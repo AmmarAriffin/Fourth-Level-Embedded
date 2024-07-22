@@ -162,3 +162,10 @@ void test_capacity_higher_than_max_invalid(void)
 
     // Assert: the return value of initCircBuf is NULL
 }
+
+void test_buf_is_unsigned(void)
+{
+
+    writeCircBuf(&buff, 0);
+    TEST_ASSERT_EQUAL(-1, readCircBuf(&buff)-1);
+}
