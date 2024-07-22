@@ -4,6 +4,8 @@
 const uint8_t STANDARD_TEST_CAPACITY = 5;
 static circBuf_t buff;
 
+uint32_t test_MAX_SIZE = 100;
+
 void setUp(void)
 {
     initCircBuf(&buff, STANDARD_TEST_CAPACITY);
@@ -38,7 +40,6 @@ int32_t * reconstructBufferWithSize(uint16_t size)
 }
 
 /* Test cases */
-
 void test_new_buffer_is_empty(void)
 {
     // Arrange: given buffer is empty
@@ -165,18 +166,26 @@ void test_min_capacity_when_single_element_written_to_buffer_then_same_value_is_
 
 void test_capacity_0_invalid(void)
 {
-    TEST_IGNORE(); // Remove this when the test is written
 
     // Arrange/Act
+    int32_t *val = initCircBuf(&buff, 0);
 
     // Assert: the return value of initCircBuf is NULL
+    TEST_ASSERT_EQUAL(val, NULL);
 }
 
 void test_capacity_higher_than_max_invalid(void)
 {
-    TEST_IGNORE(); // Remove this when the test is written
-
     // Arrange/Act
+    int32_t *val = initCircBuf(&buff, test_MAX_SIZE + 1);
 
     // Assert: the return value of initCircBuf is NULL
+    TEST_ASSERT_EQUAL(val, NULL);
+}
+
+void test_buf_is_unsigned(void)
+{
+
+    writeCircBuf(&buff, 0);
+    TEST_ASSERT_EQUAL(-1, readCircBuf(&buff)-1);
 }
