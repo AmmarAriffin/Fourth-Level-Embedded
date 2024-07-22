@@ -187,5 +187,7 @@ void test_buf_is_unsigned(void)
 {
 
     writeCircBuf(&buff, 0);
-    TEST_ASSERT_EQUAL(-1, readCircBuf(&buff)-1);
+    int32_t entry;
+    readCircBuf(&buff, &entry);
+    TEST_ASSERT_EQUAL(-1, entry-1);
 }

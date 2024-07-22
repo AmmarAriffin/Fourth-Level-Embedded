@@ -112,10 +112,14 @@ void initADC (void)
 
 uint32_t readADC() {
       uint32_t sum = 0;
+      uint32_t entry = 0;
       uint16_t i = 0;
-      for (i = 0; i < ADC_BUF_SIZE; i++)
-          sum = sum + readCircBuf (&ADC_inBuffer);
 
+      for (i = 0; i < ADC_BUF_SIZE; i++) {
+        if (readCircBuf (&ADC_inBuffer, &entry)) {
+            sum = sum + entry;
+        }
+      }
       return sum/ADC_BUF_SIZE;
 }
 

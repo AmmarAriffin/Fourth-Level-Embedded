@@ -29,7 +29,7 @@ typedef struct {
 // the start of the buffer.  Dynamically allocate and clear the the 
 // memory and return a pointer for the data.  Return NULL if 
 // allocation fails.
-int32_t *
+uint32_t *
 initCircBuf (circBuf_t *buffer, uint32_t size);
 
 // *******************************************************
@@ -43,7 +43,7 @@ writeCircBuf (circBuf_t *buffer, int32_t entry);
 // advance rindex, modulo (buffer size). The function deos not check
 // if reading has advanced ahead of writing.
 uint8_t
-readCircBuf (circBuf_t *buffer, int32_t *entry);
+readCircBuf (circBuf_t *buffer, uint32_t *entry);
 
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,
