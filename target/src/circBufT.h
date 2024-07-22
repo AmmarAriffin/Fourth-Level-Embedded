@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 // *******************************************************
+
 // Buffer structure
 typedef struct {
 	uint32_t size;		// Number of entries in buffer

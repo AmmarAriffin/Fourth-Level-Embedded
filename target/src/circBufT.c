@@ -13,6 +13,7 @@
 #include "stdlib.h"
 #include "circBufT.h"
 
+uint32_t MAX_SIZE = 100;
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
 // the start of the buffer.  Dynamically allocate and clear the the 
@@ -21,12 +22,16 @@
 int32_t *
 initCircBuf (circBuf_t *buffer, uint32_t size)
 {
-	buffer->windex = 0;
-	buffer->rindex = 0;
-	buffer->size = size;
-	buffer->data = 
-        (int32_t *) calloc (size, sizeof(int32_t));
-	return buffer->data;
+	if (size <= 0 || size > MAX_SIZE)  {
+		return NULL;
+	} else {
+		buffer->windex = 0;
+		buffer->rindex = 0;
+		buffer->size = size;
+		buffer->data = 
+			(int32_t *) calloc (size, sizeof(int32_t));
+		return buffer->data;
+	}	
 }
    // Note use of calloc() to clear contents.
 
