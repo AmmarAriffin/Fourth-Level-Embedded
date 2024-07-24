@@ -14,12 +14,14 @@
 #include <stdint.h>
 
 // *******************************************************
+
 // Buffer structure
 typedef struct {
 	uint32_t size;		// Number of entries in buffer
 	uint32_t windex;	// index for writing, mod(size)
 	uint32_t rindex;	// index for reading, mod(size)
 	uint32_t *data;		// pointer to the data
+	uint32_t count;     // unread data entries
 } circBuf_t;
 
 // *******************************************************
@@ -27,7 +29,7 @@ typedef struct {
 // the start of the buffer.  Dynamically allocate and clear the the 
 // memory and return a pointer for the data.  Return NULL if 
 // allocation fails.
-int32_t *
+uint32_t *
 initCircBuf (circBuf_t *buffer, uint32_t size);
 
 // *******************************************************
@@ -40,8 +42,8 @@ writeCircBuf (circBuf_t *buffer, int32_t entry);
 // readCircBuf: return entry at the current rindex location,
 // advance rindex, modulo (buffer size). The function deos not check
 // if reading has advanced ahead of writing.
-int32_t
-readCircBuf (circBuf_t *buffer);
+uint8_t
+readCircBuf (circBuf_t *buffer, uint32_t *entry);
 
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,
