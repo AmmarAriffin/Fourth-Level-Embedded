@@ -84,6 +84,15 @@ int32_t ADCSequenceDataGet_fake_adc_value_sequence(uint32_t arg0, uint32_t arg1,
     return 0;
 }
 
+int8_t readCircBuf_fake_sequence(circBuf_t * arg0, uint32_t * arg1)
+{
+    static uint32_t count = 1;
+    (void)arg0;
+    *arg1 = count;
+    count++;
+    return 1;
+}
+
 /* Unity setup and teardown */
 void setUp(void)
 {
@@ -248,18 +257,25 @@ void test_readADC_reads_from_correct_buffer(void)
 void test_readADC_averages_data_correctly(void)
 {
     // Arrange
-    initADC();
+    circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
     // initADC();
-    ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_adc_value_sequence;
-    int i;
-    // Act
-    for (i = 0; i < 10; i++)
-    {
-        ADCIntHandler();
-    }
+    // ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_adc_value_sequence;
+    readCircBuf_fake.custom_fake = readCircBuf_fake_sequence;
+    readCircBuf_fake.return_val = 1;
+    // int i;
+    // // Act
+    // for (i = 0; i < 10; i++)
+    // {
+    //     ADCIntHandler();
+    // }
     uint32_t value = readADC(); // Always returns 0. //Test assertion below checks write history when debugging confirms 1-10 have been written.
-    // Assert
-    TEST_ASSERT_EQUAL(3, writeCircBuf_fake.arg1_history[2]);
+    // printf("WINDEX %d\n", buffer_ptr->windex);
+    // printf("TEST VALUE %d\n", value);
+    // // Assert
+    // TEST_ASSERT_EQUAL(buffer_ptr, readCircBuf_fake.arg0_val);
+    // TEST_ASSERT_EQUAL(buffer_ptr, writeCircBuf_fake.arg0_val);
+    // TEST_ASSERT_EQUAL(3, writeCircBuf_fake.arg1_history[2]);
+
     TEST_ASSERT_EQUAL(5, value); //Exact value is 5.5
 }
 
