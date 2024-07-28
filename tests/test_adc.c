@@ -46,23 +46,6 @@ void assert_f1_called_before_f2(void* f1, void* f2)
     TEST_ASSERT(i_f1 < i_f2);
 }
 
-// Attempts at combining the three common assertions into one
-// #define ASSERT_FAKE_FUNCTION_CALL_COUNT_AND_ARGS(func) \
-//     do { \
-//         TEST_ASSERT_EQUAL(1, func##.call_count); \
-//         TEST_ASSERT_EQUAL(ADC0_BASE, func##.arg0_val); \
-//         TEST_ASSERT_EQUAL(3, func##.arg1_val); \
-//     } while(0)
-// #define FFF_ADC_PASS(FUNK)  \
-//     FUNK(ADCSequenceConfigure_fake)   
-
-// void ADC_function_call_assertion(FUNK *func)
-// {
-//     TEST_ASSERT_EQUAL(1, func.call_count);
-//     TEST_ASSERT_EQUAL(ADC0_BASE, func->arg0_val);
-//     TEST_ASSERT_EQUAL(3, func->arg1_val);  
-// }
-
 /* Custom fakes */
 int32_t ADCSequenceDataGet_fake_adc_value(uint32_t arg0, uint32_t arg1,
                                   uint32_t *arg2)
@@ -241,7 +224,7 @@ void test_ISR_writes_correct_value_to_buffer(void)
     // Act
     ADCIntHandler();
     // Assert
-    TEST_ASSERT_EQUAL(FAKE_ADC_VALUE, writeCircBuf_fake.arg1_val); //FIXED -- Rounding error with FAKE_ADC_VALUE
+    TEST_ASSERT_EQUAL(FAKE_ADC_VALUE, writeCircBuf_fake.arg1_val);
 }
 /* Test cases - readADC */
 void test_readADC_reads_from_correct_buffer(void)
@@ -257,24 +240,11 @@ void test_readADC_reads_from_correct_buffer(void)
 void test_readADC_averages_data_correctly(void)
 {
     // Arrange
-    circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
-    // initADC();
-    // ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_adc_value_sequence;
+    initADC();
     readCircBuf_fake.custom_fake = readCircBuf_fake_sequence;
     readCircBuf_fake.return_val = 1;
-    // int i;
-    // // Act
-    // for (i = 0; i < 10; i++)
-    // {
-    //     ADCIntHandler();
-    // }
-    uint32_t value = readADC(); // Always returns 0. //Test assertion below checks write history when debugging confirms 1-10 have been written.
-    // printf("WINDEX %d\n", buffer_ptr->windex);
-    // printf("TEST VALUE %d\n", value);
-    // // Assert
-    // TEST_ASSERT_EQUAL(buffer_ptr, readCircBuf_fake.arg0_val);
-    // TEST_ASSERT_EQUAL(buffer_ptr, writeCircBuf_fake.arg0_val);
-    // TEST_ASSERT_EQUAL(3, writeCircBuf_fake.arg1_history[2]);
+ 
+    uint32_t value = readADC();
 
     TEST_ASSERT_EQUAL(5, value); //Exact value is 5.5
 }
