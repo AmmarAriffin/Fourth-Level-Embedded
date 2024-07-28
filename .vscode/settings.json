@@ -6,6 +6,15 @@
     ],
     "cmake.preferredGenerators": ["Unix Makefiles"],
     "files.associations": {
-        "*.h": "c"
+        "*.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "optional": "c",
+        "system_error": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     }
 }
