@@ -11,18 +11,30 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+
+// #include "inc/hw_types.h"
+// #include "driverlib/pwm.h"
+// #include "driverlib/gpio.h"
+
+// #include "driverlib/systick.h"
+// #include "driverlib/debug.h"
+// #include "utils/ustdlib.h"
+// #include "driverlib/interrupt.h"
+
 #include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/adc.h"
-#include "driverlib/pwm.h"
-#include "driverlib/gpio.h"
+
 #include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/debug.h"
-#include "utils/ustdlib.h"
+#include "driverlib/adc.h"
 #include "circBufT.h"
 
+
+// ADC0_BASE               0x40038000
+// SYSCTL_PERIPH_ADC0      0xf0003800
+// ADC_TRIGGER_PROCESSOR   0x00000000
+// ADC_CTL_CH0             0x00000000
+// ADC_CTL_IE              0x00000040
+// ADC_CTL_END             0x00000020
 //*****************************************************************************
 // Constants
 //*****************************************************************************
@@ -116,7 +128,7 @@ uint32_t readADC() {
       uint16_t i = 0;
 
       for (i = 0; i < ADC_BUF_SIZE; i++) {
-        if (readCircBuf (&ADC_inBuffer, &entry)) {
+        if (readCircBuf (&ADC_inBuffer, &entry)) { //Viewing fake arg1_val will result in seeing the address of entry
             sum = sum + entry;
         }
       }

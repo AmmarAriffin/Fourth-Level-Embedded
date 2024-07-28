@@ -36,7 +36,7 @@ initCircBuf (circBuf_t *buffer, uint32_t size);
 // writeCircBuf: insert entry at the current windex location,
 // advance windex, modulo (buffer size).
 void
-writeCircBuf (circBuf_t *buffer, int32_t entry);
+writeCircBuf (circBuf_t *buffer, uint32_t entry);
 
 // *******************************************************
 // readCircBuf: return entry at the current rindex location,
