@@ -148,6 +148,7 @@ void test_min_capacity_when_buffer_is_created_then_buffer_empty(void)
     int32_t entry;
     readCircBuf(&buff, &entry);
     TEST_ASSERT_EQUAL(0, entry);
+    // test
 }
 
 void test_min_capacity_when_single_element_written_to_buffer_then_same_value_is_read(void)
