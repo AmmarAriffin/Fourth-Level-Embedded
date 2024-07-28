@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(FitnessTracker LANGUAGES C)
 
+
 option(
     ENABLE_PROGRAM_TARGETS
     "Enable program/debug targets (requires OpenOCD and GDB)"

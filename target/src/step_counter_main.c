@@ -43,6 +43,9 @@
 
 #include "step_counter_main.h"
 
+#include "freeRTOS.h"
+#include "task.h"
+
 /**********************************************************
  * Constants and types
  **********************************************************/
