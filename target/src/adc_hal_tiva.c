@@ -20,6 +20,8 @@
 //*****************************************************************************
 static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample values)
 
+volatile uint32_t intHandlerAdcIndex; 
+
 typedef struct {
     uint32_t adcID;
     uint32_t adcPeripheral;
@@ -31,20 +33,6 @@ adcID_t adcIDArray[numEntries] =
     {ADC1_BASE, SYSCTL_PERIPH_ADC1}
 };
 
-void ADCIntHandler(void)
-{
-	uint32_t ulValue;
-	
-	// Get the single sample from ADC0.  ADC_BASE is defined in
-	// inc/hw_memmap.h
-	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-	//
-	// Place it in the circular buffer (advancing write index)
-	writeCircBuf (&ADC_inBuffer, ulValue);
-	//
-	// Clean up, clearing the interrupt
-	ADCIntClear(ADC0_BASE, 3);                          
-}
 
 void adcHalRegister(uint32_t adcIndex, void (*callback)(uint32_t))
 {
@@ -52,6 +40,9 @@ void adcHalRegister(uint32_t adcIndex, void (*callback)(uint32_t))
     {
         return;
     }
+
+    
+    intHandlerAdcIndex = adcIndex;
 
     initCircBuf (&ADC_inBuffer, ADC_BUF_SIZE);
     // The ADC0 peripheral must be enabled for configuration and use.
@@ -80,15 +71,36 @@ void adcHalRegister(uint32_t adcIndex, void (*callback)(uint32_t))
   
     //
     // Register the interrupt handler
-    ADCIntRegister (adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM, ADCIntHandler);
+    ADCIntRegister (adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM, adcHalIntHandler);
   
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM);
 }
 
+
+void adcHalIntHandler(void)
+{
+	uint32_t ulValue;
+	
+	// Get the single sample from ADC0.  ADC_BASE is defined in
+	// inc/hw_memmap.h
+	ADCSequenceDataGet(adcIDArray[intHandlerAdcIndex].adcID, ADC_SEQUENCE_NUM, &ulValue);
+	//
+	// Place it in the circular buffer (advancing write index)
+	writeCircBuf (&ADC_inBuffer, ulValue);
+	//
+	// Clean up, clearing the interrupt
+	ADCIntClear(adcIDArray[intHandlerAdcIndex].adcID, ADC_SEQUENCE_NUM);                          
+}
+
+
 void adcHalStartConversion(uint32_t adcIndex)
 {
+    if (adcIndex < 0 || adcIndex >= numEntries) 
+    {
+        return;
+    }
     // Initiate a conversion
     //
     ADCProcessorTrigger(adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM);

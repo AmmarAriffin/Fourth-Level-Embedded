@@ -48,6 +48,7 @@ static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample valu
 //*****************************************************************************
 void pollADC(void)
 {
+    //PUT adcHalStartConversion HERE
     //
     // Initiate a conversion
     //
@@ -61,20 +62,21 @@ void pollADC(void)
 // Writes to the circular buffer.
 //
 //*****************************************************************************
-// void ADCIntHandler(void)
-// {
-// 	uint32_t ulValue;
+void ADCIntHandler(void)
+{
+    //PUT adcHalIntHandler HERE
+	uint32_t ulValue;
 	
-// 	// Get the single sample from ADC0.  ADC_BASE is defined in
-// 	// inc/hw_memmap.h
-// 	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-// 	//
-// 	// Place it in the circular buffer (advancing write index)
-// 	writeCircBuf (&ADC_inBuffer, ulValue);
-// 	//
-// 	// Clean up, clearing the interrupt
-// 	ADCIntClear(ADC0_BASE, 3);                          
-// }
+	// Get the single sample from ADC0.  ADC_BASE is defined in
+	// inc/hw_memmap.h
+	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
+	//
+	// Place it in the circular buffer (advancing write index)
+	writeCircBuf (&ADC_inBuffer, ulValue);
+	//
+	// Clean up, clearing the interrupt
+	ADCIntClear(ADC0_BASE, 3);                          
+}
 
 //*****************************************************************************
 // Initialisation functions for the ADC

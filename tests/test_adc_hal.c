@@ -87,3 +87,43 @@ void test_adc_hal_does_not_initialise_adc_with_invalid_callback(void)
     TEST_ASSERT_NOT_EQUAL(SYSCTL_PERIPH_ADC0, SysCtlPeripheralEnable_fake.arg0_val);
     TEST_ASSERT_NOT_EQUAL(SYSCTL_PERIPH_ADC1, SysCtlPeripheralEnable_fake.arg0_val);
 }
+
+void test_adc_hal_start_conversion_triggers_adc(void)
+{ 
+    // Arrange
+    adcHalRegister(0, dummyCallback);
+    // Act
+    adcHalStartConversion(0);
+    // Assert
+    TEST_ASSERT_EQUAL(ADC0_BASE, ADCProcessorTrigger_fake.arg0_val);
+}
+
+void test_adc_hal_start_conversion_with_invalid_id_does_not_triggers_adc(void)
+{ 
+    // Arrange
+    adcHalRegister(0, dummyCallback);
+    // Act
+    adcHalStartConversion(42);
+    // Assert
+    TEST_ASSERT_NOT_EQUAL(ADC0_BASE, ADCProcessorTrigger_fake.arg0_val);
+}
+
+void test_adc_hal_ISR_reads_correct_channel(void)
+{ 
+    // Arrange
+    adcHalRegister(0, dummyCallback);
+    // Act
+    adcHalIntHandler();
+    // Assert
+    TEST_ASSERT_EQUAL(ADC0_BASE, ADCSequenceDataGet_fake.arg0_val);
+}
+
+void test_adc_hal_ISR_is_cleared(void)
+{ 
+    // Arrange
+    adcHalRegister(0, dummyCallback);
+    // Act
+    adcHalIntHandler();
+    // Assert
+    TEST_ASSERT_EQUAL(1, ADCIntClear_fake.call_count);
+}
