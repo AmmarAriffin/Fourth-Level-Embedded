@@ -16,10 +16,9 @@
 //*****************************************************************************
 
 #define numEntries 2
-
-void adcHalRegister(uint32_t adcIndex, void (*callback)(uint32_t));
-void adcHalIntHandler(void);
-void adcHalStartConversion(uint32_t adcIndex);
-// typedef void(*callback)(uint32_t);
+typedef void(*callback)(uint32_t);
+void adcHalRegister(uint32_t index, void (*callback)(uint32_t));
+void adcHalStartConversion(uint32_t index);
+void adcIntCallback(void);
 
 #endif //ADC_HAL_H_

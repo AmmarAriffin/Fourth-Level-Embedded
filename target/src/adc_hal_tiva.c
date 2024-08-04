@@ -18,9 +18,12 @@
 //*****************************************************************************
 // Global variables
 //*****************************************************************************
-static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample values)
 
-volatile uint32_t intHandlerAdcIndex; 
+volatile uint32_t adcIndex; 
+
+//Global types
+static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample values)
+volatile callback registeredCallback;
 
 typedef struct {
     uint32_t adcID;
@@ -33,16 +36,18 @@ adcID_t adcIDArray[numEntries] =
     {ADC1_BASE, SYSCTL_PERIPH_ADC1}
 };
 
-
-void adcHalRegister(uint32_t adcIndex, void (*callback)(uint32_t))
+void adcHalRegister(uint32_t index, void (*callback)(uint32_t))
 {
-    if (adcIndex < 0 || adcIndex >= numEntries || callback == NULL) 
+    //Checks for invalid arguments
+    if (index < 0 || index >= numEntries || callback == NULL) 
     {
         return;
     }
 
-    
-    intHandlerAdcIndex = adcIndex;
+    //Makes index global within the module
+    adcIndex = index;
+    //Registers the passed callback function globally to be used among the module
+    registeredCallback = callback;
 
     initCircBuf (&ADC_inBuffer, ADC_BUF_SIZE);
     // The ADC0 peripheral must be enabled for configuration and use.
@@ -71,38 +76,39 @@ void adcHalRegister(uint32_t adcIndex, void (*callback)(uint32_t))
   
     //
     // Register the interrupt handler
-    ADCIntRegister (adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM, adcHalIntHandler);
+    ADCIntRegister (adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM, adcIntCallback);
   
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM);
+
+    
 }
 
 
-void adcHalIntHandler(void)
+void adcIntCallback(void)
 {
-	uint32_t ulValue;
-	
-	// Get the single sample from ADC0.  ADC_BASE is defined in
-	// inc/hw_memmap.h
-	ADCSequenceDataGet(adcIDArray[intHandlerAdcIndex].adcID, ADC_SEQUENCE_NUM, &ulValue);
-	//
-	// Place it in the circular buffer (advancing write index)
-	writeCircBuf (&ADC_inBuffer, ulValue);
-	//
-	// Clean up, clearing the interrupt
-	ADCIntClear(adcIDArray[intHandlerAdcIndex].adcID, ADC_SEQUENCE_NUM);                          
+    uint32_t value;
+    // Get the single sample from ADC0.  ADC_BASE is defined in
+    // inc/hw_memmap.h
+    ADCSequenceDataGet(adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM, &value);//This value should be passed to the callback
+    
+    //Call the callback with the read value
+    registeredCallback(value);
+
+    // Clean up, clearing the interrupt
+	ADCIntClear(ADC0_BASE, 3);    
 }
 
 
-void adcHalStartConversion(uint32_t adcIndex)
+void adcHalStartConversion(uint32_t index)
 {
-    if (adcIndex < 0 || adcIndex >= numEntries) 
+    if (index < 0 || index >= numEntries) 
     {
         return;
     }
     // Initiate a conversion
     //
-    ADCProcessorTrigger(adcIDArray[adcIndex].adcID, ADC_SEQUENCE_NUM);
+    ADCProcessorTrigger(adcIDArray[index].adcID, ADC_SEQUENCE_NUM);
 }
 

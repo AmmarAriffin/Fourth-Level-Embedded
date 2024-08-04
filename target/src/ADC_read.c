@@ -49,7 +49,7 @@ static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample valu
 void pollADC(void)
 {
     //PUT adcHalStartConversion HERE
-    //
+    //adcHalStartConversion(0)
     // Initiate a conversion
     //
     ADCProcessorTrigger(ADC0_BASE, 3);
@@ -64,16 +64,19 @@ void pollADC(void)
 //*****************************************************************************
 void ADCIntHandler(void)
 {
-    //PUT adcHalIntHandler HERE
+    //Use this as the callback??$$$$$$$$$$$$$$$$$$$
+
 	uint32_t ulValue;
 	
 	// Get the single sample from ADC0.  ADC_BASE is defined in
 	// inc/hw_memmap.h
-	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
+	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);//This value should be passed to the callback
 	//
+    //REMOVE ABOVE
 	// Place it in the circular buffer (advancing write index)
 	writeCircBuf (&ADC_inBuffer, ulValue);
 	//
+    //REMOVE BELOW
 	// Clean up, clearing the interrupt
 	ADCIntClear(ADC0_BASE, 3);                          
 }
@@ -84,7 +87,9 @@ void ADCIntHandler(void)
 
 void initADC (void)
 {
-    //
+    //TODO
+    //PUT adcHalRegister HERE
+    //adcHalRegister(0, callbackfunctionNOTDONE)
     initCircBuf (&ADC_inBuffer, ADC_BUF_SIZE);
     // The ADC0 peripheral must be enabled for configuration and use.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);

@@ -25,6 +25,14 @@ void dummyCallback(uint32_t value)
 
 }
 
+void circBuf42Callback(uint32_t value)
+{
+    //
+    circBuf_t testBuf;
+    initCircBuf(&testBuf, 10);
+    writeCircBuf(&testBuf, 42);
+}
+
 /* Unity setup and teardown */
 void setUp(void)
 {
@@ -34,6 +42,17 @@ void setUp(void)
 void tearDown(void)
 {
     
+}
+
+/* Custom mocks*/
+
+int32_t ADCSequenceDataGet_fake_value(uint32_t arg0, uint32_t arg1,
+                                  uint32_t *arg2)
+{
+    (void)arg0;
+    (void)arg1;
+    *arg2 = 42;
+    return 0;
 }
 
 /* Test cases */
@@ -113,7 +132,7 @@ void test_adc_hal_ISR_reads_correct_channel(void)
     // Arrange
     adcHalRegister(0, dummyCallback);
     // Act
-    adcHalIntHandler();
+    adcIntCallback();
     // Assert
     TEST_ASSERT_EQUAL(ADC0_BASE, ADCSequenceDataGet_fake.arg0_val);
 }
@@ -123,7 +142,31 @@ void test_adc_hal_ISR_is_cleared(void)
     // Arrange
     adcHalRegister(0, dummyCallback);
     // Act
-    adcHalIntHandler();
+    adcIntCallback();
     // Assert
     TEST_ASSERT_EQUAL(1, ADCIntClear_fake.call_count);
 }
+
+void test_adc_hal_ISR_is_calls_correct_callback(void)
+{ 
+    // Arrange
+    adcHalRegister(0, circBuf42Callback);
+    // Act
+    adcIntCallback();
+    // Assert
+    TEST_ASSERT_EQUAL(42, writeCircBuf_fake.arg1_val);
+}
+
+void test_adc_hal_callback_receives_correct_value(void)
+{
+    // Arrange
+    ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_value;
+    adcHalRegister(0, dummyCallback);
+    // Act
+    adcIntCallback();
+    // Assert
+    uint32_t *ptr42; 
+    ptr42 = ADCSequenceDataGet_fake.arg2_val;
+    TEST_ASSERT_EQUAL(42, ptr42);
+}
+
