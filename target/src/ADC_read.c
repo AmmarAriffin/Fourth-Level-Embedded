@@ -21,19 +21,16 @@
 // #include "utils/ustdlib.h"
 // #include "driverlib/interrupt.h"
 
+//******************************
+//Enclosed should be removed upon completion of HAL
 #include "inc/hw_memmap.h"
-
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
+//******************************
 #include "circBufT.h"
+#include "ADC_read.h"
 
 
-// ADC0_BASE               0x40038000
-// SYSCTL_PERIPH_ADC0      0xf0003800
-// ADC_TRIGGER_PROCESSOR   0x00000000
-// ADC_CTL_CH0             0x00000000
-// ADC_CTL_IE              0x00000040
-// ADC_CTL_END             0x00000020
 //*****************************************************************************
 // Constants
 //*****************************************************************************
@@ -64,20 +61,20 @@ void pollADC(void)
 // Writes to the circular buffer.
 //
 //*****************************************************************************
-void ADCIntHandler(void)
-{
-	uint32_t ulValue;
+// void ADCIntHandler(void)
+// {
+// 	uint32_t ulValue;
 	
-	// Get the single sample from ADC0.  ADC_BASE is defined in
-	// inc/hw_memmap.h
-	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-	//
-	// Place it in the circular buffer (advancing write index)
-	writeCircBuf (&ADC_inBuffer, ulValue);
-	//
-	// Clean up, clearing the interrupt
-	ADCIntClear(ADC0_BASE, 3);                          
-}
+// 	// Get the single sample from ADC0.  ADC_BASE is defined in
+// 	// inc/hw_memmap.h
+// 	ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
+// 	//
+// 	// Place it in the circular buffer (advancing write index)
+// 	writeCircBuf (&ADC_inBuffer, ulValue);
+// 	//
+// 	// Clean up, clearing the interrupt
+// 	ADCIntClear(ADC0_BASE, 3);                          
+// }
 
 //*****************************************************************************
 // Initialisation functions for the ADC
