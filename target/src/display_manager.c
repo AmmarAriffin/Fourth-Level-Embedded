@@ -106,6 +106,16 @@ void displayUpdate(deviceStateInfo_t deviceState, uint16_t secondsElapsed)
         }
 
         break;
+    case DISPLAY_TEMPERATURE:
+        if (deviceState.workoutStartTick != 0)
+        {
+            displayValue("Temp", "deg", deviceState.currentTemp, 0, ALIGN_CENTRE, false);
+        } else {
+            displayLine("Temp: Workout not started", 0, ALIGN_CENTRE);
+        }
+        displayValue("", "steps", deviceState.stepsTaken, 1, ALIGN_CENTRE, false);
+        displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE);
+        break;
     case DISPLAY_SET_GOAL:
         displayLine("Set goal:", 0, ALIGN_CENTRE);
         displayValue("Current:", "", deviceState.currentGoal, 2, ALIGN_CENTRE, false);
