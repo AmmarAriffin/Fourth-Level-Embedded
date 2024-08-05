@@ -15,7 +15,7 @@
 //
 //*****************************************************************************
 
-#define numEntries 2
+#define NUM_ENTRIES 2
 typedef void(*callback)(uint32_t);
 void adcHalRegister(uint32_t index, void (*callback)(uint32_t));
 void adcIntCallback(void);

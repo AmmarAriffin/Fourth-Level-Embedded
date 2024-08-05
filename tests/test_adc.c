@@ -196,38 +196,44 @@ void test_adc_poll_triggers_adc(void)
     TEST_ASSERT_EQUAL(3, ADCProcessorTrigger_fake.arg1_val);  
 }
 
-/* Test cases - ADCIntHandler */
-void test_ISR_reads_correct_channel_and_sequence(void)
-{
-    // Arrange
-    initADC();
-    // Act
-    ADCIntHandler();
-    // Assert
-    TEST_ASSERT_EQUAL(ADCSequenceDataGet_fake.arg0_val, ADC0_BASE);
-    TEST_ASSERT_LESS_THAN(4, ADCSequenceDataGet_fake.arg1_val);  
-}
 
-void test_ISR_write_to_correct_buffer(void)
-{
-    // Act
-    circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
-    ADCIntHandler();
-    // Assert
-    TEST_ASSERT_EQUAL(writeCircBuf_fake.arg0_val, buffer_ptr);
-}
+// REMOVE WHEN adc_hal_tiva is mocked ############################################################################################
+// /* Test cases - ADCIntHandler */
+// These tests are irrelevant as read_ADC shouldn't 
+// be accessing the interrupt register
+// void test_ISR_reads_correct_channel_and_sequence(void)
+// {
+//     // Arrange
+//     initADC();
+//     // Act
+//     ADCIntHandler();
+//     // Assert
+//     TEST_ASSERT_EQUAL(ADCSequenceDataGet_fake.arg0_val, ADC0_BASE);
+//     TEST_ASSERT_LESS_THAN(4, ADCSequenceDataGet_fake.arg1_val);  
+// }
 
-void test_ISR_writes_correct_value_to_buffer(void)
-{
-    // Arrange
-    uint32_t value;
-    circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
-    ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_adc_value;
-    // Act
-    ADCIntHandler();
-    // Assert
-    TEST_ASSERT_EQUAL(FAKE_ADC_VALUE, writeCircBuf_fake.arg1_val);
-}
+// void test_ISR_write_to_correct_buffer(void)
+// {
+//     // Act
+//     circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
+//     ADCIntHandler();
+//     // Assert
+//     TEST_ASSERT_EQUAL(writeCircBuf_fake.arg0_val, buffer_ptr);
+// }
+
+// void test_ISR_writes_correct_value_to_buffer(void)
+// {
+//     // Arrange
+//     uint32_t value;
+//     circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
+//     ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_adc_value;
+//     // Act
+//     ADCIntHandler();
+//     // Assert
+//     TEST_ASSERT_EQUAL(FAKE_ADC_VALUE, writeCircBuf_fake.arg1_val);
+// }
+//################################################################################################################################
+
 /* Test cases - readADC */
 void test_readADC_reads_from_correct_buffer(void)
 {
