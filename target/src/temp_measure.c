@@ -82,7 +82,7 @@ uint32_t readTemp() {
         }
       }
 
-      return ((sum/ADC_BUF_SIZE_TEMP));
+      return (ADC_CONST_TO_BE_MINUSED - (sum)* ADC_TO_TEMP_CONST);
 }
 
 
