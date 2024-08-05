@@ -18,6 +18,7 @@
 #include "driverlib/adc.h"
 #include "inc/hw_memmap.h"
 #include "circBufT.h"
+#include "temp_measure.h"
 
 #define ADC_BUF_SIZE_TEMP 10
 
@@ -25,7 +26,9 @@
 
 #define MIN_ADC_VOLTAGE 0
 
-#define ADC_TO_TEMP_CONST 147.5 - (75*(MAX_ADC_VOLTAGE - MIN_ADC_VOLTAGE)/4096)
+#define ADC_TO_TEMP_CONST (75*(MAX_ADC_VOLTAGE - MIN_ADC_VOLTAGE)/4096)
+
+#define ADC_CONST_TO_BE_MINUSED 147.5
 
 
 static circBuf_t ADC_inBuffer;
@@ -42,7 +45,7 @@ void pollTemp(void)
 
 void ADCIntHandlerTemp(void)
 {
-    int32_t ulValue;
+    uint32_t ulValue;
 
     ADCSequenceDataGet(ADC1_BASE, 3, &ulValue);
 
@@ -79,7 +82,7 @@ uint32_t readTemp() {
         }
       }
 
-      return (sum/ADC_BUF_SIZE_TEMP) * ADC_TO_TEMP_CONST;
+      return ((sum/ADC_BUF_SIZE_TEMP));
 }
 
 
