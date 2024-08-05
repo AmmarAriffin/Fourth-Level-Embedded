@@ -186,6 +186,7 @@ int main(void)
     initSysTick();
     acclInit();
     initADC();
+    initTempADC();
 
     #ifdef SERIAL_PLOTTING_ENABLED
     SerialInit ();
