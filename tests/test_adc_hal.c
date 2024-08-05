@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "adc_hal.h"
+#include "adc_hal_tiva.h"
 
 // #include "ADC_read.h" // REMOVE AT SOME POINT
 
@@ -165,8 +165,7 @@ void test_adc_hal_callback_receives_correct_value(void)
     // Act
     adcIntCallback();
     // Assert
-    uint32_t *ptr42; 
-    ptr42 = ADCSequenceDataGet_fake.arg2_val;
-    TEST_ASSERT_EQUAL(42, ptr42);
+    uint32_t *ptr42 = ADCSequenceDataGet_fake.arg2_val; 
+    TEST_ASSERT_EQUAL(42, *ptr42);
 }
 

@@ -7,13 +7,13 @@
 //*****************************************************************************
 
 #include <stdint.h>
-#include "adc_hal.h"
-#include "circBufT.h"
+#include "adc_hal_tiva.h"
+// #include "circBufT.h"
 
 //*****************************************************************************
 // Constants
 //*****************************************************************************
-#define ADC_BUF_SIZE 10
+// #define ADC_BUF_SIZE 10
 #define ADC_SEQUENCE_NUM 3
 //*****************************************************************************
 // Global variables
@@ -22,7 +22,7 @@
 volatile uint32_t adcIndex; 
 
 //Global types
-static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample values)
+// static circBuf_t ADC_inBuffer;		// Buffer of size BUF_SIZE integers (sample values)
 volatile callback registeredCallback;
 
 typedef struct {
@@ -49,7 +49,7 @@ void adcHalRegister(uint32_t index, void (*callback)(uint32_t))
     //Registers the passed callback function globally to be used among the module
     registeredCallback = callback;
 
-    initCircBuf (&ADC_inBuffer, ADC_BUF_SIZE);
+    
     // The ADC0 peripheral must be enabled for configuration and use.
     SysCtlPeripheralEnable(adcIDArray[adcIndex].adcPeripheral);
     

@@ -1,6 +1,6 @@
 #include "unity.h"
 #include "ADC_read.h"
-
+#include "adc_hal_tiva.h"
 #include "fff.h"
 DEFINE_FFF_GLOBALS;
 #define FFF_MOCK_IMPL // Includes mock implementations
@@ -145,17 +145,19 @@ void test_adc_init_enables_adc_sequence(void)
     TEST_ASSERT_EQUAL(3, ADCSequenceEnable_fake.arg1_val);  
 }
 
-void test_adc_init_registers_adc_interrupt(void)
-{
-    // Act
-    initADC();
+// void test_adc_init_registers_adc_interrupt(void)
+// {
+//     // This test is irrelevant as read_ADC shouldn't 
+//     // be accessing the interrupt register
+//     // Act
+//     initADC();
 
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCIntRegister_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCIntRegister_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCIntRegister_fake.arg1_val);  
-    TEST_ASSERT_EQUAL(ADCIntHandler, ADCIntRegister_fake.arg2_val);
-}
+//     // Assert
+//     TEST_ASSERT_EQUAL(1, ADCIntRegister_fake.call_count);
+//     TEST_ASSERT_EQUAL(ADC0_BASE, ADCIntRegister_fake.arg0_val);
+//     TEST_ASSERT_EQUAL(3, ADCIntRegister_fake.arg1_val);  
+//     // TEST_ASSERT_EQUAL(ADCIntHandler, ADCIntRegister_fake.arg2_val);
+// }
 
 void test_adc_init_enables_adc_before_other_adc_operations(void)
 {
