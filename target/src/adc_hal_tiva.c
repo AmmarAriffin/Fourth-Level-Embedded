@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "adc_hal_tiva.h"
-// #include "circBufT.h"
 
 //*****************************************************************************
 // Constants

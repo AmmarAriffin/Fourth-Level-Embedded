@@ -1,7 +1,6 @@
 #include "unity.h"
 #include "adc_hal_tiva.h"
 
-// #include "ADC_read.h" // REMOVE AT SOME POINT
 
 #include "fff.h"
 DEFINE_FFF_GLOBALS;
