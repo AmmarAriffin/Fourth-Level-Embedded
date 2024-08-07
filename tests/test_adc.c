@@ -1,22 +1,21 @@
 #include "unity.h"
 #include "ADC_read.h"
-
+// #include "adc_hal_tiva.h"
 #include "fff.h"
 DEFINE_FFF_GLOBALS;
 #define FFF_MOCK_IMPL // Includes mock implementations
 
 #include "circBufT_mock.h"
-#include "tiva_mocks/adc_mock.h"
-#include "tiva_mocks/sysctl_mock.h"
+#include "adc_hal_tiva_mock.h"
+//REMOVE TIVA DEPENDECY
+// #include "tiva_mocks/adc_mock.h"
+// #include "tiva_mocks/sysctl_mock.h"
 
 #define ADC_BUF_SIZE 10
-#define FAKE_ADC_VALUE 0xFACCEADC // No K's in hex
 
 /* Helper functions */      
 void reset_fff(void)
 {
-    FFF_ADC_FAKES_LIST(RESET_FAKE);
-    FFF_SYSCTL_FAKES_LIST(RESET_FAKE);
     FFF_CIRCBUFT_FAKES_LIST(RESET_FAKE);
     FFF_RESET_HISTORY();
 }
@@ -47,33 +46,33 @@ void assert_f1_called_before_f2(void* f1, void* f2)
 }
 
 /* Custom fakes */
-int32_t ADCSequenceDataGet_fake_adc_value(uint32_t arg0, uint32_t arg1,
-                                  uint32_t *arg2)
-{
-    (void)arg0;
-    (void)arg1;
-    *arg2 = FAKE_ADC_VALUE;
-    return 0;
-}
+// Not used but left for custom fake example 
+// int32_t ADCSequenceDataGet_fake_adc_value(uint32_t arg0, uint32_t arg1,
+//                                   uint32_t *arg2)
+// {
+//     (void)arg0;
+//     (void)arg1;
+//     *arg2 = FAKE_ADC_VALUE;
+//     return 0;
+// }
 
-int32_t ADCSequenceDataGet_fake_adc_value_sequence(uint32_t arg0, uint32_t arg1,
-                                  uint32_t *arg2)
+
+uint8_t readCircBuf_fake_sequence(circBuf_t * arg0, uint32_t * arg1)
 {
     static uint32_t count = 1;
     (void)arg0;
-    (void)arg1;
-    *arg2 = count;
-    count++;
-    return 0;
-}
-
-int8_t readCircBuf_fake_sequence(circBuf_t * arg0, uint32_t * arg1)
-{
-    static uint32_t count = 1;
-    (void)arg0;
-    *arg1 = count;
-    count++;
-    return 1;
+    if (count % 2 == 0) 
+    {
+        *arg1 = 10;
+        count++;
+        return 1;
+    } else {
+        *arg1 = 0;
+        count++;
+        return 0;
+    }
+    
+    
 }
 
 /* Unity setup and teardown */
@@ -98,119 +97,12 @@ void test_adc_init_initialises_buffer(void)
     TEST_ASSERT_EQUAL(ADC_BUF_SIZE, initCircBuf_fake.arg1_val);
 }
 
-void test_adc_init_enables_adc(void)
-{
-    // Act
-    initADC();
-
-    // Assert
-    TEST_ASSERT_EQUAL(1, SysCtlPeripheralEnable_fake.call_count);
-    TEST_ASSERT_EQUAL(SYSCTL_PERIPH_ADC0, SysCtlPeripheralEnable_fake.arg0_val);
-}
-
-void test_adc_init_initialises_adc_sequence(void)
-{
-    // Act
-    initADC();
-
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCSequenceConfigure_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCSequenceConfigure_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCSequenceConfigure_fake.arg1_val);  
-    TEST_ASSERT_EQUAL(ADC_TRIGGER_PROCESSOR, ADCSequenceConfigure_fake.arg2_val);
-    TEST_ASSERT_EQUAL(0, ADCSequenceConfigure_fake.arg3_val);
-}
-
-void test_adc_init_initialises_adc_sequence_step(void)
-{
-    // Act
-    initADC();
-
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCSequenceStepConfigure_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCSequenceStepConfigure_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCSequenceStepConfigure_fake.arg1_val);  
-    TEST_ASSERT_EQUAL(0, ADCSequenceStepConfigure_fake.arg2_val);
-    TEST_ASSERT_EQUAL((ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END), ADCSequenceStepConfigure_fake.arg3_val);
-}
-
-void test_adc_init_enables_adc_sequence(void)
-{
-    // Act
-    initADC();
-
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCSequenceEnable_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCSequenceEnable_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCSequenceEnable_fake.arg1_val);  
-}
-
-void test_adc_init_registers_adc_interrupt(void)
-{
-    // Act
-    initADC();
-
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCIntRegister_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCIntRegister_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCIntRegister_fake.arg1_val);  
-    TEST_ASSERT_EQUAL(ADCIntHandler, ADCIntRegister_fake.arg2_val);
-}
-
-void test_adc_init_enables_adc_before_other_adc_operations(void)
-{
-    // Act
-    initADC();
-
-    // Assert
-    assert_f1_called_before_f2((void*)SysCtlPeripheralEnable, (void*)ADCSequenceConfigure);
-    assert_f1_called_before_f2((void*)SysCtlPeripheralEnable, (void*)ADCSequenceStepConfigure);
-    assert_f1_called_before_f2((void*)SysCtlPeripheralEnable, (void*)ADCSequenceEnable);
-    assert_f1_called_before_f2((void*)SysCtlPeripheralEnable, (void*)ADCIntRegister);
-    assert_f1_called_before_f2((void*)SysCtlPeripheralEnable, (void*)ADCIntEnable);
-}
-
-void test_adc_init_enables_adc_interrupt(void)
-{
-    // Act
-    initADC();
-    
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCIntEnable_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCIntEnable_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCIntEnable_fake.arg1_val);  
-}
-
-/* Test cases - pollADC */
-void test_adc_poll_triggers_adc(void)
-{
-    // Arrange
-    initADC();
-    // Act
-    pollADC();
-    // Assert
-    TEST_ASSERT_EQUAL(1, ADCProcessorTrigger_fake.call_count);
-    TEST_ASSERT_EQUAL(ADC0_BASE, ADCProcessorTrigger_fake.arg0_val);
-    TEST_ASSERT_EQUAL(3, ADCProcessorTrigger_fake.arg1_val);  
-}
-
-/* Test cases - ADCIntHandler */
-void test_ISR_reads_correct_channel_and_sequence(void)
-{
-    // Arrange
-    initADC();
-    // Act
-    ADCIntHandler();
-    // Assert
-    TEST_ASSERT_EQUAL(ADCSequenceDataGet_fake.arg0_val, ADC0_BASE);
-    TEST_ASSERT_LESS_THAN(4, ADCSequenceDataGet_fake.arg1_val);  
-}
-
+/* Test cases - adcCallback */
 void test_ISR_write_to_correct_buffer(void)
 {
     // Act
     circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
-    ADCIntHandler();
+    adcCallback(42);
     // Assert
     TEST_ASSERT_EQUAL(writeCircBuf_fake.arg0_val, buffer_ptr);
 }
@@ -220,36 +112,32 @@ void test_ISR_writes_correct_value_to_buffer(void)
     // Arrange
     uint32_t value;
     circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
-    ADCSequenceDataGet_fake.custom_fake = ADCSequenceDataGet_fake_adc_value;
     // Act
-    ADCIntHandler();
+    adcCallback(42);
     // Assert
-    TEST_ASSERT_EQUAL(FAKE_ADC_VALUE, writeCircBuf_fake.arg1_val);
+    TEST_ASSERT_EQUAL(42, writeCircBuf_fake.arg1_val);
 }
+
 /* Test cases - readADC */
 void test_readADC_reads_from_correct_buffer(void)
 {
     // Arrange
     circBuf_t* buffer_ptr = get_circBuf_ptr_and_reset_fff();
+    
     // Act
+    initADC();
     readADC();
     // Assert
-    TEST_ASSERT_EQUAL(buffer_ptr, readCircBuf_fake.arg0_val);
+    TEST_ASSERT_EQUAL(initCircBuf_fake.arg0_val, readCircBuf_fake.arg0_val);
 }
 
 void test_readADC_averages_data_correctly(void)
 {
     // Arrange
-    initADC();
     readCircBuf_fake.custom_fake = readCircBuf_fake_sequence;
     readCircBuf_fake.return_val = 1;
- 
+    // Act
     uint32_t value = readADC();
-
-    TEST_ASSERT_EQUAL(5, value); //Exact value is 5.5
+    // Assert
+    TEST_ASSERT_EQUAL(10, value); 
 }
-
-
-// Arrange
-// Act
-// Assert

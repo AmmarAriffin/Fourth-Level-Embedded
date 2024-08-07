@@ -66,7 +66,7 @@
 
 #define TARGET_DISTANCE_DEFAULT 1000
 
-#define POT_SCALE_COEFF 20000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading
+#define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
 
 /*******************************************
  *      Local prototypes
