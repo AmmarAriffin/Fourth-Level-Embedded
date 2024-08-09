@@ -14,13 +14,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driverlib/sysctl.h"
-#include "driverlib/adc.h"
-#include "inc/hw_memmap.h"
-#include "circBufT.h"
 #include "temp_measure.h"
-
-#define ADC_BUF_SIZE_TEMP 10
+#include "adc_hal_tiva.h"
+#include "average.h"
 
 #define MAX_ADC_VOLTAGE 3.3
 
@@ -30,62 +26,31 @@
 
 #define ADC_CONST_TO_BE_MINUSED 147.5
 
+#define ADC_ID_2 2 // Using 2nd ADC
 
-static circBuf_t ADC_inBuffer;
+static averager averagerTemp;
+
 
 void pollTemp(void)
 {
-    //
-    // Initiate a conversion
-    //
-    ADCProcessorTrigger(ADC1_BASE, 3);
-//    g_ulSampCnt++;
+    adcHalStartConversion(ADC_ID_2);
 }
 
-
-void ADCIntHandlerTemp(void)
+void callbackADCTemp(uint32_t value)
 {
-    uint32_t ulValue;
-
-    ADCSequenceDataGet(ADC1_BASE, 3, &ulValue);
-
-    writeCircBuf(&ADC_inBuffer, ulValue);
-
-    ADCIntClear(ADC1_BASE, 3);
+    storeData(&averagerTemp, value);
 }
 
-void initTempADC (void) 
+void initTempADC(void)
 {
-    initCircBuf(&ADC_inBuffer, ADC_BUF_SIZE_TEMP);
+    initAverager(&averagerTemp);
 
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC1);
-
-    ADCSequenceConfigure(ADC1_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
-
-    ADCSequenceStepConfigure(ADC1_BASE, 3, 0, ADC_CTL_TS | ADC_CTL_CH3 | ADC_CTL_IE | ADC_CTL_END);
-
-    ADCSequenceEnable(ADC1_BASE, 3);
-
-    ADCIntRegister(ADC1_BASE, 3, ADCIntHandlerTemp);
-
-    ADCIntEnable(ADC1_BASE, 3);
+    adcHalRegister(ADC_ID_2, callbackADCTemp);
 }
 
-uint32_t readTemp() {
-      uint32_t sum = 0;
-      uint32_t entry = 0;
-      uint16_t i = 0;
-
-      for (i = 0; i < ADC_BUF_SIZE_TEMP; i++) {
-        if (readCircBuf (&ADC_inBuffer, &entry)) { //Viewing fake arg1_val will result in seeing the address of entry
-            sum = sum + entry;
-        }
-      }
-
-      return (ADC_CONST_TO_BE_MINUSED - (sum)* ADC_TO_TEMP_CONST);
+uint32_t getTemp(void) 
+{
+    uint32_t val = getAverage(&averagerTemp);
+    return (ADC_CONST_TO_BE_MINUSED - (val*ADC_TO_TEMP_CONST));
 }
-
-
-
-
 

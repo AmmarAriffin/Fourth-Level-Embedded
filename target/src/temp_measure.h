@@ -5,10 +5,10 @@
 
 void pollTemp(void);
 
-void ADCIntHandlerTemp(void);
+void callbackADCTemp(uint32_t value);
 
 void initTempADC(void);
 
-uint32_t readTemp();
+uint32_t getTemp();
 
 #endif
