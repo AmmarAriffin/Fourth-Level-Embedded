@@ -44,7 +44,7 @@
 
 #include "step_counter_main.h"
 
-#include "freeRTOS.h"
+#include "FreeRTOS.h"
 #include "task.h"
 
 /**********************************************************
@@ -159,7 +159,6 @@ void superloop(void* args)
     initClock();
     displayInit();
     btnInit();
-    initSysTick();
     acclInit();
     initADC();
     initTempADC();
@@ -189,7 +188,7 @@ void superloop(void* args)
 
             // Pol ADC Temp 
             pollTemp();
-            deviceState.currentTemp = readTemp();
+            deviceState.currentTemp = getTemp();
         }
 
         // Read and process the accelerometer
@@ -271,15 +270,15 @@ void superloop(void* args)
 }
 
 
- * Main Loop
- ***********************************************************/
+//  * Main Loop
+//  ***********************************************************/
 
 int main(void)
 {
     // Fitness Monitor 1.0 Initiialisation
 
     xTaskCreate(&superloop, "superloop", 512, NULL, 1, NULL);
-    VTaskStartScheduler():
+    vTaskStartScheduler();
 
     return 0; // Should never reach here
 

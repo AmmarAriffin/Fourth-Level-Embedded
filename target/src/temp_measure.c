@@ -26,7 +26,7 @@
 
 #define ADC_CONST_TO_BE_MINUSED 147.5
 
-#define ADC_ID_2 2 // Using 2nd ADC
+#define ADC_ID_2 1 // Using 2nd ADC
 
 static averager averagerTemp;
 
