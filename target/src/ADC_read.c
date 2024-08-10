@@ -81,7 +81,7 @@ void initADC (void)
 
 }
 
-uint32_t readADC() {
+uint32_t readADC(void) {
       uint32_t sum = 0;
       uint32_t entry = 0;
       uint16_t i = 0;
@@ -101,4 +101,6 @@ uint32_t readADC() {
       }
       
 }
+
+
 

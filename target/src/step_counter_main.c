@@ -217,6 +217,7 @@ void superloop(void* args)
             // Don't start the workout until the user begins walking
             if (deviceState.stepsTaken == 0) {
                 deviceState.workoutStartTick = currentTick;
+
             }
         }
 

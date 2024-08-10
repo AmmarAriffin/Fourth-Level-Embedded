@@ -29,12 +29,15 @@ void adcHalRegister(uint32_t index, void (*callback)(uint32_t));
 // *******************************************************
 // adcIntCallback: Calls the passed callback function and
 // clears the interrupt.
-void adcIntCallback(void);
+void adcIntSelectCallback(uint32_t index);
 
 // *******************************************************
 // adcHalStartConversion: Starts a conversion using the
 // initialised adc.
 void adcHalStartConversion(uint32_t index);
 
+void adcCallback0(void);
+
+void adcCallback1(void);
 
 #endif //ADC_HAL_TIVA_H_

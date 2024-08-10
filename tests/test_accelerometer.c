@@ -31,5 +31,19 @@ void tearDown(void)
 
 void test_accel_read_at_same_time(void)
 {
-    // Arrange : given 
+    // Arrange : given accelerometer buffer with data
+
+    // Act : Read from AccelBuf
+
+    // Assert
+}
+
+
+void test_accel_write_at_same_time(void)
+{
+    // Arrange : given accelerometer buffer
+
+    // Act : Write to AccelBuf
+
+    // ASSERT : all buffers in AccelBuf have values at the same time
 }

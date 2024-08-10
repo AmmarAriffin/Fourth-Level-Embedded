@@ -16,6 +16,7 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "cstdint": "c"
+        "cstdint": "c",
+        "xtr1common": "c"
     }
 }

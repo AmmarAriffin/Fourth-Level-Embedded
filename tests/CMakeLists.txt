@@ -27,3 +27,15 @@ target_include_directories(test_adc_hal PRIVATE ${MOCK_DIR})
 add_unity_test(test_accelerometer test_accelerometer.c ${SRC_DIR}/accelerometer.c ${SRC_DIR}/circBufT.c)
 target_include_directories(test_accelerometer PRIVATE ${SRC_DIR})
 target_include_directories(test_adc_hal PRIVATE ${MOCK_DIR})
+add_unity_test(test_average test_average.c ${SRC_DIR}/average.c ${SRC_DIR}/circBufT.c)
+target_include_directories(test_average PRIVATE ${SRC_DIR})
+
+add_unity_test(test_temp_measure test_temp_measure.c ${SRC_DIR}/temp_measure.c)
+target_include_directories(test_temp_measure PRIVATE ${SRC_DIR})
+target_include_directories(test_temp_measure PRIVATE ${MOCK_DIR})
+target_include_directories(test_temp_measure PRIVATE ${TIVAWARE_DIR})
+
+
+
+
+
