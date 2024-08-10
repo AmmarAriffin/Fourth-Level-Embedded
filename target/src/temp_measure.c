@@ -7,11 +7,6 @@
  * 
  */
 
-/*
- \\ Feels very similar to ADC_read might integrate into one module 
- \\ Temperature only unsigned
-*/
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "temp_measure.h"

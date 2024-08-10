@@ -7,7 +7,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
 
-//**q***************************************************************************
+//*****************************************************************************
 //
 // Author:  S Fernando	
 // 
@@ -30,8 +30,6 @@ void adcHalRegister(uint32_t index, void (*callback)(uint32_t));
 // adcIntCallback: Calls the passed callback function and
 // clears the interrupt.
 void adcIntSelectCallback(uint32_t index);
-
-
 
 // *******************************************************
 // adcHalStartConversion: Starts a conversion using the

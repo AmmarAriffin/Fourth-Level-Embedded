@@ -135,7 +135,6 @@ void test_readADC_averages_data_correctly(void)
 {
     // Arrange
     readCircBuf_fake.custom_fake = readCircBuf_fake_sequence;
-    // readCircBuf_fake.return_val = 1;
     // Act
     uint32_t value = readADC();
     // Assert
