@@ -32,6 +32,7 @@
 #include "math.h"
 #include "circBufV.h"
 #include "ADC_read.h"
+#include "temp_measure.h"
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #include "serial_sender.h"
@@ -43,7 +44,7 @@
 
 #include "step_counter_main.h"
 
-#include "freeRTOS.h"
+#include "FreeRTOS.h"
 #include "task.h"
 
 /**********************************************************
@@ -151,15 +152,16 @@ void superloop(void* args)
     deviceState.displayUnits= UNITS_SI;
     deviceState.workoutStartTick = 0;
     deviceState.flashTicksLeft = 0;
+    deviceState.currentTemp = 0;
     deviceState.flashMessage = calloc(MAX_STR_LEN + 1, sizeof(char));
 
     // Init libs
     initClock();
     displayInit();
     btnInit();
-    initSysTick();
     acclInit();
     initADC();
+    initTempADC();
 
     #ifdef SERIAL_PLOTTING_ENABLED
     SerialInit ();
@@ -174,7 +176,7 @@ void superloop(void* args)
         if (lastIoProcess + RATE_SYSTICK_HZ/RATE_IO_HZ < currentTick) {
             lastIoProcess = currentTick;
 
-//            updateSwitch();
+//           updateSwitch();
             btnUpdateState(&deviceState);
             pollADC();
 
@@ -183,6 +185,10 @@ void superloop(void* args)
             if (deviceState.newGoal == 0) { // Prevent a goal of zero, instead setting to the minimum goal (this also makes it easier to test the goal-reaching code on a small but non-zero target)
                 deviceState.newGoal = STEP_GOAL_ROUNDING;
             }
+
+            // Pol ADC Temp 
+            pollTemp();
+            deviceState.currentTemp = getTemp();
         }
 
         // Read and process the accelerometer
@@ -263,22 +269,16 @@ void superloop(void* args)
 }
 
 
- * Main Loop
- ***********************************************************/
+//  * Main Loop
+//  ***********************************************************/
 
 int main(void)
 {
     // Fitness Monitor 1.0 Initiialisation
 
     xTaskCreate(&superloop, "superloop", 512, NULL, 1, NULL);
-    VTaskStartScheduler():
+    vTaskStartScheduler();
 
     return 0; // Should never reach here
 
 }
-
-
-
-
-
-
