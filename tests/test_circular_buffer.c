@@ -192,3 +192,4 @@ void test_buf_is_unsigned(void)
     readCircBuf(&buff, &entry);
     TEST_ASSERT_EQUAL(-1, entry-1);
 }
+

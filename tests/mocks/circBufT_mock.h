@@ -19,3 +19,4 @@ VALUE_FUNC(uint32_t *, initCircBuf, circBuf_t *, uint32_t);
 VOID_FUNC(writeCircBuf, circBuf_t *, uint32_t);
 VALUE_FUNC(uint8_t, readCircBuf, circBuf_t *, uint32_t *);
 VOID_FUNC(freeCircBuf, circBuf_t *);
+VALUE_FUNC(uint32_t, getAverageCircBuf, circBuf_t*);
