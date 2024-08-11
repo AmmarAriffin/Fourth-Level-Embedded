@@ -8,19 +8,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "stopwatch_timer.h"
-
+#include "step_counter_main.h"
 
 
 //Pseudocode
-// stopwatch: maybe switch so 4 buttons can be used
-// - up button start/stop (hold for reset?)
-// - down button lap
-// - start: starts incrementing time/resumes if stopped
-// - stop: stops incrementing time
-// - reset: sets time back to 0
-// - lap: displays the time when button pressed and reset the time to 0
-//        while continuing the time increment
-
 // timer: 
 // - buttons: start/pause/reset/increment timer
 // - up button start/pause (hold for reset)
@@ -28,30 +19,37 @@
 //                                  -> (use other button to change digit)
 //                                  -> Change timer number
 
-stopWatch_t stopWatch;
+stopWatch_t stopWatch = {.lapNum = 0, .lapReadIndex = -1};
 
 
-void toggleStopwatch (uint16_t currentTime)
+void toggleStopwatch (uint32_t currentTime)
 {
     if (stopWatch.isRunning) {
         stopWatch.isRunning = false;
     } else {
         stopWatch.isRunning = true;
         stopWatch.lastReadTime = currentTime;
+        stopWatch.lapReadIndex = stopWatch.lapNum - 1;
     }
     
 }
 
+
 void resetStopwatch (void) 
 {
     stopWatch.elapsedTime = 0;
+    stopWatch.lapNum = 0;
+    stopWatch.lapReadIndex = -1;
+    stopWatch.isRunning = false;
+    uint8_t i;
+    for (i = 0; i < MAX_LAPS;i++){
+        stopWatch.lapTimes[i] = 0;
+    }
 }
 
-uint16_t readStopwatch (uint16_t currentTime)
+
+uint32_t readStopwatch (uint32_t currentTime)
 {
-    // currenttick - start tick = elapsedticks
-    // if stopped elapsed ticks unchanged
-    //if start after stop: elapsedticks incremented from 
     if (stopWatch.isRunning) {
         stopWatch.elapsedTime = stopWatch.elapsedTime + currentTime - stopWatch.lastReadTime;
         stopWatch.lastReadTime = currentTime;
@@ -59,11 +57,41 @@ uint16_t readStopwatch (uint16_t currentTime)
     } else {
         return stopWatch.elapsedTime;
     }
-    
-    
 }
 
-// void countDown(uint32_t timeSecs)
-// {
-//     //Start countdown
-// }
+
+void storeLap (uint32_t currentTime)
+{
+    if (stopWatch.isRunning) {
+        
+        if (stopWatch.lapNum < MAX_LAPS) {
+            stopWatch.lapTimes[stopWatch.lapNum] = stopWatch.elapsedTime + currentTime - stopWatch.lastReadTime;
+            stopWatch.lapNum++;
+            stopWatch.elapsedTime = 0;
+        }else {
+            flashMessage("Max Laps Reached!");
+        }
+        stopWatch.lapReadIndex = stopWatch.lapNum - 1;
+        
+        
+    } else {
+        if (stopWatch.lapReadIndex < MAX_LAPS - 1 && stopWatch.lapReadIndex < stopWatch.lapNum) {
+            stopWatch.lapReadIndex++;
+        } else {
+            stopWatch.lapReadIndex = 0;
+        }
+        
+    }
+}
+
+
+uint32_t readLap (int8_t lapIndexMod)
+{
+    return stopWatch.lapTimes[stopWatch.lapReadIndex + lapIndexMod];
+}
+
+
+int8_t getLapIndex (void)
+{
+    return stopWatch.lapReadIndex;
+}

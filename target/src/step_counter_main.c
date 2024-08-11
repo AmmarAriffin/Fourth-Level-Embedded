@@ -49,11 +49,12 @@
 /**********************************************************
  * Constants and types
  **********************************************************/
-
+#define RATE_SYSTICK_HZ 1000
 #define RATE_IO_HZ 75
 #define RATE_ACCL_HZ 200
 #define RATE_DISPLAY_UPDATE_HZ 5
 #define FLASH_MESSAGE_TIME 3/2 // seconds
+#define TICK_MODIFIER 10 //Changes ticks to milliseconds
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #define RATE_SERIAL_PLOT_HZ 100
@@ -175,7 +176,7 @@ void superloop(void* args)
             lastIoProcess = currentTick;
 
 //            updateSwitch();
-            btnUpdateState(&deviceState, currentTick/RATE_SYSTICK_HZ);
+            btnUpdateState(&deviceState, currentTick/TICK_MODIFIER);
             pollADC();
 
             deviceState.newGoal = readADC() * POT_SCALE_COEFF; // Set the new goal value, scaling to give the desired range
@@ -222,7 +223,7 @@ void superloop(void* args)
                 deviceState.flashTicksLeft--;
             }
 
-            displayUpdate(deviceState, currentTick/RATE_SYSTICK_HZ);
+            displayUpdate(deviceState, currentTick/TICK_MODIFIER);
         }
 
         // Send to USB via serial

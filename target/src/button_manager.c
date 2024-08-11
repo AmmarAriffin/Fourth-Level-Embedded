@@ -26,7 +26,7 @@
 //********************************************************
 // Constants and static vars
 //********************************************************
-#define LONG_PRESS_CYCLES 20
+#define LONG_PRESS_CYCLES 25
 
 static uint16_t longPressCount = 0;
 static bool allowLongPress = true;
@@ -45,7 +45,7 @@ void btnInit(void)
 //********************************************************
 // Run at a fixed rate, modifies the device's state depending on button presses
 //********************************************************
-void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint16_t currentTime)
+void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
 {
     updateButtons();
     updateSwitch();
@@ -156,23 +156,21 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint16_t currentTime)
                 break;
             //*****************************************************************
             case DISPLAY_STOPWATCH:
-                // if ((isDown(UP) == true) && (allowLongPress)) {
-                //     longPressCount++;
-                //     if (longPressCount >= LONG_PRESS_CYCLES) {
-                //         resetStopwatch();
-                //     }
-                // } else 
-                if (checkButton(UP) == PUSHED) {
+                if (isDown(UP)) {
+                    checkButton(UP);
+                    longPressCount++;
+                    if (longPressCount >= LONG_PRESS_CYCLES) {
+                        resetStopwatch();
+                    } 
+                } else if (checkButton(UP) == RELEASED && longPressCount < LONG_PRESS_CYCLES) {
                     toggleStopwatch(currentTime);
-                    allowLongPress = false;
                     longPressCount = 0;
-                }
-                if (checkButton(UP) == RELEASED) {
-                    allowLongPress = true;
+                } else if (checkButton(UP) == NO_CHANGE ) {
+                    longPressCount = 0;   
                 }
                 //#############################
                 if (checkButton(DOWN) == PUSHED) {
-                    // Print lap time and restart stopwatch
+                    storeLap(currentTime);
                 }
                 break;
         }

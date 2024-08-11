@@ -46,8 +46,8 @@
  *******************************************/
 static void displayLine(char* inStr, uint8_t row, textAlignment_t alignment);
 static void displayValue(char* prefix, char* suffix, int32_t value, uint8_t row, textAlignment_t alignment, bool thousandsFormatting);
-static void displayTime(char* prefix, uint16_t time, uint8_t row, textAlignment_t alignment);
-
+static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
+static void displayLapTime(char* prefix, uint8_t lapNum, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
 /*******************************************
  *      Global functions
  *******************************************/
@@ -60,7 +60,7 @@ void displayInit(void)
 
 
 // Update the display, called on a loop
-void displayUpdate(deviceStateInfo_t deviceState, uint16_t currentTime)
+void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
 {
     // Check for flash message override
     if (deviceState.flashTicksLeft != 0) {
@@ -71,8 +71,8 @@ void displayUpdate(deviceStateInfo_t deviceState, uint16_t currentTime)
         OLEDStringDraw (emptyLine, 0, 3);
         return;
     }
-
-    uint16_t secondsElapsed = currentTime - deviceState.workoutStartTick/RATE_SYSTICK_HZ;
+    // actually milliseconds now change name to reflect this
+    uint16_t secondsElapsed = currentTime - deviceState.workoutStartTick/10;
     uint32_t mTravelled = 0; // TODO: If I put this inside the case statement it won't compile. Work out why!
 
     switch (deviceState.displayMode) {
@@ -84,11 +84,11 @@ void displayUpdate(deviceStateInfo_t deviceState, uint16_t currentTime)
             } else {
                 displayValue("", "% of goal", deviceState.stepsTaken * 100 / deviceState.currentGoal, 1, ALIGN_CENTRE, false);
             }
-            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE);
+            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE, false);
             break;
         //*****************************************************************
         case DISPLAY_DISTANCE:
-            displayTime("Time:", secondsElapsed, 1, ALIGN_CENTRE);
+            displayTime("Time:", secondsElapsed, 1, ALIGN_CENTRE, false);
             mTravelled = deviceState.stepsTaken * M_PER_STEP;
 
             // Protection against division by zero
@@ -139,13 +139,16 @@ void displayUpdate(deviceStateInfo_t deviceState, uint16_t currentTime)
             break;
         //*****************************************************************
         case DISPLAY_STOPWATCH:
-            displayTime("Stopwatch: ", readStopwatch(currentTime), 0, ALIGN_CENTRE);
-            displayLine("                ", 1, ALIGN_CENTRE);
-            displayLine("                ", 2, ALIGN_CENTRE);
-            displayLine("                ", 3, ALIGN_CENTRE);
+            displayTime("SW", readStopwatch(currentTime), 0, ALIGN_CENTRE, true);
+            uint8_t i;
+            for (i=0;i<3;i++) {
+                if (getLapIndex() - i + 1 > 0) {
+                displayLapTime("Lap", getLapIndex() - i + 1, readLap(-i), i + 1, ALIGN_CENTRE, true);
+                } else {
+                    displayLine("                ", i + 1, ALIGN_CENTRE);
+                }
+            }
             break;
-        
-        
     }
 }
 
@@ -214,17 +217,41 @@ static void displayValue(char* prefix, char* suffix, int32_t value, uint8_t row,
 
 
 // Display a given number of seconds, formatted as mm:ss or hh:mm:ss
-static void displayTime(char* prefix, uint16_t time, uint8_t row, textAlignment_t alignment)
+static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
 {
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
-    uint16_t minutes = (time / TIME_UNIT_SCALE) % TIME_UNIT_SCALE;
-    uint16_t seconds = time % TIME_UNIT_SCALE;
-    uint16_t hours =   time / (TIME_UNIT_SCALE * TIME_UNIT_SCALE);
+    uint32_t milliSeconds = time % 100;
+    time /= 100;
+    uint32_t seconds = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t minutes = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t hours = time;
 
-    if (hours == 0) {
-        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d", prefix, minutes, seconds);
+    if (hours == 0 && milli) {
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, minutes, seconds, milliSeconds);
     } else {
         usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, hours, minutes, seconds);
+    }
+
+    displayLine(toDraw, row, alignment);
+}
+
+static void displayLapTime(char* prefix, uint8_t lapNum, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
+{
+    char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
+    uint32_t milliSeconds = time % 100;
+    time /= 100;
+    uint32_t seconds = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t minutes = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t hours = time;
+
+    if (hours == 0 && milli) {
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %d %01d:%02d:%02d", prefix, lapNum, minutes, seconds, milliSeconds);
+    } else {
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %d %01d:%02d:%02d", prefix, lapNum, hours, minutes, seconds);
     }
 
     displayLine(toDraw, row, alignment);

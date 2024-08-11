@@ -15,7 +15,7 @@
 
 #define DEBUG_STEP_INCREMENT 100
 #define DEBUG_STEP_DECREMENT 500
-#define RATE_SYSTICK_HZ 1000
+
 
 typedef enum {
     DISPLAY_STEPS = 0,

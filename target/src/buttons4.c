@@ -142,3 +142,4 @@ checkButton (uint8_t butName)
 bool isDown(uint8_t butName) {
     return but_state[butName];
 }
+
