@@ -49,7 +49,7 @@
 /**********************************************************
  * Constants and types
  **********************************************************/
-#define RATE_SYSTICK_HZ 1000
+
 #define RATE_IO_HZ 75
 #define RATE_ACCL_HZ 200
 #define RATE_DISPLAY_UPDATE_HZ 5
@@ -157,7 +157,7 @@ void superloop(void* args)
     initClock();
     displayInit();
     btnInit();
-    initSysTick();
+    // initSysTick();
     acclInit();
     initADC();
 
@@ -175,7 +175,7 @@ void superloop(void* args)
             lastIoProcess = currentTick;
 
 //            updateSwitch();
-            btnUpdateState(&deviceState);
+            btnUpdateState(&deviceState, currentTick/RATE_SYSTICK_HZ);
             pollADC();
 
             deviceState.newGoal = readADC() * POT_SCALE_COEFF; // Set the new goal value, scaling to give the desired range
@@ -222,8 +222,7 @@ void superloop(void* args)
                 deviceState.flashTicksLeft--;
             }
 
-            uint16_t secondsElapsed = (currentTick - deviceState.workoutStartTick)/RATE_SYSTICK_HZ;
-            displayUpdate(deviceState, secondsElapsed);
+            displayUpdate(deviceState, currentTick/RATE_SYSTICK_HZ);
         }
 
         // Send to USB via serial
@@ -263,7 +262,7 @@ void superloop(void* args)
 }
 
 
- * Main Loop
+ /* Main Loop
  ***********************************************************/
 
 int main(void)
@@ -271,7 +270,7 @@ int main(void)
     // Fitness Monitor 1.0 Initiialisation
 
     xTaskCreate(&superloop, "superloop", 512, NULL, 1, NULL);
-    VTaskStartScheduler():
+    vTaskStartScheduler();
 
     return 0; // Should never reach here
 

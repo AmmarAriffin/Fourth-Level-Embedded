@@ -10,6 +10,7 @@ add_tiva_executable(fitness-tracker
     i2c_driver.c
     serial_sender.c
     step_counter_main.c
+    stopwatch_timer.c
     switches.c
 )
 target_compile_options(fitness-tracker PRIVATE -Wall)

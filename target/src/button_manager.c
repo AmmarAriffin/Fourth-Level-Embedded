@@ -21,7 +21,7 @@
 #include "display_manager.h"
 #include "button_manager.h"
 #include "switches.h"
-
+#include "stopwatch_timer.h"
 
 //********************************************************
 // Constants and static vars
@@ -45,7 +45,7 @@ void btnInit(void)
 //********************************************************
 // Run at a fixed rate, modifies the device's state depending on button presses
 //********************************************************
-void btnUpdateState(deviceStateInfo_t* deviceStateInfo)
+void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint16_t currentTime)
 {
     updateButtons();
     updateSwitch();
@@ -90,38 +90,92 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo)
 
 
     } else {
-        // NORMAL OPERATION
 
-        // Changing units
-        if (checkButton(UP) == PUSHED) {
-            if (deviceStateInfo -> displayUnits == UNITS_SI) {
-                deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
-            } else {
-                deviceStateInfo -> displayUnits = UNITS_SI;
-            }
+        switch(currentDisplayMode) {
+            //*****************************************************************
+            case DISPLAY_STEPS:
+                if (checkButton(UP) == PUSHED) {
+                    if (deviceStateInfo -> displayUnits == UNITS_SI) {
+                        deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
+                    } 
+                    else {
+                        deviceStateInfo -> displayUnits = UNITS_SI;
+                    }
+                }
+                //#############################
+                if (isDown(DOWN) == true) {
+                    longPressCount++;
+                    if (longPressCount >= LONG_PRESS_CYCLES) {
+                        deviceStateInfo -> stepsTaken = 0;
+                        flashMessage("Reset!");
+                    }
+                } else {
+                    longPressCount = 0;
+                }
+                break;
+            //*****************************************************************
+            case DISPLAY_DISTANCE:
+                if (checkButton(UP) == PUSHED) {
+                    if (deviceStateInfo -> displayUnits == UNITS_SI) {
+                        deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
+                    } 
+                    else {
+                        deviceStateInfo -> displayUnits = UNITS_SI;
+                    }
+                }
+                //#############################
+                if (isDown(DOWN) == true) {
+                    longPressCount++;
+                    if (longPressCount >= LONG_PRESS_CYCLES) {
+                        deviceStateInfo -> stepsTaken = 0;
+                        flashMessage("Reset!");
+                    }
+                } else {
+                    longPressCount = 0;
+                }
+                break;
+            //*****************************************************************
+            case DISPLAY_SET_GOAL:
+                if (checkButton(UP) == PUSHED) {
+                    if (deviceStateInfo -> displayUnits == UNITS_SI) {
+                        deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
+                    } 
+                    else {
+                        deviceStateInfo -> displayUnits = UNITS_SI;
+                    }
+                }
+                //#############################
+                if (checkButton(DOWN) == PUSHED) {
+                    deviceStateInfo -> currentGoal = deviceStateInfo -> newGoal;
+                    deviceStateInfo -> displayMode = DISPLAY_STEPS;
+                }
+                break;
+            //*****************************************************************
+            case DISPLAY_TIMER:
+
+                break;
+            //*****************************************************************
+            case DISPLAY_STOPWATCH:
+                // if ((isDown(UP) == true) && (allowLongPress)) {
+                //     longPressCount++;
+                //     if (longPressCount >= LONG_PRESS_CYCLES) {
+                //         resetStopwatch();
+                //     }
+                // } else 
+                if (checkButton(UP) == PUSHED) {
+                    toggleStopwatch(currentTime);
+                    allowLongPress = false;
+                    longPressCount = 0;
+                }
+                if (checkButton(UP) == RELEASED) {
+                    allowLongPress = true;
+                }
+                //#############################
+                if (checkButton(DOWN) == PUSHED) {
+                    // Print lap time and restart stopwatch
+                }
+                break;
         }
-
-        // Resetting steps and updating goal with long and short presses
-        if ((isDown(DOWN) == true) && (currentDisplayMode != DISPLAY_SET_GOAL) && (allowLongPress)) {
-            longPressCount++;
-            if (longPressCount >= LONG_PRESS_CYCLES) {
-                deviceStateInfo -> stepsTaken = 0;
-                flashMessage("Reset!");
-            }
-        } else {
-            if ((currentDisplayMode == DISPLAY_SET_GOAL) && checkButton(DOWN) == PUSHED) {
-                deviceStateInfo -> currentGoal = deviceStateInfo -> newGoal;
-                deviceStateInfo -> displayMode = DISPLAY_STEPS;
-
-                allowLongPress = false; // Hacky solution: Protection against double-registering as a short press then a long press
-            }
-            longPressCount = 0;
-        }
-
-        if (checkButton(DOWN) == RELEASED) {
-            allowLongPress = true;
-        }
-
 
     }
 

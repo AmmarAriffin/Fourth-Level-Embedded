@@ -15,11 +15,14 @@
 
 #define DEBUG_STEP_INCREMENT 100
 #define DEBUG_STEP_DECREMENT 500
+#define RATE_SYSTICK_HZ 1000
 
 typedef enum {
     DISPLAY_STEPS = 0,
     DISPLAY_DISTANCE,
     DISPLAY_SET_GOAL,
+    DISPLAY_TIMER,
+    DISPLAY_STOPWATCH,
     DISPLAY_NUM_STATES, // Automatically enumerates to the number of display states there can be
 } displayMode_t;
 
