@@ -31,7 +31,7 @@ void pollTemp(void)
     adcHalStartConversion(ADC_ID_2);
 }
 
-void callbackADCTemp(uint32_t value)
+void callbackADCTemp(int32_t value)
 {
     storeData(&averagerTemp, value);
 }

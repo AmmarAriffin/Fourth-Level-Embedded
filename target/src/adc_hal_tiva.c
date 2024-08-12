@@ -20,7 +20,7 @@ typedef struct {
     const uint32_t adcPeripheral;
     const uint32_t sampleChannel;
     const void (*Intcallback)(void);
-    void (*GetValueCallback)(uint32_t);
+    void (*GetValueCallback)(int32_t);
 } adcID_t;
 
 adcID_t adcIDArray[NUM_ENTRIES] = 
@@ -30,7 +30,7 @@ adcID_t adcIDArray[NUM_ENTRIES] =
 };
 
 
-void adcHalRegister(uint32_t index, void (*callback)(uint32_t))
+void adcHalRegister(uint32_t index, void (*callback)(int32_t))
 {
     //Checks for invalid arguments
     if (index < 0 || index >= NUM_ENTRIES || callback == NULL) 

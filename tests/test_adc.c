@@ -57,9 +57,9 @@ void assert_f1_called_before_f2(void* f1, void* f2)
 // }
 
 
-uint8_t readCircBuf_fake_sequence(circBuf_t * arg0, uint32_t * arg1)
+uint8_t readCircBuf_fake_sequence(circBuf_t * arg0, int32_t * arg1)
 {
-    static uint32_t count = 1;
+    static int32_t count = 1;
     (void)arg0;
     if (count % 2 == 0) 
     {

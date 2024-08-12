@@ -10,17 +10,17 @@ void initAverager(averager* averageStruct)
 	initCircBuf(&(averageStruct->buffer), BUFFER_SIZE);
 }
 
-void storeData(averager* averageStruct, uint32_t value)
+void storeData(averager* averageStruct, int32_t value)
 {
 	writeCircBuf(&(averageStruct->buffer), value);
 }
 
 // *******************************************************
 // getAverageCircBuf: read all unread index to get current Average and return average
-uint32_t getAverage(averager* averageStruct)
+int32_t getAverage(averager* averageStruct)
 {
-	uint32_t sum = 0;
-	uint32_t entry = 0;
+	int32_t sum = 0;
+	int32_t entry = 0;
 	uint8_t numValues = averageStruct->buffer.count;
 
 	for (uint8_t i = 0; i < averageStruct->buffer.size; i++) 

@@ -30,7 +30,7 @@ initCircBuf (circBuf_t *buffer, uint32_t size)
 		buffer->size = size;
 		buffer->count = 0;
 		buffer->data = 
-			(uint32_t *) calloc (size, sizeof(uint32_t));
+			(int32_t *) calloc (size, sizeof(int32_t));
 		return buffer->data;
 	}	
 }
@@ -40,7 +40,7 @@ initCircBuf (circBuf_t *buffer, uint32_t size)
 // writeCircBuf: insert entry at the current windex location,
 // advance windex, modulo (buffer size).
 void
-writeCircBuf (circBuf_t *buffer, uint32_t entry)
+writeCircBuf (circBuf_t *buffer, int32_t entry)
 {	
 	//checks to see if writing to windex will result in an overwrite
 	if (buffer->count == buffer->size) {
@@ -59,7 +59,7 @@ writeCircBuf (circBuf_t *buffer, uint32_t entry)
 // advance rindex, modulo (buffer size). The function deos not check
 // if reading has advanced ahead of writing.
 uint8_t
-readCircBuf (circBuf_t *buffer, uint32_t *entry)
+readCircBuf (circBuf_t *buffer, int32_t *entry)
 {
 	//FIXED -- if write wraps around and read hasnt been called in a full loop then the buffer will be full but it will thinks its empty
 	if (buffer->rindex == buffer->windex && buffer->count == 0) {

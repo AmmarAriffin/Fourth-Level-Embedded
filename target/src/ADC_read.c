@@ -60,7 +60,7 @@ void pollADC(void)
 // Writes to the circular buffer.
 //
 //*****************************************************************************
-void adcCallback(uint32_t value)
+void adcCallback(int32_t value)
 {
     // Place it in the circular buffer (advancing write index)
 	writeCircBuf (&ADC_inBuffer, value);
@@ -81,9 +81,9 @@ void initADC (void)
 
 }
 
-uint32_t readADC(void) {
-      uint32_t sum = 0;
-      uint32_t entry = 0;
+int32_t readADC(void) {
+      int32_t sum = 0;
+      int32_t entry = 0;
       uint16_t i = 0;
       uint8_t readValues = 0;
 

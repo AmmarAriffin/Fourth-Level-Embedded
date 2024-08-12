@@ -36,14 +36,14 @@ initCircBuf (circBuf_t *buffer, uint32_t size);
 // writeCircBuf: insert entry at the current windex location,
 // advance windex, modulo (buffer size).
 void
-writeCircBuf (circBuf_t *buffer, uint32_t entry);
+writeCircBuf (circBuf_t *buffer, int32_t entry);
 
 // *******************************************************
 // readCircBuf: return entry at the current rindex location,
 // advance rindex, modulo (buffer size). The function deos not check
 // if reading has advanced ahead of writing.
 uint8_t
-readCircBuf (circBuf_t *buffer, uint32_t *entry);
+readCircBuf (circBuf_t *buffer, int32_t *entry);
 
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,
@@ -51,8 +51,5 @@ readCircBuf (circBuf_t *buffer, uint32_t *entry);
 // re initialised by another call to initCircBuf().
 void
 freeCircBuf (circBuf_t *buffer);
-
-uint32_t
-getAverageCircBuf(circBuf_t* buffer);
 
 #endif /*CIRCBUFT_H_*/
