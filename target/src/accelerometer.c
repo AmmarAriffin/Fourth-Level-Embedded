@@ -8,23 +8,64 @@
 
 
 #include "accelerometer.h"
-#include "circBufT.h"
+#include "average.h"
+#include "accl_hal_tiva.h"
 
-
+/*******************************************
+ *      Local prototypes (not to be used elsewhere)
+ *******************************************/
 typedef struct {
-    circBuf_t* AccelX;
-    circBuf_t* AccelY;
-    circBuf_t* AccelZ;
-} AccelBuf;
+    averager AccelX;
+    averager AccelY;
+    averager AccelZ;
+} AccelBuffers;
 
+static AccelBuffers AccelBuffer;
 
-#define VECTOR_SIZE 10
+// For temporarily storing values obtained from accelerometer
+// in a memory safe way
+static vector3_t vector; 
 
-static AccelBuf AccelBuffer;
+/*******************************************
+ *******************************************
+ *******************************************/
 
-void initAccel(void)
+void initAccelBuffer(void)
 {
-    initCircBuf(&(AccelBuffer.AccelX), VECTOR_SIZE);
-    initCircBuf(&(AccelBuffer.AccelY), VECTOR_SIZE);
-    initCircBuf(&(AccelBuffer.AccelZ), VECTOR_SIZE);
+    initAcclChip();
+    initAverager(&(AccelBuffer.AccelX));
+    initAverager(&(AccelBuffer.AccelY));
+    initAverager(&(AccelBuffer.AccelZ));
 }
+
+
+
+vector3_t getAverageAccel(void)
+{
+    vector3_t result;
+    result.x = getAverage(&(AccelBuffer.AccelX));
+    result.y = getAverage(&(AccelBuffer.AccelY));
+    result.z = getAverage(&(AccelBuffer.AccelZ));
+
+    return result;
+}
+
+
+/* Helper Local Functions */
+// Not gonna use this function outside of pollAccelData
+void writeAccelData(void)
+{
+    storeData(&(AccelBuffer.AccelX), vector.x);
+    storeData(&(AccelBuffer.AccelY), vector.y);
+    storeData(&(AccelBuffer.AccelZ), vector.z);
+}
+
+void pollAccelData(void)
+{
+    getAcclData(&vector);
+    writeAccelData();
+}
+
+
+
+

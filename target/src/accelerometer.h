@@ -1,13 +1,12 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
-#include "circBufT.h"
+#include "accl_hal_tiva.h"
 
+void initAccelBuffer(void);
 
+void pollAccelData(void);
 
-typedef struct AccelBuf AccelBuf;
-
-
-
+vector3_t getAverageAccel(void);
 
 #endif

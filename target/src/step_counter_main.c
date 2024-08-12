@@ -30,15 +30,14 @@
 #include "utils/ustdlib.h"
 #include "acc.h"
 #include "math.h"
-#include "circBufV.h"
 #include "ADC_read.h"
 #include "temp_measure.h"
+#include "accelerometer.h"
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #include "serial_sender.h"
 #endif //SERIAL_PLOTTING_ENABLED
 
-#include "accl_manager.h"
 #include "display_manager.h"
 #include "button_manager.h"
 
@@ -75,7 +74,6 @@
 void initClock (void);
 void initDisplay (void);
 void initAccl (void);
-vector3_t getAcclData (void);
 
 
 /*******************************************
@@ -141,7 +139,6 @@ void superloop(void* args)
     #endif // SERIAL_PLOTTING_ENABLED
 
     uint8_t stepHigh = false;
-    vector3_t mean;
 
     // Device state
     // Omnibus struct that holds loads of info about the device's current state, so it can be updated from any function
@@ -159,7 +156,7 @@ void superloop(void* args)
     initClock();
     displayInit();
     btnInit();
-    acclInit();
+    initAccelBuffer(); // init buffer and accel chip
     initADC();
     initTempADC();
 
@@ -195,9 +192,9 @@ void superloop(void* args)
         if (lastAcclProcess + RATE_SYSTICK_HZ/RATE_ACCL_HZ < currentTick) {
             lastAcclProcess = currentTick;
 
-            acclProcess();
+            pollAccelData();
 
-            mean = acclMean();
+            vector3_t mean = getAverageAccel();
 
             uint16_t combined = sqrt(mean.x*mean.x + mean.y*mean.y + mean.z*mean.z);
 
