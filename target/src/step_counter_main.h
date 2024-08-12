@@ -17,12 +17,16 @@
 #define DEBUG_STEP_DECREMENT 500
 
 
+#define SET_DISPLAY_NUM 1 // Number of display states which shouldn't be accessible
+                          // through left and right buttons
+
 typedef enum {
     DISPLAY_STEPS = 0,
     DISPLAY_DISTANCE,
     DISPLAY_SET_GOAL,
     DISPLAY_TIMER,
     DISPLAY_STOPWATCH,
+    DISPLAY_SET_TIMER,
     DISPLAY_NUM_STATES, // Automatically enumerates to the number of display states there can be
 } displayMode_t;
 

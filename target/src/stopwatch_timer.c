@@ -15,9 +15,10 @@
 // timer: 
 // - buttons: start/pause/reset/increment timer
 // - up button start/pause (hold for reset)
-// - down button (hold to start setup) -> press to change timer digit place 
-//                                  -> (use other button to change digit)
-//                                  -> Change timer number
+// - down button (hold to start setup) -> hold again to set timer
+//                                     -> Change timer number
+//           press up to change timer digit place                        
+//           use left right to change value
 
 stopWatch_t stopWatch = {.lapNum = 0, .lapReadIndex = -1};
 

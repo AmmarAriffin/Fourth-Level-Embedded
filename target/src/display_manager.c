@@ -149,6 +149,22 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
                 }
             }
             break;
+        //*****************************************************************
+        case DISPLAY_SET_TIMER:
+            displayLine("SET TIMER", 0, ALIGN_CENTRE);
+            displayLine("SET TIMER", 1, ALIGN_CENTRE);
+            displayLine("SET TIMER", 2, ALIGN_CENTRE);
+            displayLine("SET TIMER", 3, ALIGN_CENTRE);
+            break;
+        //*****************************************************************
+        default:
+            // This display state should never be viewed.
+            // These lines are just to indicate when something has gone wrong.
+            displayLine("DISPLAY ERROR", 0, ALIGN_CENTRE);
+            displayLine("DISPLAY ERROR", 1, ALIGN_CENTRE);
+            displayLine("DISPLAY ERROR", 2, ALIGN_CENTRE);
+            displayLine("DISPLAY ERROR", 3, ALIGN_CENTRE);
+            break;
     }
 }
 
