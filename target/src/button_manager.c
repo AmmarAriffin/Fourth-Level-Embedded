@@ -30,7 +30,10 @@
 
 static uint16_t longPressCountUp = 0;
 static uint16_t longPressCountDown = 0;
+static uint16_t longPressCountLeft = 0;
+static uint16_t longPressCountRight = 0;
 static bool changedState = false;
+
 
 //********************************************************
 // Init buttons and switch I/O handlers
@@ -53,35 +56,31 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
     displayMode_t currentDisplayMode = deviceStateInfo ->displayMode;
 
     // Changing screens
-    if (deviceStateInfo->displayMode < (DISPLAY_NUM_STATES - SET_DISPLAY_NUM)) {
-        if (checkButton(LEFT) == PUSHED) {
-        deviceStateInfo -> displayMode = (deviceStateInfo -> displayMode+1) % (DISPLAY_NUM_STATES - SET_DISPLAY_NUM);    
-        } else if (checkButton(RIGHT) == PUSHED) {
-            // Can't use mod, as enums behave like an unsigned int, so (0-1)%n != n-1
-            if (deviceStateInfo -> displayMode > 0) {
-                deviceStateInfo -> displayMode--;
-            } else {
-                deviceStateInfo -> displayMode = DISPLAY_NUM_STATES-1-SET_DISPLAY_NUM;
-            }
-        }
-    } else {
-        switch(currentDisplayMode) {
-            case DISPLAY_SET_TIMER:
-                if (checkButton(LEFT)) {
+    switch(currentDisplayMode) {
+        case DISPLAY_SET_TIMER:
+            if (checkButton(LEFT) == PUSHED) {
                     // Increment timer digit value
-                } else if (checkButton(RIGHT)) {
+                    incrementTime(timerSelect, placeSelect);
+                } else if (checkButton(RIGHT) == PUSHED) {
                     // Decrement timer digit value
+                    decrementTime(timerSelect, placeSelect);
                 }
-                break;
-            //*****************************************************************
-            default:
-                //Displays error if this case is reached
-                deviceStateInfo->displayMode = DISPLAY_NUM_STATES;
             break;
-        }
+        //*****************************************************************
+        default:
+            if (checkButton(LEFT) == PUSHED) {
+            deviceStateInfo -> displayMode = (deviceStateInfo -> displayMode+1) % (DISPLAY_NUM_STATES - SET_DISPLAY_NUM);    
+            } else if (checkButton(RIGHT) == PUSHED) {
+                // Can't use mod, as enums behave like an unsigned int, so (0-1)%n != n-1
+                if (deviceStateInfo -> displayMode > 0) {
+                    deviceStateInfo -> displayMode--;
+                } else {
+                    deviceStateInfo -> displayMode = DISPLAY_NUM_STATES-1-SET_DISPLAY_NUM;
+                }
+            };
+            break;
     }
     
-
     // Usage of UP and DOWN buttons
 
     switch(currentDisplayMode) {
@@ -149,10 +148,10 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                 checkButton(UP);
                 longPressCountUp++;
                 if (longPressCountUp >= LONG_PRESS_CYCLES) {
-                    //Reset timer to saved time
+                    resetTimer(timerSelect);
                 } 
             } else if (checkButton(UP) == RELEASED && longPressCountUp < LONG_PRESS_CYCLES) {
-                //Start or pause the timer
+                toggleTimer(timerSelect, currentTime);
                 longPressCountUp = 0;
             } else if (checkButton(UP) == NO_CHANGE ) {
                 longPressCountUp = 0;   
@@ -167,6 +166,7 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                 } 
             } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
                 //Change viewed timer
+                timerSelect = (timerSelect + 1) % NUM_TIMERS; 
                 longPressCountDown = 0;
             } else if (checkButton(DOWN) == NO_CHANGE ) {
                 changedState = false;
@@ -176,7 +176,7 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_SET_TIMER:
             if (checkButton(UP) == PUSHED) {
-                //Change timer digit place
+                placeSelect = (placeSelect + 1) % 3;
             }
             //#############################
             if (isDown(DOWN)) {
@@ -188,6 +188,7 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                 } 
             } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
                 //Change viewed timer
+                timerSelect = (timerSelect + 1) % NUM_TIMERS;
                 longPressCountDown = 0;
             } else if (checkButton(DOWN) == NO_CHANGE ) {
                 changedState = false;

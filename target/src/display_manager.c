@@ -47,7 +47,8 @@
 static void displayLine(char* inStr, uint8_t row, textAlignment_t alignment);
 static void displayValue(char* prefix, char* suffix, int32_t value, uint8_t row, textAlignment_t alignment, bool thousandsFormatting);
 static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
-static void displayLapTime(char* prefix, uint8_t lapNum, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
+static void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
+static void displayCursor(uint8_t place, uint8_t row, textAlignment_t alignment);
 /*******************************************
  *      Global functions
  *******************************************/
@@ -74,6 +75,8 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
     // actually milliseconds now change name to reflect this
     uint16_t secondsElapsed = currentTime - deviceState.workoutStartTick/10;
     uint32_t mTravelled = 0; // TODO: If I put this inside the case statement it won't compile. Work out why!
+    char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
+    uint8_t i;
 
     switch (deviceState.displayMode) {
         //*****************************************************************
@@ -114,7 +117,7 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
             displayValue("Current:", "", deviceState.currentGoal, 2, ALIGN_CENTRE, false);
 
             // Display the step/distance preview
-            char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
+            
             uint16_t distance = deviceState.newGoal * M_PER_STEP;
             if (deviceState.displayUnits != UNITS_SI) {
                 distance = distance * KM_TO_MILES;
@@ -132,29 +135,37 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
             break;
         //*****************************************************************
         case DISPLAY_TIMER:
-            displayValue("Timer ", "", deviceState.currentGoal, 0, ALIGN_CENTRE, false);
-            displayLine("                ", 1, ALIGN_CENTRE);
-            displayLine("                ", 2, ALIGN_CENTRE);
-            displayLine("                ", 3, ALIGN_CENTRE);
+            
+            for (i=0;i<4;i++) {
+                if (i == timerSelect) {
+                    displayNumTime("-> T ", getTimerID(i), readTimer(i, currentTime), i, ALIGN_CENTRE, true);
+                } else {
+                    displayNumTime("   T ", getTimerID(i), readTimer(i, currentTime), i, ALIGN_CENTRE, true);
+                }
+            }
+    
             break;
         //*****************************************************************
         case DISPLAY_STOPWATCH:
             displayTime("SW", readStopwatch(currentTime), 0, ALIGN_CENTRE, true);
-            uint8_t i;
+            
             for (i=0;i<3;i++) {
                 if (getLapIndex() - i + 1 > 0) {
-                displayLapTime("Lap", getLapIndex() - i + 1, readLap(-i), i + 1, ALIGN_CENTRE, true);
+                displayNumTime("Lap ", getLapIndex() - i + 1, readLap(-i), i + 1, ALIGN_CENTRE, true);
                 } else {
                     displayLine("                ", i + 1, ALIGN_CENTRE);
                 }
             }
             break;
         //*****************************************************************
-        case DISPLAY_SET_TIMER:
-            displayLine("SET TIMER", 0, ALIGN_CENTRE);
-            displayLine("SET TIMER", 1, ALIGN_CENTRE);
-            displayLine("SET TIMER", 2, ALIGN_CENTRE);
-            displayLine("SET TIMER", 3, ALIGN_CENTRE);
+        case DISPLAY_SET_TIMER: 
+            
+            displayNumTime("-> T ", getTimerID(timerSelect), readTimer(timerSelect, currentTime), 1, ALIGN_CENTRE, false);
+            displayCursor(placeSelect, 2, ALIGN_CENTRE);
+                    
+            
+            displayLine("                ", 0, ALIGN_CENTRE);
+            displayLine("                ", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
         default:
@@ -253,7 +264,7 @@ static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_
     displayLine(toDraw, row, alignment);
 }
 
-static void displayLapTime(char* prefix, uint8_t lapNum, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
+static void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
 {
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
     uint32_t milliSeconds = time % 100;
@@ -265,12 +276,26 @@ static void displayLapTime(char* prefix, uint8_t lapNum, uint32_t time, uint8_t 
     uint32_t hours = time;
 
     if (hours == 0 && milli) {
-        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %d %01d:%02d:%02d", prefix, lapNum, minutes, seconds, milliSeconds);
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s%d %01d:%02d:%02d", prefix, num, minutes, seconds, milliSeconds);
     } else {
-        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %d %01d:%02d:%02d", prefix, lapNum, hours, minutes, seconds);
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s%d %01d:%02d:%02d", prefix, num, hours, minutes, seconds);
     }
 
     displayLine(toDraw, row, alignment);
 }
 
+static void displayCursor(uint8_t place, uint8_t row, textAlignment_t alignment)
+{
+    switch(place) {
+        case 0:
+            displayLine("             ^^", row, alignment);
+            break;          
+        case 1:
+            displayLine("          ^^   ", row, alignment);
+            break;
+        case 2:
+            displayLine("       ^^      ", row, alignment);
+            break;
+    }
+}
 

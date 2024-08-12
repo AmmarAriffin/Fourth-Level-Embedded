@@ -13,6 +13,7 @@
 #include "step_counter_main.h"
 // *******************************************************
 #define MAX_LAPS 10
+#define NUM_TIMERS 4
 typedef struct 
 {
     uint32_t lastReadTime;
@@ -21,7 +22,7 @@ typedef struct
     uint8_t lapNum;
     int8_t lapReadIndex;
     bool isRunning;
-} stopWatch_t;
+} stopWatch_s;
 
 // *******************************************************
 // toggleStopwatch: Cycles between started and stopped stopwatch
@@ -45,5 +46,25 @@ uint32_t readLap (int8_t lapIndexMod);
 // getLapIndex: Peeks at the current lapReadIndex
 int8_t getLapIndex (void);
 
+
+typedef struct 
+{
+    uint32_t lastReadTime;
+    uint32_t timeRemaining;
+    uint32_t timeTotal;
+    uint8_t id;
+    bool isRunning;
+} timer_s;
+
+extern timer_s timer[NUM_TIMERS];
+extern volatile uint8_t timerSelect;
+extern volatile uint8_t placeSelect;
+
+void toggleTimer(uint8_t timerID, uint32_t currentTime);
+void resetTimer(uint8_t timerID);
+uint32_t readTimer(uint8_t timerID, uint32_t currentTime);
+uint8_t getTimerID (uint8_t timerID);
+void incrementTime (uint8_t timerID, uint8_t place);
+void decrementTime (uint8_t timerID, uint8_t place);
 
 #endif /*STOPWATCH_TIMER_H_*/

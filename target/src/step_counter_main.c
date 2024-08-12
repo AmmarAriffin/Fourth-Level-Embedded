@@ -142,6 +142,7 @@ void superloop(void* args)
 
     uint8_t stepHigh = false;
     vector3_t mean;
+    
 
     // Device state
     // Omnibus struct that holds loads of info about the device's current state, so it can be updated from any function
@@ -161,6 +162,7 @@ void superloop(void* args)
     // initSysTick();
     acclInit();
     initADC();
+    
 
     #ifdef SERIAL_PLOTTING_ENABLED
     SerialInit ();
