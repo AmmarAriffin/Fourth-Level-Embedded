@@ -19,7 +19,7 @@ uint32_t MAX_SIZE = 100;
 // the start of the buffer.  Dynamically allocate and clear the the 
 // memory and return a pointer for the data.  Return NULL if 
 // allocation fails.
-uint32_t *
+int32_t *
 initCircBuf (circBuf_t *buffer, uint32_t size)
 {
 	if (size <= 0 || size > MAX_SIZE)  {
@@ -30,7 +30,7 @@ initCircBuf (circBuf_t *buffer, uint32_t size)
 		buffer->size = size;
 		buffer->count = 0;
 		buffer->data = 
-			(int32_t *) calloc (size, sizeof(int32_t));
+			(int32_t *) calloc (size, sizeof(uint32_t));
 		return buffer->data;
 	}	
 }
