@@ -30,7 +30,7 @@ initCircBuf (circBuf_t *buffer, uint32_t size)
 		buffer->size = size;
 		buffer->count = 0;
 		buffer->data = 
-			(int32_t *) calloc (size, sizeof(int32_t));
+			(int32_t *) calloc (size, sizeof(uint32_t));
 		return buffer->data;
 	}	
 }
