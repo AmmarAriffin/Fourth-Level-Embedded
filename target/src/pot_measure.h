@@ -9,9 +9,12 @@
 // Writes to the circular buffer.
 //
 //*****************************************************************************
-void adcCallback(int32_t value);
-void initADC (void);
-void pollADC(void);         // Called periodically at high frequency
-int32_t readADC(void);     // Call to read the averaged readings from the buffer
+void pollPot(void);
+
+void callbackPotADC(int32_t value);
+
+void initPotADC(void);
+
+int32_t getPotVal(void);
 
 #endif //ADC_READ_H_
