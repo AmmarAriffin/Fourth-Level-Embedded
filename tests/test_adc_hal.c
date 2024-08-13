@@ -19,12 +19,12 @@ void reset_fff(void)
     FFF_RESET_HISTORY();
 }
 
-void dummyCallback(uint32_t value) 
+void dummyCallback(int32_t value) 
 {
 
 }
 
-void circBuf42Callback(uint32_t value)
+void circBuf42Callback(int32_t value)
 {
     //
     circBuf_t testBuf;

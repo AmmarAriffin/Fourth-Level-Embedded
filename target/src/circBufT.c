@@ -19,7 +19,7 @@ uint32_t MAX_SIZE = 100;
 // the start of the buffer.  Dynamically allocate and clear the the 
 // memory and return a pointer for the data.  Return NULL if 
 // allocation fails.
-uint32_t *
+int32_t *
 initCircBuf (circBuf_t *buffer, uint32_t size)
 {
 	if (size <= 0 || size > MAX_SIZE)  {
@@ -34,7 +34,6 @@ initCircBuf (circBuf_t *buffer, uint32_t size)
 		return buffer->data;
 	}	
 }
-   // Note use of calloc() to clear contents.
 
 // *******************************************************
 // writeCircBuf: insert entry at the current windex location,
@@ -61,7 +60,6 @@ writeCircBuf (circBuf_t *buffer, int32_t entry)
 uint8_t
 readCircBuf (circBuf_t *buffer, int32_t *entry)
 {
-	//FIXED -- if write wraps around and read hasnt been called in a full loop then the buffer will be full but it will thinks its empty
 	if (buffer->rindex == buffer->windex && buffer->count == 0) {
 		//buffer empty
 		return 0;
