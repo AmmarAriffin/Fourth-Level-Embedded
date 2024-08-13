@@ -30,12 +30,15 @@ static vector3_t vector;
  *******************************************
  *******************************************/
 
+#define ACCEL_BUFFER_SIZE 25
+
+
 void initAccelBuffer(void)
 {
     initAcclChip();
-    initAverager(&(AccelBuffer.AccelX));
-    initAverager(&(AccelBuffer.AccelY));
-    initAverager(&(AccelBuffer.AccelZ));
+    initAverager(&(AccelBuffer.AccelX), ACCEL_BUFFER_SIZE);
+    initAverager(&(AccelBuffer.AccelY), ACCEL_BUFFER_SIZE);
+    initAverager(&(AccelBuffer.AccelZ), ACCEL_BUFFER_SIZE);
 }
 
 

@@ -15,5 +15,5 @@
     FUNC(storeData)
 
 VALUE_FUNC(int32_t, getAverage, averager*);
-VOID_FUNC(initAverager, averager*);
+VOID_FUNC(initAverager, averager*, uint32_t);
 VOID_FUNC(storeData, averager*, int32_t);

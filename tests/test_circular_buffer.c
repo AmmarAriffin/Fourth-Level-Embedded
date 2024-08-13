@@ -188,7 +188,7 @@ void test_buf_is_signed(void)
 {
 
     writeCircBuf(&buff, 0);
-    int16_t entry;
+    int32_t entry;
     readCircBuf(&buff, &entry);
     TEST_ASSERT_EQUAL(-1, entry-1);
 }

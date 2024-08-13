@@ -15,7 +15,7 @@ typedef struct {
   int32_t sum;
 } averager;
 
-void initAverager(averager* averageStruct);
+void initAverager(averager* averageStruct, uint32_t size);
 
 void storeData(averager* averageStruct, int32_t value);
 

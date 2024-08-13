@@ -9,6 +9,7 @@ DEFINE_FFF_GLOBALS;
 
 #include "accl_hal_tiva_mock.h"
 
+#define BUFFER_SIZE 20
 
 /* Helper Functions */
 void reset_fff(void)
@@ -41,6 +42,12 @@ void writeStuffToVector(vector3_t* vector)
     count++;
 }
 
+// Using Carl Gauss's method
+int32_t getAverageOfSumConsequentNumbers(int firstNum, int numCount)
+{
+    return (((firstNum + (firstNum + (numCount-1)))*(numCount/(2)))/BUFFER_SIZE);
+}
+
 /* Test Cases */
 
 void test_accelBuffer_init_initialises_accelChip(void)
@@ -56,7 +63,7 @@ void test_accel_average_for_each_buffer_is_the_same(void)
 {
     getAcclData_fake.custom_fake = writeStuffToVector;
     // Arrange given full buffer
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < (BUFFER_SIZE / 2); i++)
     {
         pollAccelData();
     }
@@ -65,10 +72,13 @@ void test_accel_average_for_each_buffer_is_the_same(void)
     vector3_t vector = getAverageAccel();
 
     // Assert average be the same meaning they are read at same time
-    // 10 + 11 + 12 + 13 + 14 + 15 = 65 / 10 = 6
-    TEST_ASSERT_EQUAL(6, vector.x);
-    TEST_ASSERT_EQUAL(6, vector.y);
-    TEST_ASSERT_EQUAL(6, vector.z);
+    // 10 + 11 + 12 + 13 + 14 + 15 = 65 / 20 = 3
+
+    int32_t num = getAverageOfSumConsequentNumbers(10,BUFFER_SIZE/2);
+
+    TEST_ASSERT_EQUAL(num, vector.x);
+    TEST_ASSERT_EQUAL(num, vector.y);
+    TEST_ASSERT_EQUAL(num, vector.z);
 }
 
 void test_accel_read_at_same_time(void)
@@ -80,13 +90,17 @@ void test_accel_read_at_same_time(void)
     pollAccelData();
     getAverageAccel();
     pollAccelData();
+    getAverageAccel();
+    pollAccelData();
     // Act : Read from AccelBuf
     vector3_t vector = getAverageAccel();
     // Assert
-    // 10 + 11 + 12 = 33 / 10 = 3
-    TEST_ASSERT_EQUAL(3, vector.x);
-    TEST_ASSERT_EQUAL(3, vector.x);
-    TEST_ASSERT_EQUAL(3, vector.x);
+    int32_t num = getAverageOfSumConsequentNumbers(10,4);
+
+    // 10 + 11 + 12 + 14 = 47 / 20 = 2
+    TEST_ASSERT_EQUAL(num, vector.x);
+    TEST_ASSERT_EQUAL(num, vector.x);
+    TEST_ASSERT_EQUAL(num, vector.x);
 }
 
 
@@ -96,13 +110,14 @@ void test_accel_write_at_same_time(void)
     // Arrange : given empty accelerometer buffer
     // Act : Write to buffer
     pollAccelData();
-
+    pollAccelData();
     // ASSERT : all buffers in AccelBuf have values at the same time use average
     vector3_t vector = getAverageAccel();
 
-    TEST_ASSERT_EQUAL(1, vector.x);
-    TEST_ASSERT_EQUAL(1,vector.y);
-    TEST_ASSERT_EQUAL(1,vector.z);
+    int32_t num = getAverageOfSumConsequentNumbers(10,2);
+    TEST_ASSERT_EQUAL(num, vector.x);
+    TEST_ASSERT_EQUAL(num,vector.y);
+    TEST_ASSERT_EQUAL(num,vector.z);
 }
 
 

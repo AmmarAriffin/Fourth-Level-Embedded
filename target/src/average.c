@@ -2,12 +2,10 @@
 #include "circBufT.h"
 #include "average.h"
 
-#define BUFFER_SIZE 10
 
-
-void initAverager(averager* averageStruct)
+void initAverager(averager* averageStruct, uint32_t size)
 {
-	initCircBuf(&(averageStruct->buffer), BUFFER_SIZE);
+	initCircBuf(&(averageStruct->buffer), size);
 	averageStruct->sum = 0;
 }
 
@@ -34,5 +32,5 @@ int32_t getAverage(averager* averageStruct)
 		}	
 	}
 
-	return averageStruct->sum / BUFFER_SIZE;
+	return averageStruct->sum / (int32_t)averageStruct->buffer.size;
 }
