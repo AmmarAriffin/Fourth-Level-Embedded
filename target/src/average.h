@@ -12,6 +12,7 @@
 
 typedef struct {
   circBuf_t buffer;
+  int32_t sum;
 } averager;
 
 void initAverager(averager* averageStruct);

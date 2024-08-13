@@ -8,10 +8,15 @@
 void initAverager(averager* averageStruct)
 {
 	initCircBuf(&(averageStruct->buffer), BUFFER_SIZE);
+	averageStruct->sum = 0;
 }
 
 void storeData(averager* averageStruct, int32_t value)
 {
+	// Get value to be overwritten and minus it from sum
+	circBuf_t* buffer_address = &(averageStruct->buffer); // Just getting address 
+	averageStruct->sum -= buffer_address->data[buffer_address->windex];
+
 	writeCircBuf(&(averageStruct->buffer), value);
 }
 
@@ -19,20 +24,15 @@ void storeData(averager* averageStruct, int32_t value)
 // getAverageCircBuf: read all unread index to get current Average and return average
 int32_t getAverage(averager* averageStruct)
 {
-	int32_t sum = 0;
 	int32_t entry = 0;
-	uint8_t numValues = averageStruct->buffer.count;
 
 	for (uint8_t i = 0; i < averageStruct->buffer.size; i++) 
 	{
 		if (readCircBuf(&(averageStruct->buffer), &entry))
 		{
-			sum = sum + entry;
+			averageStruct->sum += entry;
 		}	
 	}
-	if (numValues == 0) {
-		return sum;
-	} else {
-		return sum/numValues;
-	}
+
+	return averageStruct->sum / BUFFER_SIZE;
 }

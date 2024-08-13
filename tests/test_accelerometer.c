@@ -34,7 +34,7 @@ void tearDown(void)
 /* Helper Functions */
 void writeStuffToVector(vector3_t* vector)
 {
-    static int16_t count = 1;
+    static int16_t count = 10;
     vector->x = count;
     vector->y = count;
     vector->z = count;
@@ -52,7 +52,7 @@ void test_accelBuffer_init_initialises_accelChip(void)
 }
 
 
-void test_accel_average_for_each_buffer(void)
+void test_accel_average_for_each_buffer_is_the_same(void)
 {
     getAcclData_fake.custom_fake = writeStuffToVector;
     // Arrange given full buffer
@@ -61,13 +61,14 @@ void test_accel_average_for_each_buffer(void)
         pollAccelData();
     }
 
-    // Act : read
+    // Act : read at same time
     vector3_t vector = getAverageAccel();
 
-    // Assert
-    TEST_ASSERT_EQUAL(3, vector.x);
-    TEST_ASSERT_EQUAL(3, vector.y);
-    TEST_ASSERT_EQUAL(3, vector.z);
+    // Assert average be the same meaning they are read at same time
+    // 10 + 11 + 12 + 13 + 14 + 15 = 65 / 10 = 6
+    TEST_ASSERT_EQUAL(6, vector.x);
+    TEST_ASSERT_EQUAL(6, vector.y);
+    TEST_ASSERT_EQUAL(6, vector.z);
 }
 
 void test_accel_read_at_same_time(void)
@@ -82,6 +83,7 @@ void test_accel_read_at_same_time(void)
     // Act : Read from AccelBuf
     vector3_t vector = getAverageAccel();
     // Assert
+    // 10 + 11 + 12 = 33 / 10 = 3
     TEST_ASSERT_EQUAL(3, vector.x);
     TEST_ASSERT_EQUAL(3, vector.x);
     TEST_ASSERT_EQUAL(3, vector.x);
