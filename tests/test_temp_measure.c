@@ -25,7 +25,7 @@ void test_getTemp_get_average_temp_properly(void)
     getAverage_fake.return_val = 2000;
     
     // Act
-    uint32_t val = getTemp();
+    int32_t val = getTemp();
 
     // Assert
     TEST_ASSERT_EQUAL(26, val);

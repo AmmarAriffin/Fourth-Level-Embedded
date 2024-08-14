@@ -19,7 +19,7 @@ void tearDown(void)
 /* Helper functions */
 void writeConsecutiveSequenceToBuffer(uint16_t start, uint16_t size)
 {
-    for (uint16_t i = 0; i < size; i++) {
+    for (int16_t i = 0; i < size; i++) {
       writeCircBuf(&buff, start + i);
     }
 } 
@@ -184,7 +184,7 @@ void test_capacity_higher_than_max_invalid(void)
     TEST_ASSERT_EQUAL(val, NULL);
 }
 
-void test_buf_is_unsigned(void)
+void test_buf_is_signed(void)
 {
 
     writeCircBuf(&buff, 0);

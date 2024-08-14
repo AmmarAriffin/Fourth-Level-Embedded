@@ -14,15 +14,15 @@ add_unity_test(test_fff test_fff.c)
 add_unity_test(test_circular_buffer test_circular_buffer.c ${SRC_DIR}/circBufT.c)
 target_include_directories(test_circular_buffer PRIVATE ${SRC_DIR})
 
-add_unity_test(test_adc test_adc.c ${SRC_DIR}/ADC_read.c)
-target_include_directories(test_adc PRIVATE ${SRC_DIR})
-target_include_directories(test_adc PRIVATE ${TIVAWARE_DIR})
-target_include_directories(test_adc PRIVATE ${MOCK_DIR})
 
-add_unity_test(test_adc_hal test_adc_hal.c ${SRC_DIR}/ADC_read.c ${SRC_DIR}/adc_hal_tiva.c)
+add_unity_test(test_adc_hal test_adc_hal.c ${SRC_DIR}/adc_hal_tiva.c)
 target_include_directories(test_adc_hal PRIVATE ${SRC_DIR})
 target_include_directories(test_adc_hal PRIVATE ${TIVAWARE_DIR})
 target_include_directories(test_adc_hal PRIVATE ${MOCK_DIR})
+
+add_unity_test(test_accelerometer test_accelerometer.c ${SRC_DIR}/accelerometer.c ${SRC_DIR}/average.c ${SRC_DIR}/circBufT.c)
+target_include_directories(test_accelerometer PRIVATE ${SRC_DIR})
+target_include_directories(test_accelerometer PRIVATE ${MOCK_DIR})
 
 add_unity_test(test_average test_average.c ${SRC_DIR}/average.c ${SRC_DIR}/circBufT.c)
 target_include_directories(test_average PRIVATE ${SRC_DIR})

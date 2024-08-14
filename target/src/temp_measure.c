@@ -25,27 +25,29 @@
 
 static averager averagerTemp;
 
+#define TEMP_BUFFER 20
+
 
 void pollTemp(void)
 {
     adcHalStartConversion(ADC_ID_2);
 }
 
-void callbackADCTemp(uint32_t value)
+void callbackADCTemp(int32_t value)
 {
     storeData(&averagerTemp, value);
 }
 
 void initTempADC(void)
 {
-    initAverager(&averagerTemp);
+    initAverager(&averagerTemp, TEMP_BUFFER);
 
     adcHalRegister(ADC_ID_2, callbackADCTemp);
 }
 
-uint32_t getTemp(void) 
+int32_t getTemp(void) 
 {
-    uint32_t val = getAverage(&averagerTemp);
+    int32_t val = getAverage(&averagerTemp);
     return (ADC_CONST_TO_BE_MINUSED - (val*ADC_TO_TEMP_CONST));
 }
 

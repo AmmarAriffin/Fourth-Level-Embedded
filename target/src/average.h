@@ -12,12 +12,13 @@
 
 typedef struct {
   circBuf_t buffer;
+  int32_t sum;
 } averager;
 
-void initAverager(averager* averageStruct);
+void initAverager(averager* averageStruct, uint32_t size);
 
-void storeData(averager* averageStruct, uint32_t value);
+void storeData(averager* averageStruct, int32_t value);
 
-uint32_t getAverage(averager* averageStruct);
+int32_t getAverage(averager* averageStruct);
 
 #endif /* AVERAGE_H_ */
