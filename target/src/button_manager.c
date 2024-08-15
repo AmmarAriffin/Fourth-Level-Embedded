@@ -21,7 +21,9 @@
 #include "display_manager.h"
 #include "button_manager.h"
 #include "switches.h"
-#include "stopwatch_timer.h"
+#include "stopwatch.h"
+#include "timer_s.h"
+#include "step_counter_main.h"
 
 //********************************************************
 // Constants and static vars
@@ -30,10 +32,15 @@
 
 static uint16_t longPressCountUp = 0;
 static uint16_t longPressCountDown = 0;
-static uint16_t longPressCountLeft = 0;
-static uint16_t longPressCountRight = 0;
+// static uint16_t longPressCountLeft = 0; //Uncomment if used
+// static uint16_t longPressCountRight = 0;
 static bool changedState = false;
 
+//********************************************************
+// Global vars
+//********************************************************
+uint8_t timerSelect = 0;
+uint8_t placeSelect = 0;
 
 //********************************************************
 // Init buttons and switch I/O handlers
@@ -60,10 +67,10 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         case DISPLAY_SET_TIMER:
             if (checkButton(LEFT) == PUSHED) {
                     // Increment timer digit value
-                    incrementTime(timerSelect, placeSelect);
+                    incrementTime(&timerArray[timerSelect], placeSelect);
                 } else if (checkButton(RIGHT) == PUSHED) {
                     // Decrement timer digit value
-                    decrementTime(timerSelect, placeSelect);
+                    decrementTime(&timerArray[timerSelect], placeSelect);
                 }
             break;
         //*****************************************************************
@@ -148,10 +155,10 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                 checkButton(UP);
                 longPressCountUp++;
                 if (longPressCountUp >= LONG_PRESS_CYCLES) {
-                    resetTimer(timerSelect);
+                    resetTimer(&timerArray[timerSelect]);
                 } 
             } else if (checkButton(UP) == RELEASED && longPressCountUp < LONG_PRESS_CYCLES) {
-                toggleTimer(timerSelect, currentTime);
+                toggleTimer(&timerArray[timerSelect]);
                 longPressCountUp = 0;
             } else if (checkButton(UP) == NO_CHANGE ) {
                 longPressCountUp = 0;   
@@ -204,14 +211,14 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                     resetStopwatch();
                 } 
             } else if (checkButton(UP) == RELEASED && longPressCountUp < LONG_PRESS_CYCLES) {
-                toggleStopwatch(currentTime);
+                toggleStopwatch();
                 longPressCountUp = 0;
             } else if (checkButton(UP) == NO_CHANGE ) {
                 longPressCountUp = 0;   
             }
             //#############################
             if (checkButton(DOWN) == PUSHED) {
-                storeLap(currentTime);
+                storeLap();
             }
             break;
         //*****************************************************************

@@ -10,6 +10,7 @@
 #ifndef STEP_COUNTER_MAIN_H_
 #define STEP_COUNTER_MAIN_H_
 
+#include "timer_s.h"
 
 #define M_PER_STEP 9/10
 #define MAX_STR_LEN 16
@@ -20,6 +21,8 @@
 
 #define SET_DISPLAY_NUM 1 // Number of display states which shouldn't be accessible
                           // through left and right buttons
+
+#define NUM_TIMERS 4
 
 typedef enum {
     DISPLAY_STEPS = 0,
@@ -54,6 +57,7 @@ typedef struct {
 } deviceStateInfo_t;
 
 
+extern timer_s timerArray[NUM_TIMERS]; // Declare timers
 
 void flashMessage(char* toShow);
 

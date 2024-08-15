@@ -11,6 +11,8 @@
 #define BUTTON_MANAGER_H_
 #include "step_counter_main.h"
 
+extern uint8_t timerSelect;
+extern uint8_t placeSelect;
 
 // Init this library
 void btnInit(void);

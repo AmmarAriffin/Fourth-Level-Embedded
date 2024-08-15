@@ -32,6 +32,7 @@
 #include "math.h"
 #include "circBufV.h"
 #include "ADC_read.h"
+#include "timer_s.h"
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #include "serial_sender.h"
@@ -69,6 +70,8 @@
 
 #define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
 
+
+
 /*******************************************
  *      Local prototypes
  *******************************************/
@@ -83,7 +86,7 @@ vector3_t getAcclData (void);
  *******************************************/   
 
 deviceStateInfo_t deviceState; // Stored as one global so it can be accessed by other helper libs within this main module
-
+timer_s timerArray[NUM_TIMERS]; 
 /***********************************************************
  * Initialisation functions
  ***********************************************************/
@@ -162,7 +165,13 @@ void superloop(void* args)
     // initSysTick();
     acclInit();
     initADC();
-    
+
+    // Initialise Timers
+    uint8_t initTimerIndex;
+    for (initTimerIndex = 0;initTimerIndex < NUM_TIMERS;initTimerIndex++) {
+        initTimer(&timerArray[initTimerIndex], initTimerIndex + 1);
+    }
+ 
 
     #ifdef SERIAL_PLOTTING_ENABLED
     SerialInit ();

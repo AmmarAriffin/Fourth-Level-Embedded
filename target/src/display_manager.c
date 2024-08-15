@@ -29,7 +29,10 @@
 
 #include "serial_sender.h"
 #include "display_manager.h"
-#include "stopwatch_timer.h"
+#include "stopwatch.h"
+#include "timer_s.h"
+#include "step_counter_main.h"
+#include "button_manager.h"
 
 
 //********************************************************
@@ -39,6 +42,7 @@
 #define KM_TO_MILES 62/100 // Multiply by 0.6215 to convert, this should be good enough
 #define MS_TO_KMH 36/10
 #define TIME_UNIT_SCALE 60
+
 
 
 /*******************************************
@@ -138,16 +142,16 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
             
             for (i=0;i<4;i++) {
                 if (i == timerSelect) {
-                    displayNumTime("-> T ", getTimerID(i), readTimer(i, currentTime), i, ALIGN_CENTRE, true);
+                    displayNumTime("-> T ", getTimerID(&timerArray[i]), readTimer(&timerArray[i]), i, ALIGN_CENTRE, true);
                 } else {
-                    displayNumTime("   T ", getTimerID(i), readTimer(i, currentTime), i, ALIGN_CENTRE, true);
+                    displayNumTime("   T ", getTimerID(&timerArray[i]), readTimer(&timerArray[i]), i, ALIGN_CENTRE, true);
                 }
             }
     
             break;
         //*****************************************************************
         case DISPLAY_STOPWATCH:
-            displayTime("SW", readStopwatch(currentTime), 0, ALIGN_CENTRE, true);
+            displayTime("SW", readStopwatch(), 0, ALIGN_CENTRE, true);
             
             for (i=0;i<3;i++) {
                 if (getLapIndex() - i + 1 > 0) {
@@ -160,7 +164,7 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_SET_TIMER: 
             
-            displayNumTime("-> T ", getTimerID(timerSelect), readTimer(timerSelect, currentTime), 1, ALIGN_CENTRE, false);
+            displayNumTime("-> T ", getTimerID(&timerArray[timerSelect]), readTimer(&timerArray[timerSelect]), 1, ALIGN_CENTRE, false);
             displayCursor(placeSelect, 2, ALIGN_CENTRE);
                     
             
