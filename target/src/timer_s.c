@@ -24,12 +24,12 @@
 
 
 
-void initTimer (timer_s *timerID, uint8_t a)
+void initTimer (timer_s *timerID, uint8_t ID)
 {
     timerID->lastReadTime = 0;
     timerID->timeRemaining = 0;
     timerID->timeTotal = 0;
-    timerID->id = a;
+    timerID->id = ID;
     timerID->isRunning = false;
 }
 
@@ -42,7 +42,6 @@ void toggleTimer(timer_s *timerID)
     } else {
         timerID->isRunning = true;
         timerID->lastReadTime = currentTime;
-        // timerOne.lapReadIndex = timerOne.lapNum - 1;
     }
 }
 
@@ -91,9 +90,6 @@ uint8_t getTimerID (timer_s *timerID)
 
 void incrementTime (timer_s *timerID, uint8_t place)
 {
-    //place == 0 -> seconds
-    //place == 1 -> minutes
-    //place == 2 -> hours
     static uint32_t seconds;
     static uint32_t minutes;
     static uint32_t hours;
@@ -123,9 +119,6 @@ void incrementTime (timer_s *timerID, uint8_t place)
 
 void decrementTime (timer_s *timerID, uint8_t place)
 {
-    //place == 0 -> seconds
-    //place == 1 -> minutes
-    //place == 2 -> hours
     static uint32_t seconds;
     static uint32_t minutes;
     static uint32_t hours;
@@ -151,4 +144,9 @@ void decrementTime (timer_s *timerID, uint8_t place)
     timerID->timeTotal = (seconds*MS_IN_SECOND) + (minutes*MS_IN_MINUTE) + (hours*MS_IN_HOUR);
     timerID->timeRemaining = timerID->timeTotal;
     timerID->isRunning = false;
+}
+
+void setTime (timer_s *timerID, uint32_t time) 
+{
+    timerID->timeTotal = time;
 }

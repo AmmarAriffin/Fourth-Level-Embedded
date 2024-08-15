@@ -17,6 +17,7 @@
         "type_traits": "c",
         "utility": "c",
         "cstdint": "c",
-        "compare": "c"
+        "compare": "c",
+        "random": "c"
     }
 }
