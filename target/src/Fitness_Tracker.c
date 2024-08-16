@@ -45,7 +45,7 @@ void pollGPIO(FitnessTrackerPtr instance)
 
 void display(FitnessTrackerPtr instance)
 {
-    instance->state->updateDisplay(instance->state);
+    instance->state->updateDisplay(instance);
 }
 
 
