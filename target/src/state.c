@@ -1,6 +1,6 @@
 
 
-// Inspiration from Fredy and here
+// Inspiration from here
 // https://www.adamtornhill.com/Patterns%20in%20C%202,%20STATE.pdf
 // Ammar Ariffin
 

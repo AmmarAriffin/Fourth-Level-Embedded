@@ -40,5 +40,6 @@
         "xstring": "c",
         "xutility": "c",
         "*.readme": "c"
-    }
+    },
+    "C_Cpp.codeAnalysis.clangTidy.headerFilter": ""
 }

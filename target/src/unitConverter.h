@@ -1,11 +1,16 @@
-// *******************************************************
-// 
-// state.h
-//
-// Implementing a State Pattern 
-// Ammar Ariffin
-// 
-// *******************************************************
+/*****************\HEADER/******************
+* AUTHORS: - Patty Furr                   *
+*          - Rea Sons                     *
+* VERSION: 2.0                            *
+* CREATED: 8/16/2024, 4:43:34 PM          *
+* MODIFIED: 8/17/2024, 10:12:10 AM        *
+* FILE: unitConverter.h                   *
+*******************************************/
+
+
+
+
+
 #ifndef UNITCONVERTER_H_
 #define UNITCONVERTER_H_
 #include <stdint.h>
