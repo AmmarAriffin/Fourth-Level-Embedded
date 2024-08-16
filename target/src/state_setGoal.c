@@ -6,14 +6,13 @@
 
 /* Include what it will transition into */
 #include "state_temperature.h"
+#include "state_distance.h"
 
 
 #define STEP_GOAL_ROUNDING 100
 #define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
 
 static uint32_t newGoal = 0;
-
-
 
 
 /* Functions for State */
@@ -31,7 +30,8 @@ static void updateDisplay(FitnessTrackerPtr context)
 
     /* Third Line */
     if (newGoal == 0) {
-        displayString("New Goal: None", THIRD_ROW, ALIGN_CENTRE);
+        newGoal = 100;
+        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
     } else {
         displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
     }
@@ -47,11 +47,17 @@ void setGoalToNewGoal(FitnessTrackerPtr context)
 }
 
 
+
 /* State Transitions */
 
 static void goToTemperature(FitnessTrackerPtr context)
 {
     changeState(context, transitionToTemperature());
+}
+
+static void goToDistance(FitnessTrackerPtr context)
+{
+    changeState(context, transitionToDistance());
 }
 
 /* Function when other change to this concrete state */
@@ -68,6 +74,7 @@ StatePtr transitionToSetGoal(void)
         startedState.rightButPressed = goToTemperature;
         startedState.updateDisplay = updateDisplay;
         startedState.botButPressed = setGoalToNewGoal;
+        startedState.leftButPressed = goToDistance;
 
 
         initialised = 1;

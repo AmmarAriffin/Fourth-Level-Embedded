@@ -34,22 +34,22 @@ uint32_t changeToMPH(uint32_t numSteps, uint8_t seconds)
 {
     uint32_t speed;
     if (seconds != 0) {
-        speed = (numSteps / seconds) * MS_TO_KMH;
+        speed = (numSteps / seconds) * M_PER_STEP * KM_TO_MILES;
     } else {
-        speed = numSteps * MS_TO_KMH;
+        speed = numSteps * M_PER_STEP * KM_TO_MILES;
     }
-    return (speed * 2);
+    return (speed);
 }
 
 uint32_t changeToKPH(uint32_t numSteps, uint8_t seconds)
 {
     uint32_t speed;
     if (seconds != 0) {
-        speed = (numSteps / seconds) * MS_TO_KMH;
+        speed = (numSteps / seconds) * M_PER_STEP * MS_TO_KMH;
     } else {
-        speed = numSteps * MS_TO_KMH;
+        speed = numSteps * MS_TO_KMH * M_PER_STEP;
     }
-    return (speed*MS_TO_KMH);
+    return (speed);
 }
 
 

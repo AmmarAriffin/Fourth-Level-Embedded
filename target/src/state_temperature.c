@@ -6,7 +6,7 @@
 
 /* Include what it will transition into */
 #include "state_distance.h"
-
+#include "state_setGoal.h"
 
 
 /* Functions for State */
@@ -58,6 +58,12 @@ static void goToDistance(FitnessTrackerPtr context)
     changeState(context, transitionToDistance());
 }
 
+static void goToSetGoal(FitnessTrackerPtr context)
+{
+    changeState(context, transitionToSetGoal());
+}
+
+
 /* Function when other change to this concrete state */
 StatePtr transitionToTemperature(void)
 {
@@ -72,6 +78,7 @@ StatePtr transitionToTemperature(void)
         startedState.rightButPressed = goToDistance;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
+        startedState.leftButPressed = goToSetGoal;
 
         initialised = 1;
     }
