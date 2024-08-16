@@ -14,9 +14,10 @@ typedef enum {
     UNIT_STEPS = 0,
     UNIT_METRIC,
     UNIT_IMPERIAL,
+    NUM_UNITS,
 } UnitType;
 
-static UnitType unitType;
+
 
 uint32_t changeToMiles(uint32_t numSteps);
 
@@ -29,5 +30,7 @@ void incrementUnitType(void);
 uint32_t changeToKPH(uint32_t numSteps, uint8_t seconds);
 
 uint32_t changeToMPH(uint32_t numSteps, uint8_t seconds);
+
+UnitType getUnit(void);
 
 #endif // UNITCONVERTER_H_

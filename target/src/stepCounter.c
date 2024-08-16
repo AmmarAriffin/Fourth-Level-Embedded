@@ -31,7 +31,7 @@ void setGoal(uint32_t newGoal)
 
 uint32_t getStepsPercent(void)
 {
-    return (stepCounter.stepsTaken / stepCounter.stepsGoal * 100);
+    return (stepCounter.stepsTaken * 100 / stepCounter.stepsGoal);
 }
 
 uint32_t getCurrentGoal(void)

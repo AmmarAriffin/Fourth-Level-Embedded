@@ -1,10 +1,8 @@
 add_tiva_executable(fitness-tracker
     adc_hal_tiva.c
     pot_measure.c
-    button_manager.c
     buttons4.c
     circBufT.c
-    display_manager.c
     i2c_driver.c
     serial_sender.c
     step_counter_main.c

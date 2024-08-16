@@ -2,6 +2,7 @@
 #include "unitConverter.h"
 
 
+static UnitType unitType;
 
 // Constants
 #define M_PER_STEP 9/10 // Meters per step
@@ -55,4 +56,12 @@ uint32_t changeToKPH(uint32_t numSteps, uint8_t seconds)
 void incrementUnitType(void)
 {
     unitType++;
+    if (unitType == NUM_UNITS) {
+        unitType = UNIT_STEPS;
+    }
+}
+
+UnitType getUnit(void)
+{
+    return unitType;
 }

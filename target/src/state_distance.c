@@ -9,6 +9,56 @@
 #include "state_setGoal.h"
 
 
+
+
+/* Functions for State */
+static void updateDisplay(FitnessTrackerPtr context)
+{   
+    
+    /* First Line */
+    displayString("", FIRST_ROW, ALIGN_CENTRE);
+
+    /* Second Line *//* Third Line */
+
+    switch (getUnit()) 
+    {
+        case UNIT_STEPS:
+            displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE);
+            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE);
+            break;
+        case UNIT_METRIC:
+            displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE);
+            displayValue("Speed:", changeToKPH(getStepsCount(), context->secondsElapsed), "kph", THIRD_ROW, ALIGN_CENTRE);
+            break;
+        case UNIT_IMPERIAL:
+            displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE);
+            displayValue("Speed:", changeToMPH(getStepsCount(), context->secondsElapsed), "mph", THIRD_ROW, ALIGN_CENTRE);
+            break;
+    }
+
+    /* Fourth Line */
+    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE);
+}
+
+static void changeUnits(FitnessTrackerPtr context)
+{
+    incrementUnitType();
+}
+
+
+void resetSteps(FitnessTrackerPtr context)
+{
+    resetStepCount();    
+}
+
+/* State Transition */
+
+static void goToSetGoal(FitnessTrackerPtr context)
+{
+    changeState(context, transitionToSetGoal());
+}
+
+
 /* Function for coming into this module */
 StatePtr transitionToDistance(void)
 {
@@ -32,57 +82,3 @@ StatePtr transitionToDistance(void)
 
     return (&startedState);
 }
-
-/* Helper Functions */
-
-
-
-
-/* Functions for State */
-void updateDisplay(FitnessTrackerPtr context)
-{   
-    
-    /* First Line */
-    displayString("", FIRST_ROW, ALIGN_LEFT);
-
-    /* Second Line *//* Third Line */
-
-    switch (unitType) 
-    {
-        case UNIT_STEPS:
-            displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE);
-            break;
-        case UNIT_METRIC:
-            displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToKPH(getStepsCount(), context->secondsElapsed), "kph", THIRD_ROW, ALIGN_CENTRE);
-            break;
-        case UNIT_IMPERIAL:
-            displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToMPH(getStepsCount(), context->secondsElapsed), "mph", THIRD_ROW, ALIGN_CENTRE);
-            break;
-    }
-
-    /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE);
-}
-
-void changeUnits(FitnessTrackerPtr context)
-{
-    incrementUnitType();
-}
-
-
-void resetSteps(FitnessTrackerPtr context)
-{
-    resetStepCount();    
-}
-
-/* State Transition */
-
-static void goToSetGoal(FitnessTrackerPtr context)
-{
-    changeState(context, transitionToDistance());
-}
-
-

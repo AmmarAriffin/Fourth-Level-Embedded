@@ -14,6 +14,46 @@
 static uint32_t newGoal = 0;
 
 
+
+
+/* Functions for State */
+static void updateDisplay(FitnessTrackerPtr context)
+{
+    pollPot();
+    /* Get New Goal */
+    newGoal = getPotVal() * POT_SCALE_COEFF;
+    newGoal = (newGoal / STEP_GOAL_ROUNDING) * STEP_GOAL_ROUNDING; // Round to nearest hundred
+    /* First Line */
+    displayString("Set Step Goal:", FIRST_ROW, ALIGN_CENTRE);
+
+    /* Second Line*/
+    displayValue("Goal:", getCurrentGoal(), "steps", SECOND_ROW, ALIGN_CENTRE);
+
+    /* Third Line */
+    if (newGoal == 0) {
+        displayString("New Goal: None", THIRD_ROW, ALIGN_CENTRE);
+    } else {
+        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
+    }
+    
+    /* Fourth Line */
+    displayTime("Time:", context->secondsElapsed,  FOURTH_ROW, ALIGN_CENTRE);
+
+}
+
+void setGoalToNewGoal(FitnessTrackerPtr context)
+{
+    setGoal(newGoal);
+}
+
+
+/* State Transitions */
+
+static void goToTemperature(FitnessTrackerPtr context)
+{
+    changeState(context, transitionToTemperature());
+}
+
 /* Function when other change to this concrete state */
 StatePtr transitionToSetGoal(void)
 {
@@ -35,42 +75,3 @@ StatePtr transitionToSetGoal(void)
 
     return (&startedState);
 }
-
-/* Functions for State */
-void updateDisplay(FitnessTrackerPtr context)
-{
-    pollPot();
-    /* Get New Goal */
-    newGoal = getPotVal() * POT_SCALE_COEFF;
-    newGoal = (newGoal / STEP_GOAL_ROUNDING) * STEP_GOAL_ROUNDING; // Round to nearest hundred
-    /* First Line */
-    displayString("Set Your Step Goal:", FIRST_ROW, ALIGN_CENTRE);
-
-    /* Second Line*/
-    displayValue("Current Goal:", getCurrentGoal(), "steps", SECOND_ROW, ALIGN_CENTRE);
-
-    /* Third Line */
-    if (newGoal == 0) {
-        displayString("New Goal: A Failure", THIRD_ROW, ALIGN_CENTRE);
-    } else {
-        displayValue("New Goal:", newGoal, "steps", THIRD_ROW, ALIGN_CENTRE);
-    }
-    
-    /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed,  FOURTH_ROW, ALIGN_CENTRE);
-
-}
-
-void setGoalToNewGoal(FitnessTrackerPtr context)
-{
-    setGoalToNewGoal(newGoal);
-}
-
-
-/* State Transitions */
-
-static void goToTemperature(FitnessTrackerPtr context)
-{
-    changeState(context, transitionToDistance());
-}
-

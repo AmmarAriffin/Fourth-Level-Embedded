@@ -6,6 +6,6 @@
 #include "state_distance.h"
 
 /* Function when other change to this concrete state */
-StatePtr transitionToDistance(void);
+StatePtr transitionToTemperature(void);
 
 

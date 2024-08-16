@@ -2,7 +2,7 @@
 #define Fitness_Tracker_H_
 
 #include "state.h"
-
+#include <stdint.h>
 
 typedef struct FitnessTracker* FitnessTrackerPtr;
 
@@ -12,7 +12,7 @@ typedef struct FitnessTracker* FitnessTrackerPtr;
 struct FitnessTracker
 {
     StatePtr state;
-    uint32_t secondsElapsed;
+    uint16_t secondsElapsed;
 };
 
 void changeState(FitnessTrackerPtr instance, StatePtr newState);

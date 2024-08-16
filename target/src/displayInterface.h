@@ -12,6 +12,8 @@
 #ifndef DISPLAYINTERFACE_H_
 #define DISPLAYINTERFACE_H_
 
+#include <stdint.h>
+
 typedef enum {
     ALIGN_LEFT = 0,
     ALIGN_CENTRE,
@@ -25,23 +27,6 @@ typedef enum {
     THIRD_ROW,
     FOURTH_ROW,
 } rowNum_t;
-
-// typedef enum {
-//     DISPLAY_STEPS = 0,
-//     DISPLAY_DISTANCE,
-//     DISPLAY_SET_GOAL,
-//     DISPLAY_TEMPERATURE,
-//     DISPLAY_NUM_STATES, // Automatically enumerates to the number of display states there can be
-// } displayMode_t;
-
-// typedef struct {
-//     uint32_t stepsTaken;
-//     uint32_t currentGoal;
-//     uint32_t newGoal;
-//     uint16_t secondsElapsed;
-//     displayMode_t displayMode;
-// } stepsInfo_t;
-
 
 
 void displayInit(void); // Initalize the display

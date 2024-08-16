@@ -1,5 +1,5 @@
 #include "stdint.h"
-
+#include <stdbool.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/gpio.h"
@@ -17,7 +17,8 @@
 
 void startTracker(FitnessTrackerPtr instance)
 {
-    transitionToDistance();
+    StatePtr test = transitionToDistance();
+    changeState(instance, test);
     initButtons();
     initSwitch();
 }
@@ -89,12 +90,11 @@ void leftSwitchON(FitnessTrackerPtr instance)
 void botButLongPress(FitnessTrackerPtr instance)
 {
     static uint16_t longPressCount = 0;
-    static bool allowLongPress = true;
 
     if (isDown(DOWN)) {
         longPressCount++;
         if (longPressCount >= LONG_PRESS_CYCLES) {
-            instance->state->botButLongPress;
+            instance->state->botButLongPress(instance);
         }
     }
 }

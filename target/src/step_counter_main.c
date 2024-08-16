@@ -163,7 +163,7 @@ void superloop(void* args)
     static struct FitnessTracker fitnessTracker = {0,0};
 
     FitnessTrackerPtr fitnessTrackerPtr = &fitnessTracker;
-
+    fitnessTracker.secondsElapsed = 0;
     // Start state
     startTracker(fitnessTrackerPtr);
 
