@@ -21,7 +21,7 @@ stopWatch_s stopWatch = {.lapNum = 0, .lapReadIndex = -1, .isRunning = false};
 
 void toggleStopwatch (void)
 {
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     if (stopWatch.isRunning) {
         stopWatch.isRunning = false;
@@ -49,7 +49,7 @@ void resetStopwatch (void)
 
 uint32_t readStopwatch (void)
 {
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     if (stopWatch.isRunning) {
         stopWatch.elapsedTime = stopWatch.elapsedTime + currentTime - stopWatch.lastReadTime;
@@ -63,7 +63,7 @@ uint32_t readStopwatch (void)
 
 void storeLap (void)
 {
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     if (stopWatch.isRunning) {
         

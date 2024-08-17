@@ -31,10 +31,11 @@ void toggleTimer(timer_s *timerID);
 // resetTimer: Returns timer's timerRemaing to timeTotal and stops the timer
 void resetTimer(timer_s *timerID);
 // *******************************************************
+// updateTimer: Updates the timer's timeRemaining and flashes a message if finished.
+void updateTimer(timer_s *timerID);
+// *******************************************************
 // readTimer: Both updates the timer's timeRemaining and returns it.
-// Also flashes a timer ended message. 
-// This could be split into a read function and an interupt function
-// which updates the timeRemaining.
+// Also flashes a timer ended message.
 uint32_t readTimer(timer_s *timerID);
 // *******************************************************
 // getTimerID: Returns the id of a timer

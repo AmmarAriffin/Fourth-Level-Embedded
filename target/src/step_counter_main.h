@@ -59,7 +59,7 @@ typedef struct {
 
 
 extern timer_s timerArray[NUM_TIMERS]; // Declare timers
-
+unsigned long readCurrentTick(void);
 void flashMessage(char* toShow);
 
 #endif /* STEP_COUNTER_MAIN_H_ */

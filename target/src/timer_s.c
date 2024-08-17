@@ -35,7 +35,7 @@ void initTimer (timer_s *timerID, uint8_t ID)
 
 void toggleTimer(timer_s *timerID) 
 {
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     if (timerID->isRunning) {
         timerID->isRunning = false;
@@ -53,10 +53,28 @@ void resetTimer(timer_s *timerID)
     timerID->isRunning = false;
 }
 
+void updateTimer(timer_s *timerID) 
+{
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
+    static char msg[17];
+    if (timerID->isRunning) {
+        if ((currentTime - timerID->lastReadTime) >= timerID->timeRemaining) {
+            timerID->isRunning = false;
+            timerID->timeRemaining = 0;
+            usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
+            flashMessage(msg);
+            return timerID->timeRemaining;
+        } else {
+            timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
+            timerID->lastReadTime = currentTime;
+            return timerID->timeRemaining;
+        }
+    }
+}
 
 uint32_t readTimer(timer_s *timerID) 
 {
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     static char msg[17];
     if (timerID->isRunning) {
@@ -64,7 +82,7 @@ uint32_t readTimer(timer_s *timerID)
             timerID->isRunning = false;
             timerID->timeRemaining = 0;
             usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
-            flashMessage(msg); //THIS CURRENTLY ONLY WORKS IF ON THE TIMER DISPLAY SCREEN
+            flashMessage(msg);
             return timerID->timeRemaining;
         } else {
             timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
