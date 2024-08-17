@@ -65,38 +65,39 @@ void displayInit(void)
 
 
 // Update the display, called on a loop
-void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
+void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
 {
     // Check for flash message override
-    if (deviceState.flashTicksLeft != 0) {
+    if (deviceState->flashTicksLeft != 0) {
         char* emptyLine = "                ";
         OLEDStringDraw (emptyLine, 0, 0);
-        displayLine(deviceState.flashMessage, 1, ALIGN_CENTRE);
+        displayLine(deviceState->flashMessage, 1, ALIGN_CENTRE);
         OLEDStringDraw (emptyLine, 0, 2);
         OLEDStringDraw (emptyLine, 0, 3);
         return;
     }
     // actually milliseconds now change name to reflect this
-    uint16_t secondsElapsed = currentTime - deviceState.workoutStartTick/10;
+    uint16_t secondsElapsed = currentTime - deviceState->workoutStartTick/TICK_MODIFIER;
     uint32_t mTravelled = 0; // TODO: If I put this inside the case statement it won't compile. Work out why!
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
     uint8_t i;
 
-    switch (deviceState.displayMode) {
+    switch (deviceState->displayMode) {
         //*****************************************************************
         case DISPLAY_STEPS:
             displayLine("", 0, ALIGN_CENTRE); // Clear the top line
-            if (deviceState.displayUnits == UNITS_SI) {
-                displayValue("", "steps", deviceState.stepsTaken, 1, ALIGN_CENTRE, false);
+            if (deviceState->displayUnits == UNITS_SI) {
+                displayValue("", "steps", deviceState->stepsTaken, 1, ALIGN_CENTRE, false);
             } else {
-                displayValue("", "% of goal", deviceState.stepsTaken * 100 / deviceState.currentGoal, 1, ALIGN_CENTRE, false);
+                displayValue("", "% of goal", deviceState->stepsTaken * 100 / deviceState->currentGoal, 1, ALIGN_CENTRE, false);
             }
             displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE, false);
+            displayLine("", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
         case DISPLAY_DISTANCE:
             displayTime("Time:", secondsElapsed, 1, ALIGN_CENTRE, false);
-            mTravelled = deviceState.stepsTaken * M_PER_STEP;
+            mTravelled = deviceState->stepsTaken * M_PER_STEP;
 
             // Protection against division by zero
             uint16_t speed;
@@ -106,36 +107,36 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
                 speed = mTravelled * MS_TO_KMH; // if zero seconds elapsed, act as if it's at least one
             }
 
-            if (deviceState.displayUnits == UNITS_SI) {
+            if (deviceState->displayUnits == UNITS_SI) {
                 displayValue("Dist:", "km", mTravelled, 0, ALIGN_CENTRE, true);
                 displayValue("Speed", "kph", speed, 2, ALIGN_CENTRE, false);
             } else {
                 displayValue("Dist:", "mi", mTravelled * KM_TO_MILES, 0, ALIGN_CENTRE, true);
                 displayValue("Speed", "mph", speed * KM_TO_MILES, 2, ALIGN_CENTRE, false);
             }
-
+            displayLine("", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
         case DISPLAY_SET_GOAL:
             displayLine("Set goal:", 0, ALIGN_CENTRE);
-            displayValue("Current:", "", deviceState.currentGoal, 2, ALIGN_CENTRE, false);
+            displayValue("Current:", "", deviceState->currentGoal, 2, ALIGN_CENTRE, false);
 
             // Display the step/distance preview
             
-            uint16_t distance = deviceState.newGoal * M_PER_STEP;
-            if (deviceState.displayUnits != UNITS_SI) {
+            uint16_t distance = deviceState->newGoal * M_PER_STEP;
+            if (deviceState->displayUnits != UNITS_SI) {
                 distance = distance * KM_TO_MILES;
             }
 
             // if <10 km/miles, use a decimal point. Otherwise display whole units (to save space)
             if (distance < 10*1000) {
-                usnprintf(toDraw, DISPLAY_WIDTH + 1, "%d stps/%d.%01d%s", deviceState.newGoal, distance / 1000, (distance % 1000)/100, deviceState.displayUnits == UNITS_SI ? "km" : "mi");
+                usnprintf(toDraw, DISPLAY_WIDTH + 1, "%d stps/%d.%01d%s", deviceState->newGoal, distance / 1000, (distance % 1000)/100, deviceState->displayUnits == UNITS_SI ? "km" : "mi");
             } else {
-                usnprintf(toDraw, DISPLAY_WIDTH + 1, "%d stps/%d%s", deviceState.newGoal, distance / 1000, deviceState.displayUnits == UNITS_SI ? "km" : "mi");
+                usnprintf(toDraw, DISPLAY_WIDTH + 1, "%d stps/%d%s", deviceState->newGoal, distance / 1000, deviceState->displayUnits == UNITS_SI ? "km" : "mi");
             }
 
             displayLine(toDraw, 1, ALIGN_CENTRE);
-
+            displayLine("", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
         case DISPLAY_TIMER:
@@ -153,6 +154,7 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
         case DISPLAY_STOPWATCH:
             displayTime("SW", readStopwatch(), 0, ALIGN_CENTRE, true);
             
+            // Scrolls through existing lap times
             for (i=0;i<3;i++) {
                 if (getLapIndex() - i + 1 > 0) {
                 displayNumTime("Lap ", getLapIndex() - i + 1, readLap(-i), i + 1, ALIGN_CENTRE, true);
@@ -168,13 +170,14 @@ void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime)
             displayCursor(placeSelect, 2, ALIGN_CENTRE);
                     
             
-            displayLine("                ", 0, ALIGN_CENTRE);
-            displayLine("                ", 3, ALIGN_CENTRE);
+            displayLine("", 0, ALIGN_CENTRE);
+            displayLine("", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
         default:
             // This display state should never be viewed.
-            // These lines are just to indicate when something has gone wrong.
+            // These lines are just to indicate when the displayMode has been 
+            // set to something that doesn't have a case.
             displayLine("DISPLAY ERROR", 0, ALIGN_CENTRE);
             displayLine("DISPLAY ERROR", 1, ALIGN_CENTRE);
             displayLine("DISPLAY ERROR", 2, ALIGN_CENTRE);
@@ -292,13 +295,13 @@ static void displayCursor(uint8_t place, uint8_t row, textAlignment_t alignment)
 {
     switch(place) {
         case 0:
-            displayLine("             ^^", row, alignment);
+            displayLine("             ^S", row, alignment);
             break;          
         case 1:
-            displayLine("          ^^   ", row, alignment);
+            displayLine("          ^M   ", row, alignment);
             break;
         case 2:
-            displayLine("       ^^      ", row, alignment);
+            displayLine("       ^H      ", row, alignment);
             break;
     }
 }

@@ -23,6 +23,7 @@
                           // through left and right buttons
 
 #define NUM_TIMERS 4
+#define TICK_MODIFIER 10 //Changes ticks to milliseconds
 
 typedef enum {
     DISPLAY_STEPS = 0,

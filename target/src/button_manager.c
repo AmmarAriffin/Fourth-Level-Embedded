@@ -55,12 +55,12 @@ void btnInit(void)
 //********************************************************
 // Run at a fixed rate, modifies the device's state depending on button presses
 //********************************************************
-void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
+void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
 {
     updateButtons();
     updateSwitch();
 
-    displayMode_t currentDisplayMode = deviceStateInfo ->displayMode;
+    displayMode_t currentDisplayMode = deviceState ->displayMode;
 
     // Changing screens
     switch(currentDisplayMode) {
@@ -76,13 +76,13 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         //*****************************************************************
         default:
             if (checkButton(LEFT) == PUSHED) {
-            deviceStateInfo -> displayMode = (deviceStateInfo -> displayMode+1) % (DISPLAY_NUM_STATES - SET_DISPLAY_NUM);    
+            deviceState->displayMode = (deviceState->displayMode+1) % (DISPLAY_NUM_STATES - SET_DISPLAY_NUM);    
             } else if (checkButton(RIGHT) == PUSHED) {
                 // Can't use mod, as enums behave like an unsigned int, so (0-1)%n != n-1
-                if (deviceStateInfo -> displayMode > 0) {
-                    deviceStateInfo -> displayMode--;
+                if (deviceState->displayMode > 0) {
+                    deviceState->displayMode--;
                 } else {
-                    deviceStateInfo -> displayMode = DISPLAY_NUM_STATES-1-SET_DISPLAY_NUM;
+                    deviceState->displayMode = DISPLAY_NUM_STATES-1-SET_DISPLAY_NUM;
                 }
             };
             break;
@@ -94,18 +94,18 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_STEPS:
             if (checkButton(UP) == PUSHED) {
-                if (deviceStateInfo -> displayUnits == UNITS_SI) {
-                    deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
+                if (deviceState->displayUnits == UNITS_SI) {
+                    deviceState->displayUnits = UNITS_ALTERNATE;
                 } 
                 else {
-                    deviceStateInfo -> displayUnits = UNITS_SI;
+                    deviceState->displayUnits = UNITS_SI;
                 }
             }
             //#############################
             if (isDown(DOWN) == true) {
                 longPressCountDown++;
                 if (longPressCountDown >= LONG_PRESS_CYCLES) {
-                    deviceStateInfo -> stepsTaken = 0;
+                    deviceState->stepsTaken = 0;
                     flashMessage("Reset!");
                 }
             } else {
@@ -115,18 +115,18 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_DISTANCE:
             if (checkButton(UP) == PUSHED) {
-                if (deviceStateInfo -> displayUnits == UNITS_SI) {
-                    deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
+                if (deviceState->displayUnits == UNITS_SI) {
+                    deviceState->displayUnits = UNITS_ALTERNATE;
                 } 
                 else {
-                    deviceStateInfo -> displayUnits = UNITS_SI;
+                    deviceState->displayUnits = UNITS_SI;
                 }
             }
             //#############################
             if (isDown(DOWN) == true) {
                 longPressCountDown++;
                 if (longPressCountDown >= LONG_PRESS_CYCLES) {
-                    deviceStateInfo -> stepsTaken = 0;
+                    deviceState->stepsTaken = 0;
                     flashMessage("Reset!");
                 }
             } else {
@@ -136,17 +136,20 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_SET_GOAL:
             if (checkButton(UP) == PUSHED) {
-                if (deviceStateInfo -> displayUnits == UNITS_SI) {
-                    deviceStateInfo -> displayUnits = UNITS_ALTERNATE;
+                if (deviceState->displayUnits == UNITS_SI) {
+                    deviceState->displayUnits = UNITS_ALTERNATE;
                 } 
                 else {
-                    deviceStateInfo -> displayUnits = UNITS_SI;
+                    deviceState->displayUnits = UNITS_SI;
                 }
             }
             //#############################
             if (checkButton(DOWN) == PUSHED) {
-                deviceStateInfo -> currentGoal = deviceStateInfo -> newGoal;
-                deviceStateInfo -> displayMode = DISPLAY_STEPS;
+                deviceState->currentGoal = deviceState->newGoal;
+                char toDraw[DISPLAY_WIDTH+1];
+                usnprintf(toDraw, DISPLAY_WIDTH + 1, "GOAL SET: %d", deviceState->newGoal);
+                flashMessage(toDraw);
+                deviceState->displayMode = DISPLAY_STEPS;
             }
             break;
         //*****************************************************************
@@ -168,7 +171,7 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                 checkButton(DOWN);
                 longPressCountDown++;
                 if (longPressCountDown >= LONG_PRESS_CYCLES && !changedState) {
-                    deviceStateInfo->displayMode = DISPLAY_SET_TIMER;
+                    deviceState->displayMode = DISPLAY_SET_TIMER;
                     changedState = true;
                 } 
             } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
@@ -190,7 +193,7 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
                 checkButton(DOWN);
                 longPressCountDown++;
                 if (longPressCountDown >= LONG_PRESS_CYCLES && !changedState) {
-                    deviceStateInfo->displayMode = DISPLAY_TIMER;
+                    deviceState->displayMode = DISPLAY_TIMER;
                     changedState = true;
                 } 
             } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
@@ -224,7 +227,7 @@ void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime)
         //*****************************************************************
         default:
             //Displays error if this case is reached
-            deviceStateInfo->displayMode = DISPLAY_NUM_STATES;
+            deviceState->displayMode = DISPLAY_NUM_STATES;
         break;
     }
 }

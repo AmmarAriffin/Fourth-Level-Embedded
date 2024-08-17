@@ -18,6 +18,6 @@ extern uint8_t placeSelect;
 void btnInit(void);
 
 // Run at a fixed rate, modifies the device state according to the user's button and switch inputs
-void btnUpdateState(deviceStateInfo_t* deviceStateInfo, uint32_t currentTime);
+void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime);
 
 #endif /* BUTTON_MANAGER_H_ */

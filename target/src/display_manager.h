@@ -30,7 +30,7 @@ typedef struct {
 
 
 void displayInit(void); // Initalize the display
-void displayUpdate(deviceStateInfo_t deviceState, uint32_t currentTime); // Update the display, given the device's state and the length of the current workout
+void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime); // Update the display, given the device's state and the length of the current workout
 
 #define DISPLAY_WIDTH 16
 
