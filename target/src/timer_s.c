@@ -63,11 +63,9 @@ void updateTimer(timer_s *timerID)
             timerID->timeRemaining = 0;
             usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
             flashMessage(msg);
-            return timerID->timeRemaining;
         } else {
             timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
             timerID->lastReadTime = currentTime;
-            return timerID->timeRemaining;
         }
     }
 }
