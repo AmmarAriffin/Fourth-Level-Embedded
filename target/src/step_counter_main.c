@@ -30,8 +30,6 @@
 #include "utils/ustdlib.h"
 #include "acc.h"
 #include "math.h"
-#include "circBufV.h"
-#include "ADC_read.h"
 #include "timer_s.h"
 #include "pot_measure.h"
 #include "temp_measure.h"
