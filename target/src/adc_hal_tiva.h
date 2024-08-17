@@ -18,23 +18,26 @@
 // *******************************************************
 // callback: Defines a function pointer type for the 
 // callback function which will be passed into adchalRegister.
-typedef void(*callback)(uint32_t);
+typedef void(*callback)(int32_t);
 
 // *******************************************************
 // adcHalRegister: Initialises an adc based on a given id.
 // Registers an internal interupt function which calls the 
 // callback function.
-void adcHalRegister(uint32_t index, void (*callback)(uint32_t));
+void adcHalRegister(uint32_t index, void (*callback)(int32_t));
 
 // *******************************************************
 // adcIntCallback: Calls the passed callback function and
 // clears the interrupt.
-void adcIntCallback(void);
+void adcIntSelectCallback(uint32_t index);
 
 // *******************************************************
 // adcHalStartConversion: Starts a conversion using the
 // initialised adc.
 void adcHalStartConversion(uint32_t index);
 
+void adcCallback0(void);
+
+void adcCallback1(void);
 
 #endif //ADC_HAL_TIVA_H_

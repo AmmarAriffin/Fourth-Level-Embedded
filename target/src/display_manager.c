@@ -139,6 +139,17 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
             displayLine("", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
+        case DISPLAY_TEMPERATURE:
+            if (deviceState.workoutStartTick != 0)
+            {
+                displayValue("Temp", "deg", deviceState.currentTemp, 0, ALIGN_CENTRE, false);
+            } else {
+                displayLine("Temp: Workout not started", 0, ALIGN_CENTRE);
+            }
+            displayValue("", "steps", deviceState.stepsTaken, 1, ALIGN_CENTRE, false);
+            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE);
+            break;
+        //*****************************************************************
         case DISPLAY_TIMER:
             
             for (i=0;i<4;i++) {

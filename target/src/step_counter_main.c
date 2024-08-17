@@ -33,18 +33,20 @@
 #include "circBufV.h"
 #include "ADC_read.h"
 #include "timer_s.h"
+#include "pot_measure.h"
+#include "temp_measure.h"
+#include "accelerometer.h"
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #include "serial_sender.h"
 #endif //SERIAL_PLOTTING_ENABLED
 
-#include "accl_manager.h"
 #include "display_manager.h"
 #include "button_manager.h"
 
 #include "step_counter_main.h"
 
-#include "freeRTOS.h"
+#include "FreeRTOS.h"
 #include "task.h"
 
 /**********************************************************
@@ -78,7 +80,6 @@
 void initClock (void);
 void initDisplay (void);
 void initAccl (void);
-vector3_t getAcclData (void);
 
 
 /*******************************************
@@ -144,8 +145,7 @@ void superloop(void* args)
     #endif // SERIAL_PLOTTING_ENABLED
 
     uint8_t stepHigh = false;
-    vector3_t mean;
-    
+
 
     // Device state
     // Omnibus struct that holds loads of info about the device's current state, so it can be updated from any function
@@ -156,15 +156,17 @@ void superloop(void* args)
     deviceState.displayUnits= UNITS_SI;
     deviceState.workoutStartTick = 0;
     deviceState.flashTicksLeft = 0;
+    deviceState.currentTemp = 0;
     deviceState.flashMessage = calloc(MAX_STR_LEN + 1, sizeof(char));
 
     // Init libs
     initClock();
     displayInit();
     btnInit();
-    // initSysTick();
-    acclInit();
-    initADC();
+
+    initAccelBuffer(); // init buffer and accel chip
+    initPotADC();
+    initTempADC();
 
     // Initialise Timers
     uint8_t initTimerIndex;
@@ -188,22 +190,26 @@ void superloop(void* args)
 
 //            updateSwitch();
             btnUpdateState(&deviceState, currentTick/TICK_MODIFIER);
-            pollADC();
+            pollPot();
 
-            deviceState.newGoal = readADC() * POT_SCALE_COEFF; // Set the new goal value, scaling to give the desired range
+            deviceState.newGoal = getPotVal() * POT_SCALE_COEFF; // Set the new goal value, scaling to give the desired range
             deviceState.newGoal = (deviceState.newGoal / STEP_GOAL_ROUNDING) * STEP_GOAL_ROUNDING; // Round to the nearest 100 steps
             if (deviceState.newGoal == 0) { // Prevent a goal of zero, instead setting to the minimum goal (this also makes it easier to test the goal-reaching code on a small but non-zero target)
                 deviceState.newGoal = STEP_GOAL_ROUNDING;
             }
+
+            // Pol ADC Temp 
+            pollTemp();
+            deviceState.currentTemp = getTemp();
         }
 
         // Read and process the accelerometer
         if (lastAcclProcess + RATE_SYSTICK_HZ/RATE_ACCL_HZ < currentTick) {
             lastAcclProcess = currentTick;
 
-            acclProcess();
+            pollAccelData();
 
-            mean = acclMean();
+            vector3_t mean = getAverageAccel();
 
             uint16_t combined = sqrt(mean.x*mean.x + mean.y*mean.y + mean.z*mean.z);
 
@@ -223,6 +229,7 @@ void superloop(void* args)
             // Don't start the workout until the user begins walking
             if (deviceState.stepsTaken == 0) {
                 deviceState.workoutStartTick = currentTick;
+
             }
         }
 
@@ -274,8 +281,9 @@ void superloop(void* args)
 }
 
 
- /* Main Loop
- ***********************************************************/
+
+//  * Main Loop
+//  ***********************************************************/
 
 int main(void)
 {
@@ -287,9 +295,3 @@ int main(void)
     return 0; // Should never reach here
 
 }
-
-
-
-
-
-

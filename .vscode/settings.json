@@ -18,6 +18,23 @@
         "utility": "c",
         "cstdint": "c",
         "compare": "c",
-        "random": "c"
+        "xtr1common": "c",
+        "compare": "c",
+        "atomic": "c",
+        "bit": "c",
+        "*.tcc": "c",
+        "concepts": "c",
+        "cstddef": "c",
+        "cstdio": "c",
+        "cwchar": "c",
+        "deque": "c",
+        "vector": "c",
+        "memory": "c",
+        "memory_resource": "c",
+        "random": "c",
+        "initializer_list": "c",
+        "new": "c",
+        "stdexcept": "c",
+        "typeinfo": "c"
     }
 }

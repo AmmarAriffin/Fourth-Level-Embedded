@@ -29,6 +29,7 @@ typedef enum {
     DISPLAY_STEPS = 0,
     DISPLAY_DISTANCE,
     DISPLAY_SET_GOAL,
+    DISPLAY_TEMPERATURE,
     DISPLAY_TIMER,
     DISPLAY_STOPWATCH,
     DISPLAY_SET_TIMER,
@@ -47,6 +48,7 @@ typedef struct {
     uint32_t stepsTaken;
     uint32_t currentGoal;       // Goal the user is aiming for
     uint32_t newGoal;           // Value from the potentiometer, processed to give a new goal
+    uint32_t currentTemp;
     bool debugMode;             // Is enable/disable debug functionality
     displayMode_t displayMode;
     displayUnits_t displayUnits;
