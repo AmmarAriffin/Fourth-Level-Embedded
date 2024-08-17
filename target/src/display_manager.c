@@ -147,7 +147,7 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
                 displayLine("Temp: Workout not started", 0, ALIGN_CENTRE);
             }
             displayValue("", "steps", deviceState->stepsTaken, 1, ALIGN_CENTRE, false);
-            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE);
+            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE, false);
             break;
         //*****************************************************************
         case DISPLAY_TIMER:
