@@ -21,6 +21,7 @@
 #define EXT_H 24 
 #define TICK_MOD 10 // Changes ticks to milliseconds
 
+
 struct timer_s
 {
     uint32_t lastReadTime;
@@ -74,6 +75,7 @@ void resetTimer(timer_s *timerID)
     timerID->isRunning = false;
 }
 
+
 void updateTimer(timer_s *timerID) 
 {
     uint32_t currentTime = readCurrentTick()/TICK_MOD;
@@ -90,6 +92,7 @@ void updateTimer(timer_s *timerID)
         }
     }
 }
+
 
 uint32_t readTimer(timer_s *timerID) 
 {
@@ -154,6 +157,7 @@ void incrementTime (timer_s *timerID, uint8_t place)
     timerID->isRunning = false;
 }
 
+
 void decrementTime (timer_s *timerID, uint8_t place)
 {
     static uint32_t seconds;
@@ -182,6 +186,7 @@ void decrementTime (timer_s *timerID, uint8_t place)
     timerID->timeRemaining = timerID->timeTotal;
     timerID->isRunning = false;
 }
+
 
 void setTime (timer_s *timerID, uint32_t time) 
 {

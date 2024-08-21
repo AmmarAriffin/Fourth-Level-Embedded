@@ -13,16 +13,6 @@
 // *******************************************************
 #define MAX_LAPS 10
 
-typedef struct 
-{
-    uint32_t lastReadTime;
-    uint32_t elapsedTime;
-    uint32_t lapTimes[MAX_LAPS];
-    uint8_t lapNum;
-    int8_t lapReadIndex;
-    bool isRunning;
-} stopWatch_s;
-
 // *******************************************************
 // toggleStopwatch: Cycles between started and stopped stopwatch
 void toggleStopwatch (void);

@@ -37,4 +37,9 @@ target_include_directories(test_timer_s PRIVATE ${SRC_DIR})
 target_include_directories(test_timer_s PRIVATE ${MOCK_DIR})
 target_include_directories(test_timer_s PRIVATE ${TIVAWARE_DIR})
 
+add_unity_test(test_stopwatch test_stopwatch.c ${SRC_DIR}/stopwatch.c)
+target_include_directories(test_stopwatch PRIVATE ${SRC_DIR})
+target_include_directories(test_stopwatch PRIVATE ${MOCK_DIR})
+target_include_directories(test_stopwatch PRIVATE ${TIVAWARE_DIR})
+
 

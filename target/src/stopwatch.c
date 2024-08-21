@@ -10,11 +10,18 @@
 #include "stopwatch.h"
 #include "step_counter_main.h"
 #include "utils/ustdlib.h"
-#include "freeRTOS.h"
-#include "task.h"
 
 #define TICK_MOD 10 // Changes ticks to milliseconds
 
+typedef struct
+{
+    uint32_t lastReadTime;
+    uint32_t elapsedTime;
+    uint32_t lapTimes[MAX_LAPS];
+    uint8_t lapNum;
+    int8_t lapReadIndex;
+    bool isRunning;
+} stopWatch_s;
 
 stopWatch_s stopWatch = {.lapNum = 0, .lapReadIndex = -1, .isRunning = false};
 
@@ -90,8 +97,20 @@ void storeLap (void)
 
 uint32_t readLap (int8_t lapIndexMod)
 {
-    return stopWatch.lapTimes[stopWatch.lapReadIndex + lapIndexMod];
-}
+    int8_t finalMod;
+    // Wraps index modifier to current number of laps stored
+    if (lapIndexMod > 0) {
+        finalMod = (stopWatch.lapReadIndex + lapIndexMod) % stopWatch.lapNum;
+    } else if (lapIndexMod < 0) {
+        finalMod = (stopWatch.lapReadIndex + lapIndexMod);
+        if (finalMod < 0) {
+            finalMod = -finalMod % stopWatch.lapNum;
+        } 
+    } else {
+        finalMod = stopWatch.lapReadIndex;
+    }
+    return stopWatch.lapTimes[finalMod];
+}   
 
 
 int8_t getLapIndex (void)

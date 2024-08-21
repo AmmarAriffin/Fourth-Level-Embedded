@@ -9,7 +9,7 @@
     #define VALUE_FUNC DECLARE_FAKE_VALUE_FUNC
 #endif
 
-#define FFF_TIMER_S_FAKES_LIST(FUNC)      \
+#define FFF_STEP_COUNTER_MAIN_FAKES_LIST(FUNC)      \
     FUNC(readCurrentTick)                 \
     FUNC(flashMessage)                    \
     FUNC(usnprintf)    

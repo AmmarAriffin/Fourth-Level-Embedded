@@ -6,7 +6,7 @@
 DEFINE_FFF_GLOBALS;
 #define FFF_MOCK_IMPL // Includes mock implementations
 
-#include "timer_s_mock.h"
+#include "step_counter_main_mock.h"
 
 /* Helper functions */
 
@@ -31,7 +31,7 @@ struct timer_s
 
 void setUp(void)
 {
-    FFF_TIMER_S_FAKES_LIST(RESET_FAKE);
+    FFF_STEP_COUNTER_MAIN_FAKES_LIST(RESET_FAKE);
     FFF_RESET_HISTORY();
 }
 
