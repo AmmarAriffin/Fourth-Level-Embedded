@@ -7,6 +7,7 @@
 // *******************************************************
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "timer_s.h"
 #include "step_counter_main.h"
 #include "utils/ustdlib.h"
