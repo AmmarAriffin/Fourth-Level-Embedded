@@ -44,10 +44,11 @@ timer_s * createTimer (uint8_t ID)
 }
 
 
-void destroyTimer(timer_s *instance)
+void destroyTimer(timer_s **instance)
 {
     if (instance) {
-        free(instance);
+        free(*instance);
+        *instance = NULL;
     }
 }
 
