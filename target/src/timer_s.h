@@ -12,18 +12,14 @@
 #include <stdbool.h>
 // *******************************************************
 
-typedef struct 
-{
-    uint32_t lastReadTime;
-    uint32_t timeRemaining;
-    uint32_t timeTotal;
-    uint8_t id;
-    bool isRunning;
-} timer_s;
+typedef struct timer_s timer_s;
 
 // *******************************************************
-// initTimer: Initialises a timer's members
-void initTimer (timer_s *timerID, uint8_t ID);
+// createTimer: Creates and initialises a timer's members
+timer_s * createTimer (uint8_t ID);
+// *******************************************************
+// destroyTimer: Destroys a timer
+void destroyTimer (timer_s *instance);
 // *******************************************************
 // toggleTimer: Cycles between started and stopped timer
 void toggleTimer(timer_s *timerID);

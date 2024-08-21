@@ -77,16 +77,16 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
                 checkButton(LEFT);
                 longPressCountLeft++;
                 if (longPressCountLeft == LONG_PRESS_CYCLES) {
-                    incrementTime(&timerArray[timerSelect], placeSelect);
+                    incrementTime(timerArray[timerSelect], placeSelect);
                     buttonHeldLeft = true;
                     longPressCountLeft = 0;
                 } else if (longPressCountLeft == SHORTER_LONG_PRESS_CYCLES && buttonHeldLeft){
                     //Allows faster time increments when button is held down
-                    incrementTime(&timerArray[timerSelect], placeSelect);
+                    incrementTime(timerArray[timerSelect], placeSelect);
                     longPressCountLeft = 0;
                 }
             } else if (checkButton(LEFT) == RELEASED && longPressCountLeft < LONG_PRESS_CYCLES) {
-                incrementTime(&timerArray[timerSelect], placeSelect);
+                incrementTime(timerArray[timerSelect], placeSelect);
                 buttonHeldLeft = false;
                 longPressCountLeft = 0;
             } else if (checkButton(LEFT) == NO_CHANGE ) {
@@ -97,16 +97,16 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
                 checkButton(RIGHT);
                 longPressCountRight++;
                 if (longPressCountRight == LONG_PRESS_CYCLES) {
-                    decrementTime(&timerArray[timerSelect], placeSelect);
+                    decrementTime(timerArray[timerSelect], placeSelect);
                     buttonHeldRight = true;
                     longPressCountRight = 0;
                 } else if (longPressCountRight == SHORTER_LONG_PRESS_CYCLES && buttonHeldRight){
                     //Allows faster time decrements when button is held down
-                    decrementTime(&timerArray[timerSelect], placeSelect);
+                    decrementTime(timerArray[timerSelect], placeSelect);
                     longPressCountRight = 0;
                 }
             } else if (checkButton(RIGHT) == RELEASED && longPressCountRight < LONG_PRESS_CYCLES) {
-                decrementTime(&timerArray[timerSelect], placeSelect);
+                decrementTime(timerArray[timerSelect], placeSelect);
                 buttonHeldRight = false;
                 longPressCountRight = 0;
             } else if (checkButton(RIGHT) == NO_CHANGE ) {
@@ -197,10 +197,10 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
                 checkButton(UP);
                 longPressCountUp++;
                 if (longPressCountUp >= LONG_PRESS_CYCLES) {
-                    resetTimer(&timerArray[timerSelect]);
+                    resetTimer(timerArray[timerSelect]);
                 } 
             } else if (checkButton(UP) == RELEASED && longPressCountUp < LONG_PRESS_CYCLES) {
-                toggleTimer(&timerArray[timerSelect]);
+                toggleTimer(timerArray[timerSelect]);
                 longPressCountUp = 0;
             } else if (checkButton(UP) == NO_CHANGE ) {
                 longPressCountUp = 0;   

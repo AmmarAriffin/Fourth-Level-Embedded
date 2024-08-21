@@ -85,7 +85,7 @@ void initAccl (void);
  *******************************************/   
 
 deviceStateInfo_t deviceState; // Stored as one global so it can be accessed by other helper libs within this main module
-timer_s timerArray[NUM_TIMERS]; 
+timer_s *timerArray[NUM_TIMERS]; 
 /***********************************************************
  * Initialisation functions
  ***********************************************************/
@@ -169,7 +169,7 @@ void superloop(void* args)
     // Initialise Timers
     uint8_t initTimerIndex;
     for (initTimerIndex = 0;initTimerIndex < NUM_TIMERS;initTimerIndex++) {
-        initTimer(&timerArray[initTimerIndex], initTimerIndex + 1);
+        timerArray[initTimerIndex] = createTimer(initTimerIndex + 1);
     }
  
 

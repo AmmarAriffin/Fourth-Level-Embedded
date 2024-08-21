@@ -154,9 +154,9 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
             
             for (i=0;i<4;i++) {
                 if (i == timerSelect) {
-                    displayNumTime("-> T ", getTimerID(&timerArray[i]), readTimer(&timerArray[i]), i, ALIGN_CENTRE, true);
+                    displayNumTime("-> T ", getTimerID(timerArray[i]), readTimer(timerArray[i]), i, ALIGN_CENTRE, true);
                 } else {
-                    displayNumTime("   T ", getTimerID(&timerArray[i]), readTimer(&timerArray[i]), i, ALIGN_CENTRE, true);
+                    displayNumTime("   T ", getTimerID(timerArray[i]), readTimer(timerArray[i]), i, ALIGN_CENTRE, true);
                 }
             }
     
@@ -177,7 +177,7 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_SET_TIMER: 
             
-            displayNumTime("-> T ", getTimerID(&timerArray[timerSelect]), readTimer(&timerArray[timerSelect]), 1, ALIGN_CENTRE, false);
+            displayNumTime("-> T ", getTimerID(timerArray[timerSelect]), readTimer(timerArray[timerSelect]), 1, ALIGN_CENTRE, false);
             displayCursor(placeSelect, 2, ALIGN_CENTRE);
                     
             

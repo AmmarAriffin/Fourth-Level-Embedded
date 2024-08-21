@@ -10,8 +10,6 @@
 #include "timer_s.h"
 #include "step_counter_main.h"
 #include "utils/ustdlib.h"
-#include "freeRTOS.h"
-#include "task.h"
 
 #define MS_IN_SECOND 100
 #define MS_IN_MINUTE 6000
@@ -22,16 +20,37 @@
 #define EXT_H 24 
 #define TICK_MOD 10 // Changes ticks to milliseconds
 
-
-
-void initTimer (timer_s *timerID, uint8_t ID)
+struct timer_s
 {
-    timerID->lastReadTime = 0;
-    timerID->timeRemaining = 0;
-    timerID->timeTotal = 0;
-    timerID->id = ID;
-    timerID->isRunning = false;
+    uint32_t lastReadTime;
+    uint32_t timeRemaining;
+    uint32_t timeTotal;
+    uint8_t id;
+    bool isRunning;
+};
+
+
+timer_s * createTimer (uint8_t ID)
+{
+    timer_s *instance = malloc(sizeof(timer_s));
+    if (instance) {
+        instance->lastReadTime = 0;
+        instance->timeRemaining = 0;
+        instance->timeTotal = 0;
+        instance->id = ID;
+        instance->isRunning = false;
+    }
+    return instance;
 }
+
+
+void destroyTimer(timer_s *instance)
+{
+    if (instance) {
+        free(instance);
+    }
+}
+
 
 void toggleTimer(timer_s *timerID) 
 {

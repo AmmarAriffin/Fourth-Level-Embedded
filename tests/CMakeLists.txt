@@ -32,7 +32,9 @@ target_include_directories(test_temp_measure PRIVATE ${SRC_DIR})
 target_include_directories(test_temp_measure PRIVATE ${MOCK_DIR})
 target_include_directories(test_temp_measure PRIVATE ${TIVAWARE_DIR})
 
-
-
+add_unity_test(test_timer_s test_timer_s.c ${SRC_DIR}/timer_s.c)
+target_include_directories(test_timer_s PRIVATE ${SRC_DIR})
+target_include_directories(test_timer_s PRIVATE ${MOCK_DIR})
+target_include_directories(test_timer_s PRIVATE ${TIVAWARE_DIR})
 
 

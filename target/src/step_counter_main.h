@@ -60,7 +60,7 @@ typedef struct {
 } deviceStateInfo_t;
 
 
-extern timer_s timerArray[NUM_TIMERS]; // Declare timers
+extern timer_s *timerArray[NUM_TIMERS]; // Declare timers
 unsigned long readCurrentTick(void);
 void flashMessage(char* toShow);
 
