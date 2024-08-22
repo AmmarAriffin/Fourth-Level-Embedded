@@ -14,16 +14,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/debug.h"
-#include "inc/tm4c123gh6pm.h"
 #include "buttons4.h"
 #include "display_manager.h"
 #include "button_manager.h"
-#include "switches.h"
+// #include "switches.h" // Switches not used in this build
 #include "stopwatch.h"
 #include "timer_s.h"
 #include "step_counter_main.h"
@@ -56,7 +50,7 @@ uint8_t placeSelect = 0;
 void btnInit(void)
 {
     initButtons();
-    initSwitch();
+    // initSwitch();
 }
 
 
@@ -66,7 +60,7 @@ void btnInit(void)
 void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
 {
     updateButtons();
-    updateSwitch();
+    // updateSwitch();
 
     displayMode_t currentDisplayMode = deviceState ->displayMode;
 
@@ -92,7 +86,7 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
             } else if (checkButton(LEFT) == NO_CHANGE ) {
                 longPressCountLeft = 0;   
             }
-
+            //#############################
             if (!isDown(RIGHT)) {
                 checkButton(RIGHT);
                 longPressCountRight++;
@@ -115,6 +109,7 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
         //*****************************************************************
         default:
             if (checkButton(LEFT) == PUSHED) {
+                //SET_DISPLAY_NUM defines a number of displays which should not be switched to using left/right buttons
             deviceState->displayMode = (deviceState->displayMode+1) % (DISPLAY_NUM_STATES - SET_DISPLAY_NUM);    
             } else if (checkButton(RIGHT) == PUSHED) {
                 // Can't use mod, as enums behave like an unsigned int, so (0-1)%n != n-1
@@ -141,14 +136,23 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
                 }
             }
             //#############################
-            if (isDown(DOWN) == true) {
+            if (isDown(DOWN)) { 
+                checkButton(DOWN);
                 longPressCountDown++;
                 if (longPressCountDown >= LONG_PRESS_CYCLES) {
                     deviceState->stepsTaken = 0;
                     flashMessage("Reset!");
+                    changedState = true;
+                } 
+            } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
+                if (deviceState->displaySteps == STEPS_TOTAL) {
+                    deviceState->displaySteps = STEPS_PERCENTILE;
+                } else {
+                    deviceState->displaySteps = STEPS_TOTAL;
                 }
-            } else {
                 longPressCountDown = 0;
+            } else if (checkButton(DOWN) == NO_CHANGE ) {
+                longPressCountDown = 0;   
             }
             break;
         //*****************************************************************

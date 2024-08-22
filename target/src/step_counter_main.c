@@ -151,7 +151,8 @@ void superloop(void* args)
     deviceState.stepsTaken = 0;
     deviceState.currentGoal = TARGET_DISTANCE_DEFAULT;
     deviceState.debugMode = false;
-    deviceState.displayUnits= UNITS_SI;
+    deviceState.displayUnits = UNITS_SI;
+    deviceState.displaySteps = STEPS_TOTAL;
     deviceState.workoutStartTick = 0;
     deviceState.flashTicksLeft = 0;
     deviceState.currentTemp = 0;
