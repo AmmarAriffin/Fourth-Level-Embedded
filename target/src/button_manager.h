@@ -11,11 +11,13 @@
 #define BUTTON_MANAGER_H_
 #include "step_counter_main.h"
 
+extern uint8_t timerSelect;
+extern uint8_t placeSelect;
 
 // Init this library
 void btnInit(void);
 
 // Run at a fixed rate, modifies the device state according to the user's button and switch inputs
-void btnUpdateState(deviceStateInfo_t* deviceStateInfo);
+void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime);
 
 #endif /* BUTTON_MANAGER_H_ */

@@ -30,6 +30,7 @@
 #include "utils/ustdlib.h"
 #include "acc.h"
 #include "math.h"
+#include "timer_s.h"
 #include "pot_measure.h"
 #include "temp_measure.h"
 #include "accelerometer.h"
@@ -55,6 +56,7 @@
 #define RATE_DISPLAY_UPDATE_HZ 5
 #define FLASH_MESSAGE_TIME 3/2 // seconds
 
+
 #ifdef SERIAL_PLOTTING_ENABLED
 #define RATE_SERIAL_PLOT_HZ 100
 #endif // SERIAL_PLOTTING_ENABLED
@@ -67,6 +69,8 @@
 #define TARGET_DISTANCE_DEFAULT 1000
 
 #define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
+
+
 
 /*******************************************
  *      Local prototypes
@@ -81,7 +85,7 @@ void initAccl (void);
  *******************************************/   
 
 deviceStateInfo_t deviceState; // Stored as one global so it can be accessed by other helper libs within this main module
-
+timer_s *timerArray[NUM_TIMERS]; 
 /***********************************************************
  * Initialisation functions
  ***********************************************************/
@@ -140,6 +144,7 @@ void superloop(void* args)
 
     uint8_t stepHigh = false;
 
+
     // Device state
     // Omnibus struct that holds loads of info about the device's current state, so it can be updated from any function
     deviceState.displayMode = DISPLAY_STEPS;
@@ -156,9 +161,17 @@ void superloop(void* args)
     initClock();
     displayInit();
     btnInit();
+
     initAccelBuffer(); // init buffer and accel chip
     initPotADC();
     initTempADC();
+
+    // Initialise Timers
+    uint8_t initTimerIndex;
+    for (initTimerIndex = 0;initTimerIndex < NUM_TIMERS;initTimerIndex++) {
+        timerArray[initTimerIndex] = createTimer(initTimerIndex + 1);
+    }
+ 
 
     #ifdef SERIAL_PLOTTING_ENABLED
     SerialInit ();
@@ -173,8 +186,8 @@ void superloop(void* args)
         if (lastIoProcess + RATE_SYSTICK_HZ/RATE_IO_HZ < currentTick) {
             lastIoProcess = currentTick;
 
-//           updateSwitch();
-            btnUpdateState(&deviceState);
+//            updateSwitch();
+            btnUpdateState(&deviceState, currentTick/TICK_MODIFIER);
             pollPot();
 
             deviceState.newGoal = getPotVal() * POT_SCALE_COEFF; // Set the new goal value, scaling to give the desired range
@@ -226,8 +239,7 @@ void superloop(void* args)
                 deviceState.flashTicksLeft--;
             }
 
-            uint16_t secondsElapsed = (currentTick - deviceState.workoutStartTick)/RATE_SYSTICK_HZ;
-            displayUpdate(deviceState, secondsElapsed);
+            displayUpdate(&deviceState, currentTick/TICK_MODIFIER);
         }
 
         // Send to USB via serial
@@ -265,6 +277,7 @@ void superloop(void* args)
     }
 
 }
+
 
 
 //  * Main Loop

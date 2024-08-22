@@ -10,6 +10,9 @@
 // Note that pin PF0 (the pin for the RIGHT pushbutton - SW2 on
 //  the Tiva board) needs special treatment - See PhilsNotesOnTiva.rtf.
 //
+// NOTICE: isDown returns true for UP/DOWN being pressed
+//         but false for LEFT/RIGHT. Add ! for LEFT/RIGHT
+//         as they are active low.
 // P.J. Bones UCECE
 // Last modified:  7.2.2018
 // 
@@ -142,3 +145,4 @@ checkButton (uint8_t butName)
 bool isDown(uint8_t butName) {
     return but_state[butName];
 }
+
