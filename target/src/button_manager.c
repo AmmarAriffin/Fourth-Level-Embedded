@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "driverlib/debug.h"
 #include "buttons4.h"
 #include "display_manager.h"
 #include "button_manager.h"
@@ -139,12 +140,11 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
             if (isDown(DOWN)) { 
                 checkButton(DOWN);
                 longPressCountDown++;
-                if (longPressCountDown >= LONG_PRESS_CYCLES) {
+                if (longPressCountDown >= LONG_PRESS_CYCLES && !changedState) {
                     deviceState->stepsTaken = 0;
                     flashMessage("Reset!");
-                    changedState = true;
                 } 
-            } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
+            } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES && !changedState) {
                 if (deviceState->displaySteps == STEPS_TOTAL) {
                     deviceState->displaySteps = STEPS_PERCENTILE;
                 } else {
@@ -152,6 +152,7 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
                 }
                 longPressCountDown = 0;
             } else if (checkButton(DOWN) == NO_CHANGE ) {
+                changedState = false;
                 longPressCountDown = 0;   
             }
             break;
@@ -193,6 +194,7 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
                 usnprintf(toDraw, DISPLAY_WIDTH + 1, "GOAL SET: %d", deviceState->newGoal);
                 flashMessage(toDraw);
                 deviceState->displayMode = DISPLAY_STEPS;
+                changedState = true;
             }
             break;
         //*****************************************************************
@@ -282,7 +284,6 @@ void btnUpdateState(deviceStateInfo_t* deviceState, uint32_t currentTime)
 //                 longPressCountDown++;
 //                 if (longPressCountDown >= LONG_PRESS_CYCLES) {
 //                     // DO SOMETHING ON LONG PRESS
-//                     changedState = true;
 //                 } 
 //             } else if (checkButton(DOWN) == RELEASED && longPressCountDown < LONG_PRESS_CYCLES) {
 //                 // DO SOMETHING ON SHORT PRESS
