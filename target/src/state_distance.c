@@ -7,7 +7,7 @@
 #include "unitConverter.h"
 
 #include "state_setGoal.h"
-#include "state_temperature.h"
+#include "state_stopwatch.h"
 
 
 
@@ -58,9 +58,9 @@ static void goToSetGoal(FitnessTrackerPtr context)
     changeState(context, transitionToSetGoal());
 }
 
-static void goToTemperature(FitnessTrackerPtr context)
+static void goToStopwatch(FitnessTrackerPtr context)
 {
-    changeState(context, transitionToTemperature());
+    changeState(context, transitionToStopwatch());
 }
 
 /* Function for coming into this module */
@@ -80,7 +80,7 @@ StatePtr transitionToDistance(void)
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
         startedState.botButLongPress = resetSteps;
-        startedState.leftButPressed = goToTemperature;
+        startedState.leftButPressed = goToStopwatch;
 
         initialised = 1;
     }
