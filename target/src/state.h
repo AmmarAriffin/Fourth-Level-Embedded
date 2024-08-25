@@ -26,6 +26,7 @@ struct State {
     ActionFunction leftSWPressed;
     ActionFunction updateDisplay;
     ActionFunction botButLongPress;
+    ActionFunction topButLongPress;
 };
 
 void initDefaultImplementation(StatePtr state);

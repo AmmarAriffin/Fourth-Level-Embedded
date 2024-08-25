@@ -41,6 +41,11 @@ static void defaultbotButLongPress(FitnessTrackerPtr instance)
 {
 }
 
+static void defaulttopButLongPress(FitnessTrackerPtr instance)
+{
+
+}
+
 void initDefaultImplementation(StatePtr state)
 {
     state->leftButPressed = defaultLeftButPressed;
@@ -50,6 +55,7 @@ void initDefaultImplementation(StatePtr state)
     state->leftSWPressed = defaultLeftSWPressed;
     state->updateDisplay = defaultupdateDisplay;
     state->botButLongPress = defaultbotButLongPress;
+    state->topButLongPress = defaulttopButLongPress;
 }
 
 

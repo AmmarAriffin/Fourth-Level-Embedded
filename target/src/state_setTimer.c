@@ -10,10 +10,22 @@
 
 static void updateDisplay(FitnessTrackerPtr context)
 {
+    
 }
 
-/* State Transitions */
+static void selectTimeFormat(FitnessTrackerPtr context)
+{
+    // Select the place time to change which is 
+    // hours, minutes and seconds
+}
 
+static void selectTimerToChange(FitnessTrackerPtr context)
+{
+    //
+}
+
+
+/* State Transitions */
 
 static void goBackToTimer(FitnessTrackerPtr context)
 {
@@ -32,6 +44,10 @@ StatePtr transitionToSetTimer(void)
         initDefaultImplementation(&startedState);
         /* Init all the functions for state */
         startedState.updateDisplay = updateDisplay;
+        startedState.topButPressed = selectTimeFormat;
+        startedState.botButLongPress = goBackToTimer;
+        startedState.botButPressed = selectTimerToChange;
+
 
         initialised = 1;
     }
