@@ -30,6 +30,7 @@
 #include "utils/ustdlib.h"
 #include "acc.h"
 #include "math.h"
+<<<<<<< Updated upstream
 #include "timer_s.h"
 #include "pot_measure.h"
 #include "temp_measure.h"
@@ -326,8 +327,11 @@ int main(void)
 #include "utils/ustdlib.h"
 #include "acc.h"
 #include "math.h"
+=======
+>>>>>>> Stashed changes
 #include "stepCounter.h"
 #include "accelerometer.h"
+#include "core.h"
 
 
 
@@ -352,6 +356,7 @@ int main(void)
 #define RATE_ACCL_HZ 200
 #define RATE_DISPLAY_UPDATE_HZ 5
 #define FLASH_MESSAGE_TIME 3/2 // seconds
+
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #define RATE_SERIAL_PLOT_HZ 100
@@ -388,17 +393,9 @@ void initClock (void)
                    SYSCTL_XTAL_16MHZ);
 }
 
-
 /***********************************************************
  * Helper functions
  ***********************************************************/
-// Read the current systick value, without mangling the data
-unsigned long readCurrentTick(void)
-{
-    return xTaskGetTickCount();
-}
-
-
 
 // Flash a message onto the screen, overriding everything else
 void flashMessage(char* toShow)
@@ -414,6 +411,7 @@ void flashMessage(char* toShow)
 
     deviceState.flashMessage[i] = '\0';
 }
+
 
 // error trapping function that FreeRTOS
 void vAssertCalled( const char * pcFile, unsigned long ulLine ) {
@@ -443,9 +441,7 @@ void superloop(void* args)
     deviceState.debugMode = false;
     deviceState.displayUnits= UNITS_SI;
     deviceState.workoutStartTick = 0;
-    deviceState.flashTicksLeft = 0;
     deviceState.currentTemp = 0;
-    deviceState.flashMessage = calloc(MAX_STR_LEN + 1, sizeof(char));
 
     // Init libs
     initClock();
@@ -491,7 +487,7 @@ void superloop(void* args)
                 incrementStep();
 
                 // flash a message if the user has reached their goal
-                if (getStepsCount() == deviceState.currentGoal && deviceState.flashTicksLeft == 0) {
+                if (getStepsCount() == deviceState.currentGoal) {
                     flashMessage("Goal reached!");
                 }
 
@@ -508,10 +504,6 @@ void superloop(void* args)
         // Write to the display
         if (lastDisplayProcess + RATE_SYSTICK_HZ/RATE_DISPLAY_UPDATE_HZ < currentTick) {
             lastDisplayProcess = currentTick;
-
-            if (deviceState.flashTicksLeft > 0) {
-                deviceState.flashTicksLeft--;
-            }
 
             uint16_t secondsElapsed = (currentTick - deviceState.workoutStartTick)/RATE_SYSTICK_HZ;
             fitnessTracker.secondsElapsed = secondsElapsed;

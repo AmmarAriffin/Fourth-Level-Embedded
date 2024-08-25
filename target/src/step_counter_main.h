@@ -10,8 +10,6 @@
 #ifndef STEP_COUNTER_MAIN_H_
 #define STEP_COUNTER_MAIN_H_
 
-#include "timer_s.h"
-
 #define M_PER_STEP 9/10
 #define MAX_STR_LEN 16
 
@@ -22,8 +20,11 @@
 #define SET_DISPLAY_NUM 1 // Number of display states which shouldn't be accessible
                           // through left and right buttons
 
+<<<<<<< Updated upstream
 #define NUM_TIMERS 4
 #define TICK_MODIFIER 10 //Changes ticks to milliseconds
+=======
+>>>>>>> Stashed changes
 
 typedef enum {
     DISPLAY_STEPS = 0,
@@ -56,12 +57,16 @@ typedef struct {
 
     // For displaying temporary messages over the top of everything else
     char *flashMessage;
-    unsigned long flashTicksLeft;
+    unsigned long flashTicksLeft;  
 } deviceStateInfo_t;
 
+<<<<<<< Updated upstream
 
 extern timer_s *timerArray[NUM_TIMERS]; // Declare timers
 unsigned long readCurrentTick(void);
+=======
+>>>>>>> Stashed changes
 void flashMessage(char* toShow);
+
 
 #endif /* STEP_COUNTER_MAIN_H_ */

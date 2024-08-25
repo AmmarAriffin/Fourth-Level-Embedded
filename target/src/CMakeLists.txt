@@ -3,6 +3,7 @@ add_tiva_executable(fitness-tracker
     pot_measure.c
     buttons4.c
     circBufT.c
+    core.c
     i2c_driver.c
     serial_sender.c
     step_counter_main.c
@@ -18,10 +19,11 @@ add_tiva_executable(fitness-tracker
     state_temperature.c
     displayInterface.c
     pot_measure.c
+    Fitness_Tracker.c
     state.c
     stepCounter.c
     unitConverter.c
-    Fitness_Tracker.c
+    
 )
 target_compile_options(fitness-tracker PRIVATE -Wall)
 target_link_libraries(fitness-tracker PRIVATE tivaware OrbitOLED freertos::heap-4 m)

@@ -36,7 +36,7 @@ void displayValue(char* prefix, int32_t intValue, char*suffix, uint8_t row, text
 
 void displayString(char* inStr, uint8_t row, textAlignment_t alignment);
 
-void displayTime(char* prefix, uint16_t time, uint8_t row, textAlignment_t alignment);
+void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
 
 void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
 

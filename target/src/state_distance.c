@@ -37,7 +37,7 @@ static void updateDisplay(FitnessTrackerPtr context)
     }
 
     /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE);
+    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
 }
 
 static void changeUnits(FitnessTrackerPtr context)
