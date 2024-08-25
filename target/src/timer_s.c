@@ -20,10 +20,9 @@
 #define EXT_M 60
 #define EXT_H 24 
 #define TICK_MOD 10 // Changes ticks to milliseconds
-#define NUM_TIMERS 4
 
 static uint8_t timerSelect = 0;
-timer_s *timerArray[NUM_TIMERS]; 
+
 struct timer_s
 {
     uint32_t lastReadTime;
@@ -38,13 +37,6 @@ void initTimers(void)
     for (uint8_t i=0; i < NUM_TIMERS; i++)
     {
         timerArray[i] = createTimer(i++);
-    }
-
-
-       // Initialise Timers
-    uint8_t initTimerIndex;
-    for (initTimerIndex = 0;initTimerIndex < NUM_TIMERS;initTimerIndex++) {
-        timerArray[initTimerIndex] = createTimer(initTimerIndex + 1);
     }
 } 
 
