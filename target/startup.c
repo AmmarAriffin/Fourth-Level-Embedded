@@ -4,7 +4,7 @@
 #define WEAK __attribute__((weak))
 #define UNUSED(x) ((void)(x))
 
-// Fordward declaration of main and C initialization functions.
+// Forward declaration of main and C initialization functions.
 int main(void);
 void __libc_init_array(void);
 

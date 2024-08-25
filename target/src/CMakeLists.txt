@@ -9,7 +9,6 @@ add_tiva_executable(fitness-tracker
     serial_sender.c
     step_counter_main.c
     stopwatch.c
-    switches.c
     timer_s.c
     temp_measure.c
     average.c
