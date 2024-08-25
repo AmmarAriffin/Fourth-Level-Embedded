@@ -5,7 +5,7 @@
 #include "unitConverter.h"
 
 /* Include what it will transition into */
-#include "state_distance.h"
+#include "state_timer.h"
 #include "state_setGoal.h"
 
 
@@ -53,9 +53,9 @@ static void changeUnits(FitnessTrackerPtr context)
 
 /* State Transitions */
 
-static void goToDistance(FitnessTrackerPtr context)
+static void goToTimer(FitnessTrackerPtr context)
 {
-    changeState(context, transitionToDistance());
+    changeState(context, transitionToTimer());
 }
 
 static void goToSetGoal(FitnessTrackerPtr context)
@@ -75,7 +75,7 @@ StatePtr transitionToTemperature(void)
         initDefaultImplementation(&startedState);
         initTempADC();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToDistance;
+        startedState.rightButPressed = goToTimer;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
         startedState.leftButPressed = goToSetGoal;

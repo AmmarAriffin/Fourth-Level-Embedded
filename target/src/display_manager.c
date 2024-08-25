@@ -274,7 +274,7 @@ static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_
     uint32_t hours = time;
 
     if (hours == 0 && milli) {
-        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, minutes, seconds, milliSeconds);
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d", prefix, minutes, seconds);
     } else {
         usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, hours, minutes, seconds);
     }

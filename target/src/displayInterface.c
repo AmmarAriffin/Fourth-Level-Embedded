@@ -88,15 +88,15 @@ void displayString(char* inStr, uint8_t row, textAlignment_t alignment)
     OLEDStringDraw(toDraw, 0, row);
 }
 
-// I wanna get rid of this
-void displayTime(char* prefix, uint16_t time, uint8_t row, textAlignment_t alignment)
+static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
 {
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
+    uint16_t milliSeconds = time % 100;
     uint16_t minutes = (time / TIME_UNIT_SCALE) % TIME_UNIT_SCALE;
     uint16_t seconds = time % TIME_UNIT_SCALE;
     uint16_t hours =   time / (TIME_UNIT_SCALE * TIME_UNIT_SCALE);
 
-    if (hours == 0) {
+    if (hours == 0 && milli) {
         usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d", prefix, minutes, seconds);
     } else {
         usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, hours, minutes, seconds);
@@ -104,7 +104,23 @@ void displayTime(char* prefix, uint16_t time, uint8_t row, textAlignment_t align
     displayString(toDraw, row, alignment);
 }
 
-void clearDisplay()
+// For when you want a number in that prefix too
+static void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
+{
+    char newPrefix[strlen(prefix) + 1];
+    usnprintf(newPrefix, strlen(prefix) + 1, "%s%d", prefix, num);
+    displayTime(newPrefix, time, row, alignment, milli);
+}
+
+
+void clearDisplayRow(uint8_t row)
+{
+    char* emptyLine = "                ";
+    OLEDStringDraw(emptyLine, 0, row);
+}
+
+
+void clearDisplay(void)
 {
     char* emptyLine = "                ";
     OLEDStringDraw(emptyLine, 0, 0);

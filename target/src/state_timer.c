@@ -23,7 +23,7 @@ static void startSelectedTimer(FitnessTrackerPtr context)
     
 }
 
-static void goToNextTimer(FitnessTrackerPtr context)
+static void switchTimer(FitnessTrackerPtr context)
 {
 
 }
@@ -65,7 +65,7 @@ StatePtr transitionToTimer(void)
         startedState.rightButPressed = goToStopwatch;
         startedState.updateDisplay = updateDisplay;
         startedState.leftButPressed = goToTemperature;
-        startedState.botButPressed = goToNextTimer;
+        startedState.botButPressed = switchTimer;
         startedState.botButLongPress = goToSetTimer;
         startedState.topButLongPress = resetSelectedTimer;
         startedState.topButPressed = startSelectedTimer;

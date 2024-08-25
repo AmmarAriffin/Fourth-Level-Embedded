@@ -13,6 +13,7 @@
 #define DISPLAYINTERFACE_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum {
     ALIGN_LEFT = 0,
@@ -36,5 +37,12 @@ void displayValue(char* prefix, int32_t intValue, char*suffix, uint8_t row, text
 void displayString(char* inStr, uint8_t row, textAlignment_t alignment);
 
 void displayTime(char* prefix, uint16_t time, uint8_t row, textAlignment_t alignment);
+
+void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
+
+void clearDisplayRow(uint8_t row);
+
+void clearDisplay(void);
+
 
 #endif /* DISPLAYINTERFACE_H_ */
