@@ -25,7 +25,6 @@ static void defaultTopButPressed(FitnessTrackerPtr instance)
 
 static void defaultBotButPressed(FitnessTrackerPtr instance)
 {
-    
 }
 
 static void defaultLeftSWPressed(FitnessTrackerPtr instance)
@@ -40,7 +39,6 @@ static void defaultupdateDisplay(FitnessTrackerPtr instance)
 
 static void defaultbotButLongPress(FitnessTrackerPtr instance)
 {
-
 }
 
 void initDefaultImplementation(StatePtr state)

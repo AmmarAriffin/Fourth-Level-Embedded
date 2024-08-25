@@ -1,14 +1,14 @@
-#ifndef STATE_TEMPERATURE_H_
-#define STATE_TEMPERATURE_H_
+#ifndef STATE_SETTIMER_H_
+#define STATE_SETTIMER_H_
 
 #include "state.h"
 #include "Fitness_Tracker.h"
 
 
 /* Include what it will transition into */
-#include "state_distance.h"
+#include "state_timer.h"
 
 /* Function when other change to this concrete state */
-StatePtr transitionToTemperature(void);
+StatePtr transitionToSetTimer(void);
 
 #endif

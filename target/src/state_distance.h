@@ -1,3 +1,10 @@
+/* 
+ *   by Ammar Ariffin
+ *
+ * State for showing distance
+ * 
+**/
+
 #ifndef STATE_DISTANCE_H_
 #define STATE_DISTANCE_H_
 

@@ -7,11 +7,10 @@
 // *******************************************************
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "timer_s.h"
 #include "step_counter_main.h"
 #include "utils/ustdlib.h"
-#include "freeRTOS.h"
-#include "task.h"
 
 #define MS_IN_SECOND 100
 #define MS_IN_MINUTE 6000
@@ -22,41 +21,90 @@
 #define EXT_H 24 
 #define TICK_MOD 10 // Changes ticks to milliseconds
 
+static uint8_t timerSelect = 0;
 
-
-void initTimer (timer_s *timerID, uint8_t ID)
+struct timer_s
 {
-    timerID->lastReadTime = 0;
-    timerID->timeRemaining = 0;
-    timerID->timeTotal = 0;
-    timerID->id = ID;
-    timerID->isRunning = false;
+    uint32_t lastReadTime;
+    uint32_t timeRemaining;
+    uint32_t timeTotal;
+    uint8_t id;
+    bool isRunning;
+};
+
+void initTimers(void)
+{
+    for (uint8_t i=0; i < NUM_TIMERS; i++)
+    {
+        timerArray[i] = createTimer(i++);
+    }
+} 
+
+timer_s * createTimer (uint8_t ID)
+{
+    timer_s *instance = malloc(sizeof(timer_s));
+    if (instance) {
+        instance->lastReadTime = 0;
+        instance->timeRemaining = 0;
+        instance->timeTotal = 0;
+        instance->id = ID;
+        instance->isRunning = false;
+    }
+    return instance;
 }
 
-void toggleTimer(timer_s *timerID) 
-{
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
 
-    if (timerID->isRunning) {
-        timerID->isRunning = false;
-    } else {
-        timerID->isRunning = true;
-        timerID->lastReadTime = currentTime;
+void destroyTimer(timer_s **instance)
+{
+    if (instance) {
+        free(*instance);
+        *instance = NULL;
     }
 }
 
 
-void resetTimer(timer_s *timerID) 
+void toggleTimer(void) 
+{
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
+
+    if (timerArray[timerSelect]->isRunning) {
+        timerArray[timerSelect]->isRunning = false;
+    } else {
+        timerArray[timerSelect]->isRunning = true;
+        timerArray[timerSelect]->lastReadTime = currentTime;
+    }
+}
+
+
+void resetTimer(void) 
 {
     // timerID->timeTotal = 1000; //Debug functionality to easily add time to a timer
-    timerID->timeRemaining = timerID->timeTotal;
-    timerID->isRunning = false;
+    timerArray[timerSelect]->timeRemaining = timerArray[timerSelect]->timeTotal;
+    timerArray[timerSelect]->isRunning = false;
+}
+
+
+void updateTimer() 
+{
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
+    static char msg[17];
+    if (timerID->isRunning) {
+        if ((currentTime - timerID->lastReadTime) >= timerID->timeRemaining) {
+            timerID->isRunning = false;
+            timerID->timeRemaining = 0;
+            usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
+            flashMessage(msg);
+        } else {
+            timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
+            timerID->lastReadTime = currentTime;
+        }
+    }
 }
 
 
 uint32_t readTimer(timer_s *timerID) 
 {
-    uint32_t currentTime = xTaskGetTickCount()/TICK_MOD;
+    uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     static char msg[17];
     if (timerID->isRunning) {
@@ -64,7 +112,7 @@ uint32_t readTimer(timer_s *timerID)
             timerID->isRunning = false;
             timerID->timeRemaining = 0;
             usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
-            flashMessage(msg); //THIS CURRENTLY ONLY WORKS IF ON THE TIMER DISPLAY SCREEN
+            flashMessage(msg);
             return timerID->timeRemaining;
         } else {
             timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
@@ -117,6 +165,7 @@ void incrementTime (timer_s *timerID, uint8_t place)
     timerID->isRunning = false;
 }
 
+
 void decrementTime (timer_s *timerID, uint8_t place)
 {
     static uint32_t seconds;
@@ -145,6 +194,7 @@ void decrementTime (timer_s *timerID, uint8_t place)
     timerID->timeRemaining = timerID->timeTotal;
     timerID->isRunning = false;
 }
+
 
 void setTime (timer_s *timerID, uint32_t time) 
 {

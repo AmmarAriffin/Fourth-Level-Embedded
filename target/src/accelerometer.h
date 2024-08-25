@@ -1,3 +1,11 @@
+/* 
+ *   by Ammar Ariffin
+ *
+ * Module for getting data from
+ * the accelerometer
+ * 
+**/
+
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 

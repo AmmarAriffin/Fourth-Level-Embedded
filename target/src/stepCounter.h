@@ -1,3 +1,11 @@
+/* 
+ *   by Ammar Ariffin
+ *
+ * Module for counting step and any step counting related functions
+ * 
+**/
+
+
 #ifndef STEPCOUNTER_H_
 #define STEPCOUNTER_H_
 

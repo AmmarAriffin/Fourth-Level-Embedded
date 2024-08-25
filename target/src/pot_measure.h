@@ -1,3 +1,10 @@
+/* 
+ *   by Ammar Ariffin
+ *
+ * Potentiometer Functionality
+**/
+
+
 #ifndef ADC_READ_H_
 #define ADC_READ_H_
 
