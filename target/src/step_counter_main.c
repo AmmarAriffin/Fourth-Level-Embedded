@@ -287,6 +287,15 @@ void superloop(void* args)
 int main(void)
 {
     // Fitness Monitor 1.0 Initiialisation
+    
+    // Init libs
+    initClock();
+    displayInit();
+    btnInit();
+    acclInit();
+    initADC();
+    initTempADC();
+
 
     xTaskCreate(&superloop, "superloop", 512, NULL, 1, NULL);
     vTaskStartScheduler();
