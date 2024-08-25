@@ -22,7 +22,6 @@
 #define SET_DISPLAY_NUM 1 // Number of display states which shouldn't be accessible
                           // through left and right buttons
 
-#define NUM_TIMERS 4
 #define TICK_MODIFIER 10 //Changes ticks to milliseconds
 
 typedef enum {
@@ -60,8 +59,6 @@ typedef struct {
 } deviceStateInfo_t;
 
 
-extern timer_s *timerArray[NUM_TIMERS]; // Declare timers
-unsigned long readCurrentTick(void);
 void flashMessage(char* toShow);
 
 #endif /* STEP_COUNTER_MAIN_H_ */

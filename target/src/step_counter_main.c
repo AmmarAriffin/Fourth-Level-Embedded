@@ -34,6 +34,7 @@
 #include "pot_measure.h"
 #include "temp_measure.h"
 #include "accelerometer.h"
+#include "time.h"
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #include "serial_sender.h"
@@ -85,7 +86,7 @@ void initAccl (void);
  *******************************************/   
 
 deviceStateInfo_t deviceState; // Stored as one global so it can be accessed by other helper libs within this main module
-timer_s *timerArray[NUM_TIMERS]; 
+
 /***********************************************************
  * Initialisation functions
  ***********************************************************/
@@ -100,13 +101,6 @@ void initClock (void)
 /***********************************************************
  * Helper functions
  ***********************************************************/
-// Read the current systick value, without mangling the data
-unsigned long readCurrentTick(void)
-{
-    return xTaskGetTickCount();
-}
-
-
 
 // Flash a message onto the screen, overriding everything else
 void flashMessage(char* toShow)
@@ -166,11 +160,7 @@ void superloop(void* args)
     initPotADC();
     initTempADC();
 
-    // Initialise Timers
-    uint8_t initTimerIndex;
-    for (initTimerIndex = 0;initTimerIndex < NUM_TIMERS;initTimerIndex++) {
-        timerArray[initTimerIndex] = createTimer(initTimerIndex + 1);
-    }
+ 
  
 
     #ifdef SERIAL_PLOTTING_ENABLED
