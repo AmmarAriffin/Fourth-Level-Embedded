@@ -23,16 +23,16 @@ static void updateDisplay(FitnessTrackerPtr context)
     switch (getUnit()) 
     {
         case UNIT_STEPS:
-            displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE, false);
+            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE, true);
             break;
         case UNIT_METRIC:
-            displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToKPH(getStepsCount(), context->timeElapsed), "kph", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE, true);
+            displayValue("Speed:", changeToKPH(getStepsCount(), context->timeElapsed), "kph", THIRD_ROW, ALIGN_CENTRE, true);
             break;
         case UNIT_IMPERIAL:
-            displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToMPH(getStepsCount(), context->timeElapsed), "mph", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE, true);
+            displayValue("Speed:", changeToMPH(getStepsCount(), context->timeElapsed), "mph", THIRD_ROW, ALIGN_CENTRE, true);
             break;
         default: 
             break;

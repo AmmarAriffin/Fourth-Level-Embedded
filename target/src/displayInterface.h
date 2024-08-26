@@ -32,7 +32,7 @@ typedef enum {
 
 void displayInit(void); // Initalize the display
 
-void displayValue(char* prefix, int32_t intValue, char*suffix, uint8_t row, textAlignment_t alignment);
+void displayValue(char* prefix, int32_t intValue, char*suffix, uint8_t row, textAlignment_t alignment, bool thousandsFormatting);
 
 void displayString(char* inStr, uint8_t row, textAlignment_t alignment);
 

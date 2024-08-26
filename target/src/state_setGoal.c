@@ -26,14 +26,14 @@ static void updateDisplay(FitnessTrackerPtr context)
     displayString("Set Step Goal:", FIRST_ROW, ALIGN_CENTRE);
 
     /* Second Line*/
-    displayValue("Goal:", getCurrentGoal(), "steps", SECOND_ROW, ALIGN_CENTRE);
+    displayValue("Goal:", getCurrentGoal(), "steps", SECOND_ROW, ALIGN_CENTRE, false);
 
     /* Third Line */
     if (newGoal == 0) {
         newGoal = 100;
-        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
+        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE, false);
     } else {
-        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
+        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE, false);
     }
     
     /* Fourth Line */

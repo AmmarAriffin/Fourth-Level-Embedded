@@ -19,7 +19,6 @@
         "cstdint": "c",
         "compare": "c",
         "xtr1common": "c",
-        "compare": "c",
         "atomic": "c",
         "bit": "c",
         "*.tcc": "c",
@@ -40,7 +39,8 @@
         "xmemory": "c",
         "xstring": "c",
         "xutility": "c",
-        "*.readme": "c"
+        "*.readme": "c",
+        "ratio": "c"
     },
     "C_Cpp.codeAnalysis.clangTidy.headerFilter": ""
 }

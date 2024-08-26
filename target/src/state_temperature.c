@@ -31,10 +31,10 @@ static void updateDisplay(FitnessTrackerPtr context)
         switch (getUnit())
         {
             case UNIT_IMPERIAL:
-                displayValue("", changeToFahrenheit(currTemp), "F", THIRD_ROW, ALIGN_CENTRE);
+                displayValue("", changeToFahrenheit(currTemp), "F", THIRD_ROW, ALIGN_CENTRE, false);
                 break;
             default:
-                displayValue("", currTemp, "C", THIRD_ROW, ALIGN_CENTRE);
+                displayValue("", currTemp, "C", THIRD_ROW, ALIGN_CENTRE, false);
                 break;
         }
     } else {

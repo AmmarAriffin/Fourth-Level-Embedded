@@ -14,9 +14,10 @@ static void updateDisplay(FitnessTrackerPtr context)
 {
     displayTime("SW", readStopwatch(), 0, ALIGN_CENTRE, true);
     // Scrolls through existing lap times
+    
     for (uint8_t i=0;i<3;i++) {
         if (getLapIndex() - i + 1 > 0) {
-        displayNumTime("Lap ", getLapIndex() - i + 1, readLap(-i), i + 1, ALIGN_CENTRE, true);
+            displayNumTime("Lap ", getLapIndex() - i + 1, readLap(-i), i + 1, ALIGN_CENTRE, true);
         } else {
             clearDisplayRow(i+1);
         }
