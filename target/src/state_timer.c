@@ -8,29 +8,35 @@
 #include "state_stopwatch.h"
 #include "state_temperature.h"
 
-static bool isSetTimer = 0;
+// static bool isSetTimer = 0;
 
 /* Functions for State */
 
 static void updateDisplay(FitnessTrackerPtr context)
 {
-
+    for (uint8_t i=0;i<4;i++) {
+        if (i == getSelectedTimer()) {
+            displayNumTime("-> T ", getTimerID(i), readTimer(i), i, ALIGN_CENTRE, true);
+        } else {
+            displayNumTime("   T ", getTimerID(i), readTimer(i), i, ALIGN_CENTRE, true);
+        }
+    }
 }
 
 
 static void startSelectedTimer(FitnessTrackerPtr context)
 {
-    
+    toggleTimer();
 }
 
 static void switchTimer(FitnessTrackerPtr context)
 {
-
+    timerCycle();
 }
 
 static void resetSelectedTimer(FitnessTrackerPtr context)
 {
-
+    resetTimer();
 }
 
 
@@ -62,9 +68,9 @@ StatePtr transitionToTimer(void)
     {
         initDefaultImplementation(&startedState);
         /* Init all the functions for state */
-        startedState.rightButPressed = goToStopwatch;
+        startedState.rightButPressed = goToTemperature;
         startedState.updateDisplay = updateDisplay;
-        startedState.leftButPressed = goToTemperature;
+        startedState.leftButPressed = goToStopwatch;
         startedState.botButPressed = switchTimer;
         startedState.botButLongPress = goToSetTimer;
         startedState.topButLongPress = resetSelectedTimer;

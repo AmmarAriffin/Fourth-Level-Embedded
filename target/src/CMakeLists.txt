@@ -17,10 +17,12 @@ add_tiva_executable(fitness-tracker
     state_distance.c
     state_setGoal.c
     state_temperature.c
-    displayInterface.c
-    pot_measure.c
-    Fitness_Tracker.c
+    state_timer.c
+    state_stopwatch.c
+    state_setTimer.c
     state.c
+    displayInterface.c
+    Fitness_Tracker.c
     stepCounter.c
     unitConverter.c
     

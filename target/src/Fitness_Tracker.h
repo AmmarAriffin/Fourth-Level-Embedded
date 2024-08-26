@@ -12,7 +12,7 @@ typedef struct FitnessTracker* FitnessTrackerPtr;
 struct FitnessTracker
 {
     StatePtr state;
-    uint16_t secondsElapsed;
+    uint16_t timeElapsed;
 };
 
 void changeState(FitnessTrackerPtr instance, StatePtr newState);
@@ -30,13 +30,10 @@ void rightButPressed(FitnessTrackerPtr instance);
 
 void leftButPressed(FitnessTrackerPtr instance);
 
-void topButPressed(FitnessTrackerPtr instance);
+void topButHandler(FitnessTrackerPtr instance);
 
-void botButPressed(FitnessTrackerPtr instance);
+void botButHandler(FitnessTrackerPtr instance);
 
 void leftSwitchON(FitnessTrackerPtr instance);
-
-void botButLongPress(FitnessTrackerPtr instance);
-
 
 #endif /* Fitness_Tracker_H */

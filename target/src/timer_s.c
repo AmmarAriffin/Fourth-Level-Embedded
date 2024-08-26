@@ -20,16 +20,13 @@
 #define EXT_S 60
 #define EXT_M 60
 #define EXT_H 24 
-#define TICK_MOD 10 // Changes ticks to milliseconds
+#define NUM_TIMERS 4
 
 /* Local declarations */
-timer_s * createTimer (uint8_t ID);
+static timer_s * createTimer (uint8_t ID);
 
 static uint8_t timerSelect = 0;
-<<<<<<< Updated upstream
-=======
 static uint8_t placeSelect = 0;
->>>>>>> Stashed changes
 
 struct timer_s
 {
@@ -40,7 +37,7 @@ struct timer_s
     bool isRunning;
 };
 
-timer_s *timerArray[NUM_TIMERS];
+static timer_s *timerArray[NUM_TIMERS];
 
 
 
@@ -48,11 +45,7 @@ void initTimers(void)
 {
     for (uint8_t i=0; i < NUM_TIMERS; i++)
     {
-<<<<<<< Updated upstream
-        timerArray[i] = createTimer(i++);
-=======
         timerArray[i] = createTimer(i + 1);
->>>>>>> Stashed changes
     }
 } 
 
@@ -119,11 +112,9 @@ uint32_t readTimer(uint8_t timerIndex)
     } else {
         if (timerArray[timerIndex]->timeRemaining == timerArray[timerIndex]->timeTotal) {
             return timerArray[timerIndex]->timeTotal;
-        } else {
-            return timerArray[timerIndex]->timeRemaining;
         }
-        
     }
+    return timerArray[timerIndex]->timeRemaining;
 }
 
 
@@ -211,12 +202,23 @@ void placeCycle(void)
 }
 
 
+uint8_t getSelectedTimer(void)
+{
+    return timerSelect;
+}
+
+
+uint8_t getSelectedPlace(void)
+{
+    return placeSelect;
+}
+
 /* Local functions */
 
 // *******************************************************
 // createTimer: Creates and initialises a timer's members
 // e.g timer_s *myTimer = createTimer(1);
-timer_s * createTimer (uint8_t ID)
+static timer_s * createTimer (uint8_t ID)
 {
     timer_s *instance = malloc(sizeof(timer_s));
     if (instance) {

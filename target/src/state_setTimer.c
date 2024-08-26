@@ -1,5 +1,6 @@
 #include "state_timer.h"
 #include "displayInterface.h"
+#include "timer_s.h"
 
 #include <stdbool.h>
 
@@ -10,18 +11,32 @@
 
 static void updateDisplay(FitnessTrackerPtr context)
 {
-    
+    displayString("", 0, ALIGN_CENTRE);
+    displayNumTime("-> T ", getTimerID(getSelectedTimer()), readTimer(getSelectedTimer()), 1, ALIGN_CENTRE, false);
+    displayCursor(getSelectedPlace(), 2, ALIGN_CENTRE);
+    displayString("", 3, ALIGN_CENTRE);
 }
 
 static void selectTimeFormat(FitnessTrackerPtr context)
 {
     // Select the place time to change which is 
     // hours, minutes and seconds
+    placeCycle();
 }
 
 static void selectTimerToChange(FitnessTrackerPtr context)
 {
-    //
+    timerCycle();
+}
+
+static void incrementTime_state(FitnessTrackerPtr context)
+{
+    incrementTime();
+}
+
+static void decrementTime_state(FitnessTrackerPtr context)
+{
+    decrementTime();
 }
 
 
@@ -47,6 +62,9 @@ StatePtr transitionToSetTimer(void)
         startedState.topButPressed = selectTimeFormat;
         startedState.botButLongPress = goBackToTimer;
         startedState.botButPressed = selectTimerToChange;
+        startedState.leftButPressed = incrementTime_state;
+        startedState.rightButPressed = decrementTime_state;
+        
 
 
         initialised = 1;

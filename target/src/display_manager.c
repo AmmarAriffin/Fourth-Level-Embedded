@@ -77,7 +77,7 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
         return;
     }
     // actually milliseconds now change name to reflect this
-    uint16_t secondsElapsed = currentTime - deviceState->workoutStartTick/TICK_MODIFIER;
+    uint16_t secondsElapsed = currentTime - deviceState->workoutStartTick/TICK_MOD;
     uint32_t mTravelled = 0; // TODO: If I put this inside the case statement it won't compile. Work out why!
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
     uint8_t i;

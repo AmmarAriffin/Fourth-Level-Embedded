@@ -40,6 +40,8 @@ void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t align
 
 void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli);
 
+void displayCursor(uint8_t place, uint8_t row, textAlignment_t alignment);
+
 void clearDisplayRow(uint8_t row);
 
 void clearDisplay(void);

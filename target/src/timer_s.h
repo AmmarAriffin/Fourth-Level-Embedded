@@ -54,5 +54,11 @@ void timerCycle(void);
 // *******************************************************
 // placeChange: Cycles place value
 void placeCycle(void);
+// *******************************************************
+// getSelectedTimer: Returns timerSelect variable
+uint8_t getSelectedTimer(void);
+// *******************************************************
+// getSelectedPlace: Returns placeSelect variable
+uint8_t getSelectedPlace(void);
 
 #endif /*TIMER_S_H_*/

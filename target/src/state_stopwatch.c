@@ -23,7 +23,7 @@ static void updateDisplay(FitnessTrackerPtr context)
     }
 }
 
-static void resetCurrStopwatch(FitnessTrackerPtr context)
+static void resetStopwatch_state(FitnessTrackerPtr context)
 {
     resetStopwatch();
 }
@@ -62,11 +62,11 @@ StatePtr transitionToStopwatch(void)
         initDefaultImplementation(&startedState);
         /* Init all the functions for state */
         startedState.updateDisplay = updateDisplay;
-        startedState.leftButPressed = goToTimer;
-        startedState.rightButPressed = goToDistance;
-        startedState.topButLongPress = resetCurrStopwatch;
+        startedState.leftButPressed = goToDistance;
+        startedState.rightButPressed = goToTimer;
+        startedState.topButLongPress = resetStopwatch_state;
         startedState.topButPressed = toggleStopwatch_state;
-        startedState.botButPressed = storeLap;
+        startedState.botButPressed = storeLap_state;
 
         initialised = 1;
     }

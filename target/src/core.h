@@ -9,6 +9,7 @@
 // 
 // *******************************************************
 
+#define TICK_MOD 10 // Changes ticks to milliseconds
 // *******************************************************
 // readCurrentTick: Read the current systick value, without mangling the data
 unsigned long readCurrentTick(void);

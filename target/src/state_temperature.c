@@ -26,7 +26,7 @@ static void updateDisplay(FitnessTrackerPtr context)
 
     /* Third Line*/
     // If workout starts 
-    if (context->secondsElapsed != 0)
+    if (context->timeElapsed != 0)
     {
         switch (getUnit())
         {
@@ -42,7 +42,7 @@ static void updateDisplay(FitnessTrackerPtr context)
     }
 
     /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
+    displayTime("Time:", context->timeElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
     
 }
 
@@ -55,7 +55,7 @@ static void changeUnits(FitnessTrackerPtr context)
 
 static void goToTimer(FitnessTrackerPtr context)
 {
-    // changeState(context, transitionToTimer());
+    changeState(context, transitionToTimer());
 }
 
 static void goToSetGoal(FitnessTrackerPtr context)
@@ -75,10 +75,10 @@ StatePtr transitionToTemperature(void)
         initDefaultImplementation(&startedState);
         initTempADC();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToTimer;
+        startedState.rightButPressed = goToSetGoal;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
-        startedState.leftButPressed = goToSetGoal;
+        startedState.leftButPressed = goToTimer;
 
         initialised = 1;
     }

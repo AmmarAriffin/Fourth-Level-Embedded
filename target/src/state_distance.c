@@ -7,7 +7,7 @@
 #include "unitConverter.h"
 
 #include "state_setGoal.h"
-#include "state_temperature.h"
+#include "state_stopwatch.h"
 
 
 
@@ -28,16 +28,18 @@ static void updateDisplay(FitnessTrackerPtr context)
             break;
         case UNIT_METRIC:
             displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToKPH(getStepsCount(), context->secondsElapsed), "kph", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("Speed:", changeToKPH(getStepsCount(), context->timeElapsed), "kph", THIRD_ROW, ALIGN_CENTRE);
             break;
         case UNIT_IMPERIAL:
             displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToMPH(getStepsCount(), context->secondsElapsed), "mph", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("Speed:", changeToMPH(getStepsCount(), context->timeElapsed), "mph", THIRD_ROW, ALIGN_CENTRE);
+            break;
+        default: 
             break;
     }
 
     /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
+    displayTime("Time:", context->timeElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
 }
 
 static void changeUnits(FitnessTrackerPtr context)
@@ -51,16 +53,16 @@ void resetSteps(FitnessTrackerPtr context)
     resetStepCount();    
 }
 
-/* State Transition */
+/* State Transitions */
 
 static void goToSetGoal(FitnessTrackerPtr context)
 {
     changeState(context, transitionToSetGoal());
 }
 
-static void goToTemperature(FitnessTrackerPtr context)
+static void goToStopwatch(FitnessTrackerPtr context)
 {
-    changeState(context, transitionToTemperature());
+    changeState(context, transitionToStopwatch());
 }
 
 /* Function for coming into this module */
@@ -76,11 +78,11 @@ StatePtr transitionToDistance(void)
 
         displayInit();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToSetGoal;
+        startedState.rightButPressed = goToStopwatch;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
         startedState.botButLongPress = resetSteps;
-        startedState.leftButPressed = goToTemperature;
+        startedState.leftButPressed = goToSetGoal;
 
         initialised = 1;
     }

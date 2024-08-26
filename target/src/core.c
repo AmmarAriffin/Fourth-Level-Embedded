@@ -23,9 +23,12 @@
 // static char flashText[MAX_STR_LEN + 1];
 // static unsigned long flashTicksLeft;
 
+static unsigned long currentTick = 0;
+
 unsigned long readCurrentTick(void)
 {
-    return xTaskGetTickCount();
+    currentTick = xTaskGetTickCount();
+    return currentTick;
 }
 
 // // TODO: make interrupt driven
