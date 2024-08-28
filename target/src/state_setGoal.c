@@ -11,7 +11,7 @@
 
 
 #define STEP_GOAL_ROUNDING 100
-#define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
+#define POT_SCALE_COEFF 20000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
 
 static uint32_t newGoal = 0;
 

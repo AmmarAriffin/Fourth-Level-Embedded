@@ -48,7 +48,6 @@ static void changeUnits(FitnessTrackerPtr context)
         incrementStep45();
     } else {
         incrementUnitType();
-        isDebugging = false;
     }
 }
 
@@ -56,14 +55,15 @@ static void decrementSteps(FitnessTrackerPtr context)
 {
     if (isDebugging){
         decrementStep45();
-    } else {
-        isDebugging = false;
     }
 }
 
 static void resetSteps(FitnessTrackerPtr context)
 {
-    resetStepCount();    
+    if (!isDebugging) {
+        resetStepCount();
+    }
+        
 }
 
 static void debugModeOn(FitnessTrackerPtr context)
