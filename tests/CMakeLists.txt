@@ -32,7 +32,9 @@ target_include_directories(test_temp_measure PRIVATE ${SRC_DIR})
 target_include_directories(test_temp_measure PRIVATE ${MOCK_DIR})
 target_include_directories(test_temp_measure PRIVATE ${TIVAWARE_DIR})
 
-#remove static from the definition of stopWatch in stopwatch.c for stopwatch tests to work
+# remove static from the definition of: 
+# "static stopWatch_s stopWatch = {.lapNum = 0, .lapReadIndex = -1, .isRunning = false};" 
+# in stopwatch.c for stopwatch tests to work
 add_unity_test(test_stopwatch test_stopwatch.c ${SRC_DIR}/stopwatch.c)
 target_include_directories(test_stopwatch PRIVATE ${SRC_DIR})
 target_include_directories(test_stopwatch PRIVATE ${MOCK_DIR})
@@ -43,5 +45,14 @@ target_include_directories(test_unitConverter PRIVATE ${SRC_DIR})
 
 add_unity_test(test_stepCounter test_stepCounter.c ${SRC_DIR}/stepCounter.c)
 target_include_directories(test_stepCounter PRIVATE ${SRC_DIR})
+
+# remove static from the definition of:
+# "static timer_s *timerArray[NUM_TIMERS];"
+# in timer_s.c for timer_s tests to work
+add_unity_test(test_timer_s test_timer_s.c ${SRC_DIR}/timer_s.c)
+target_include_directories(test_timer_s PRIVATE ${SRC_DIR})
+target_include_directories(test_timer_s PRIVATE ${MOCK_DIR})
+target_include_directories(test_timer_s PRIVATE ${TIVAWARE_DIR})
+
 
 

@@ -8,6 +8,8 @@ DEFINE_FFF_GLOBALS;
 
 #include "step_counter_main_mock.h"
 
+#define NUM_TIMERS 4
+
 /* Helper functions */
 
 unsigned long readCurrentTick_fake_incrementing_tick(void)
@@ -27,6 +29,8 @@ struct timer_s
     bool isRunning;
 };
 
+extern timer_s *timerArray[NUM_TIMERS];
+
 /* Unity setup and teardown */
 
 void setUp(void)
@@ -39,266 +43,274 @@ void tearDown(void)
 {
 }
 
-/* Test cases - createTimer */
-void test_timer_s_createTimer_creates_a_timer(void)
+/* Test cases - toggleTimer */
+void test_timer_s_initTimers_initialises_timers_correctly(void)
 {
     // Arrange
+    
     // Act
-    timer_s *timerTest = createTimer(1);
+    initTimers();
     // Assert
-    TEST_ASSERT_NOT_EQUAL(NULL, timerTest);
-    TEST_ASSERT_EQUAL(8, sizeof(timerTest));
-
+    for (int i = 0;i<4;i++) {
+        TEST_ASSERT_EQUAL(i+1, timerArray[i]->id);
+    }
 }
 
-/* Test cases - destroyTimer */
-void test_timer_s_destroyTimer_destroys_a_timer(void)
-{
-    // Arrange
-    timer_s *timerTest = createTimer(1);
-    // Act
-    destroyTimer(&timerTest);
-    // Assert
-    TEST_ASSERT_EQUAL(NULL, timerTest);
-}
 
 /* Test cases - toggleTimer */
 void test_timer_s_toggleTimer_starts_timer(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
+    initTimers();
     // Act
     toggleTimer();
     // Assert
-    TEST_ASSERT_EQUAL(true, timerTest->isRunning);
+    TEST_ASSERT_EQUAL(true, timerArray[0]->isRunning);
 }
 
 void test_timer_s_toggleTimer_stops_timer(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
+    initTimers();
     // Act
     toggleTimer();
     toggleTimer();
     // Assert
-    TEST_ASSERT_EQUAL(false, timerTest->isRunning);
+    TEST_ASSERT_EQUAL(false, timerArray[0]->isRunning);
+}
+
+void test_timer_s_toggleTimer_starts_other_timers_with_timerCycle(void)
+{
+    // Arrange
+    initTimers();
+    // Act
+    toggleTimer();
+    timerCycle();
+    toggleTimer();
+    // Assert
+    TEST_ASSERT_EQUAL(true, timerArray[1]->isRunning);
 }
 
 /* Test cases - resetTimer */
 void test_timer_s_resetTimer_resets_timeRemaining(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->timeRemaining = 100;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->timeRemaining = 100;
     // Act
     resetTimer();
     // Assert
-    TEST_ASSERT_EQUAL(100, timerTest->timeRemaining);
+    TEST_ASSERT_EQUAL(100, timerArray[0]->timeRemaining);
 }
 
 void test_timer_s_resetTimer_resets_isRunning(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->timeRemaining = 100;
-    timerTest->isRunning = true;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->timeRemaining = 100;
+    timerArray[0]->isRunning = true;
     // Act
     resetTimer();
     // Assert
-    TEST_ASSERT_EQUAL(false, timerTest->isRunning);
+    TEST_ASSERT_EQUAL(false, timerArray[0]->isRunning);
 }
 
 /* Test cases - updateTimer */
 void test_timer_s_updateTimers_reduces_timeRemaining(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->timeRemaining = 100;
-    timerTest->isRunning = true;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->timeRemaining = 100;
+    timerArray[0]->isRunning = true;
     readCurrentTick_fake.custom_fake = readCurrentTick_fake_incrementing_tick;
     // Act
     updateTimers();
     // Assert
-    TEST_ASSERT_LESS_THAN(100, timerTest->timeRemaining);
+    TEST_ASSERT_LESS_THAN(100, timerArray[0]->timeRemaining);
 }
 
 void test_timer_s_updateTimers_does_not_reduce_timeRemaining_when_not_running(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->timeRemaining = 100;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->timeRemaining = 100;
+    timerArray[0]->isRunning = false;
     readCurrentTick_fake.custom_fake = readCurrentTick_fake_incrementing_tick;
     // Act
     updateTimers();
     // Assert
-    TEST_ASSERT_EQUAL(100, timerTest->timeRemaining);
+    TEST_ASSERT_EQUAL(100, timerArray[0]->timeRemaining);
 }
 
 void test_timer_s_updateTimers_ends_timer(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 1;
-    timerTest->timeRemaining = 1;
-    timerTest->isRunning = true;
+    initTimers();
+    timerArray[0]->timeTotal = 1;
+    timerArray[0]->timeRemaining = 1;
+    timerArray[0]->isRunning = true;
     readCurrentTick_fake.custom_fake = readCurrentTick_fake_incrementing_tick;
     // Act
+    toggleTimer();
     updateTimers();
     // Assert
-    TEST_ASSERT_EQUAL(0, timerTest->timeRemaining);
-    TEST_ASSERT_EQUAL(false, timerTest->isRunning);
+    TEST_ASSERT_EQUAL(false, timerArray[0]->isRunning);
 }
 
 /* Test cases - readTimer */
 void test_timer_s_readTimer_reduces_timeRemaining(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->timeRemaining = 100;
-    timerTest->isRunning = true;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->timeRemaining = 100;
+    timerArray[0]->isRunning = true;
     readCurrentTick_fake.custom_fake = readCurrentTick_fake_incrementing_tick;
     uint32_t testTimeLeft;
     // Act
-    testTimeLeft = readTimer(timerTest);
+    testTimeLeft = readTimer(0);
     // Assert
-    TEST_ASSERT_LESS_THAN(100, timerTest->timeRemaining);
+    TEST_ASSERT_LESS_THAN(100, timerArray[0]->timeRemaining);
     TEST_ASSERT_LESS_THAN(100, testTimeLeft);
 }
 
 void test_timer_s_readTimer_does_not_reduce_timeRemaining_when_not_running(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->timeRemaining = 100;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->timeRemaining = 100;
+    timerArray[0]->isRunning = false;
     readCurrentTick_fake.custom_fake = readCurrentTick_fake_incrementing_tick;
     uint32_t testTimeLeft;
     // Act
-    testTimeLeft = readTimer(timerTest);
+    testTimeLeft = readTimer(0);
     // Assert
-    TEST_ASSERT_EQUAL(100, timerTest->timeRemaining);
+    TEST_ASSERT_EQUAL(100, timerArray[0]->timeRemaining);
     TEST_ASSERT_EQUAL(100, testTimeLeft);
 }
 
 void test_timer_s_readTimer_ends_timer(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 1;
-    timerTest->timeRemaining = 1;
-    timerTest->isRunning = true;
+    initTimers();
+    timerArray[0]->timeTotal = 1;
+    timerArray[0]->timeRemaining = 1;
+    timerArray[0]->isRunning = true;
     readCurrentTick_fake.custom_fake = readCurrentTick_fake_incrementing_tick;
     uint32_t testTimeLeft;
     // Act
-    testTimeLeft = readTimer(timerTest);
+    toggleTimer();
+    testTimeLeft = readTimer(0);
     // Assert
-    TEST_ASSERT_EQUAL(0, timerTest->timeRemaining);
-    TEST_ASSERT_EQUAL(0, testTimeLeft);
-    TEST_ASSERT_EQUAL(false, timerTest->isRunning);
+    TEST_ASSERT_EQUAL(false, timerArray[0]->isRunning);
 }    
 
 /* Test cases - getTimerID */
 void test_timer_s_getTimerID_returns_correct_id(void)
 {
     // Arrange
+    
     // Act
-    timer_s *timerTest1 = createTimer(1);
-    timer_s *timerTest2 = createTimer(2);
+    initTimers();
     // Assert
-    TEST_ASSERT_EQUAL(1, getTimerID(timerTest1));
-    TEST_ASSERT_EQUAL(2, getTimerID(timerTest2));
+    TEST_ASSERT_EQUAL(1, getTimerID(0));
+    TEST_ASSERT_EQUAL(2, getTimerID(1));
 }  
 
 /* Test cases - incrementTime */ 
 void test_timer_s_incrementTime_increments_timeTotal_seconds(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->isRunning = false;
     // Act
     incrementTime();
     // Assert
-    TEST_ASSERT_EQUAL(200, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(200, timerArray[0]->timeTotal);
 }   
 
 void test_timer_s_incrementTime_increments_timeTotal_minutes(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 6000;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 6000;
+    timerArray[0]->isRunning = false;
     // Act
+    placeCycle();
     incrementTime();
     // Assert
-    TEST_ASSERT_EQUAL(12000, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(12000, timerArray[0]->timeTotal);
 }  
 
 void test_timer_s_incrementTime_increments_timeTotal_hours(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 360000;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 360000;
+    timerArray[0]->isRunning = false;
     // Act
+    placeCycle();
+    placeCycle();
     incrementTime();
     // Assert
-    TEST_ASSERT_EQUAL(720000, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(720000, timerArray[0]->timeTotal);
 }  
 
 /* Test cases - decrementTime */ 
 void test_timer_s_decrementTime_decrements_timeTotal_seconds(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 200;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 200;
+    timerArray[0]->isRunning = false;
     // Act
     decrementTime();
     // Assert
-    TEST_ASSERT_EQUAL(100, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(100, timerArray[0]->timeTotal);
 }   
 
 void test_timer_s_decrementTime_decrements_timeTotal_minutes(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 12000;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 12000;
+    timerArray[0]->isRunning = false;
     // Act
+    placeCycle();
     decrementTime();
     // Assert
-    TEST_ASSERT_EQUAL(6000, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(6000, timerArray[0]->timeTotal);
 }  
 
 void test_timer_s_decrementTime_decrements_timeTotal_hours(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 720000;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 720000;
+    timerArray[0]->isRunning = false;
     // Act
+    placeCycle();
+    placeCycle();
     decrementTime();
     // Assert
-    TEST_ASSERT_EQUAL(360000, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(360000, timerArray[0]->timeTotal);
 }  
 
 /* Test cases - setTime */ 
 void test_timer_s_setTime_changes_timeTotal(void)
 {
     // Arrange
-    timer_s *timerTest = createTimer(1);
-    timerTest->timeTotal = 100;
-    timerTest->isRunning = false;
+    initTimers();
+    timerArray[0]->timeTotal = 100;
+    timerArray[0]->isRunning = false;
     // Act
-    setTime(timerTest, 200);
+    setTime(0, 200);
     // Assert
-    TEST_ASSERT_EQUAL(200, timerTest->timeTotal);
+    TEST_ASSERT_EQUAL(200, timerArray[0]->timeTotal);
 }   
