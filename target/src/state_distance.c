@@ -23,21 +23,23 @@ static void updateDisplay(FitnessTrackerPtr context)
     switch (getUnit()) 
     {
         case UNIT_STEPS:
-            displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE, false);
+            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE, true);
             break;
         case UNIT_METRIC:
-            displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToKPH(getStepsCount(), context->secondsElapsed), "kph", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE, true);
+            displayValue("Speed:", changeToKPH(getStepsCount(), context->timeElapsed), "kph", THIRD_ROW, ALIGN_CENTRE, true);
             break;
         case UNIT_IMPERIAL:
-            displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE);
-            displayValue("Speed:", changeToMPH(getStepsCount(), context->secondsElapsed), "mph", THIRD_ROW, ALIGN_CENTRE);
+            displayValue("Dist:", changeToMiles(getStepsCount()), "mi", SECOND_ROW, ALIGN_CENTRE, true);
+            displayValue("Speed:", changeToMPH(getStepsCount(), context->timeElapsed), "mph", THIRD_ROW, ALIGN_CENTRE, true);
+            break;
+        default: 
             break;
     }
 
     /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE);
+    displayTime("Time:", context->timeElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
 }
 
 static void changeUnits(FitnessTrackerPtr context)
@@ -51,7 +53,7 @@ void resetSteps(FitnessTrackerPtr context)
     resetStepCount();    
 }
 
-/* State Transition */
+/* State Transitions */
 
 static void goToSetGoal(FitnessTrackerPtr context)
 {
@@ -76,11 +78,11 @@ StatePtr transitionToDistance(void)
 
         displayInit();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToSetGoal;
+        startedState.rightButPressed = goToStopwatch;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
         startedState.botButLongPress = resetSteps;
-        startedState.leftButPressed = goToStopwatch;
+        startedState.leftButPressed = goToSetGoal;
 
         initialised = 1;
     }

@@ -43,10 +43,18 @@ void displayInit(void)
 }
 
 
-void displayValue(char* prefix, int32_t intValue, char*suffix, uint8_t row, textAlignment_t alignment)
+void displayValue(char* prefix, int32_t intValue, char*suffix, uint8_t row, textAlignment_t alignment, bool thousandsFormatting)
 {
-    char toDraw[DISPLAY_WIDTH+1];
-    usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %d %s", prefix, intValue, suffix);
+    char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
+
+    if (thousandsFormatting) {
+        // Print a number/1000 to 3dp, with decimal point and sign
+        // Use a mega cool ternary operator to decide whether to use a minus sign
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s%c%d.%03d %s", prefix, intValue<0? '-':' ', abs(intValue / 1000), abs(intValue) % 1000, suffix);
+    } else {
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %d %s", prefix, intValue, suffix); // Can use %4d if we want uniform spacing
+    }
+
     displayString(toDraw, row, alignment);
 }
 
@@ -88,16 +96,19 @@ void displayString(char* inStr, uint8_t row, textAlignment_t alignment)
     OLEDStringDraw(toDraw, 0, row);
 }
 
-static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
+void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
 {
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
-    uint16_t milliSeconds = time % 100;
-    uint16_t minutes = (time / TIME_UNIT_SCALE) % TIME_UNIT_SCALE;
-    uint16_t seconds = time % TIME_UNIT_SCALE;
-    uint16_t hours =   time / (TIME_UNIT_SCALE * TIME_UNIT_SCALE);
+    uint32_t milliSeconds = time % 100;
+    time /= 100;
+    uint32_t seconds = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t minutes = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t hours = time;
 
     if (hours == 0 && milli) {
-        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d", prefix, minutes, seconds);
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, minutes, seconds, milliSeconds);
     } else {
         usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, hours, minutes, seconds);
     }
@@ -105,11 +116,40 @@ static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_
 }
 
 // For when you want a number in that prefix too
-static void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
+void displayNumTime(char* prefix, uint8_t num, uint32_t time, uint8_t row, textAlignment_t alignment, bool milli)
 {
-    char newPrefix[strlen(prefix) + 1];
-    usnprintf(newPrefix, strlen(prefix) + 1, "%s%d", prefix, num);
-    displayTime(newPrefix, time, row, alignment, milli);
+    char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
+    uint32_t milliSeconds = time % 100;
+    time /= 100;
+    uint32_t seconds = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t minutes = time % TIME_UNIT_SCALE;
+    time /= TIME_UNIT_SCALE;
+    uint32_t hours = time;
+
+    if (hours == 0 && milli) {
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s%d %01d:%02d:%02d", prefix, num, minutes, seconds, milliSeconds);
+    } else {
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s%d %01d:%02d:%02d", prefix, num, hours, minutes, seconds);
+    }
+
+    displayString(toDraw, row, alignment);
+}
+
+
+void displayCursor(uint8_t place, uint8_t row, textAlignment_t alignment)
+{
+    switch(place) {
+        case 0:
+            displayString("             ^S", row, alignment);
+            break;          
+        case 1:
+            displayString("          ^M   ", row, alignment);
+            break;
+        case 2:
+            displayString("       ^H      ", row, alignment);
+            break;
+    }
 }
 
 

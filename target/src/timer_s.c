@@ -9,8 +9,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "timer_s.h"
-#include "step_counter_main.h"
+#include "core.h"
 #include "utils/ustdlib.h"
+#include "step_counter_main.h"
 
 #define MS_IN_SECOND 100
 #define MS_IN_MINUTE 6000
@@ -19,9 +20,13 @@
 #define EXT_S 60
 #define EXT_M 60
 #define EXT_H 24 
-#define TICK_MOD 10 // Changes ticks to milliseconds
+#define NUM_TIMERS 4
+
+/* Local declarations */
+static timer_s * createTimer (uint8_t ID);
 
 static uint8_t timerSelect = 0;
+static uint8_t placeSelect = 0;
 
 struct timer_s
 {
@@ -32,35 +37,17 @@ struct timer_s
     bool isRunning;
 };
 
+static timer_s *timerArray[NUM_TIMERS];
+
+
+
 void initTimers(void)
 {
     for (uint8_t i=0; i < NUM_TIMERS; i++)
     {
-        timerArray[i] = createTimer(i++);
+        timerArray[i] = createTimer(i + 1);
     }
 } 
-
-timer_s * createTimer (uint8_t ID)
-{
-    timer_s *instance = malloc(sizeof(timer_s));
-    if (instance) {
-        instance->lastReadTime = 0;
-        instance->timeRemaining = 0;
-        instance->timeTotal = 0;
-        instance->id = ID;
-        instance->isRunning = false;
-    }
-    return instance;
-}
-
-
-void destroyTimer(timer_s **instance)
-{
-    if (instance) {
-        free(*instance);
-        *instance = NULL;
-    }
-}
 
 
 void toggleTimer(void) 
@@ -78,78 +65,79 @@ void toggleTimer(void)
 
 void resetTimer(void) 
 {
-    // timerID->timeTotal = 1000; //Debug functionality to easily add time to a timer
+    // timerArray[timerSelect]->timeTotal = 1000; //Debug functionality to easily add time to a timer
     timerArray[timerSelect]->timeRemaining = timerArray[timerSelect]->timeTotal;
     timerArray[timerSelect]->isRunning = false;
 }
 
 
-void updateTimer() 
+void updateTimers(void) 
 {
     uint32_t currentTime = readCurrentTick()/TICK_MOD;
     static char msg[17];
-    if (timerID->isRunning) {
-        if ((currentTime - timerID->lastReadTime) >= timerID->timeRemaining) {
-            timerID->isRunning = false;
-            timerID->timeRemaining = 0;
-            usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
-            flashMessage(msg);
-        } else {
-            timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
-            timerID->lastReadTime = currentTime;
+    uint8_t i;
+    for (i=0;i < NUM_TIMERS;i++) {
+        if (timerArray[i]->isRunning) {
+            if ((currentTime - timerArray[i]->lastReadTime) >= timerArray[i]->timeRemaining) {
+                timerArray[i]->isRunning = false;
+                timerArray[i]->timeRemaining = 0;
+                usnprintf(msg, 17, "TIMER %d ENDED!", timerArray[i]->id);
+                flashMessage(msg);
+            } else {
+                timerArray[i]->timeRemaining = timerArray[i]->timeRemaining - (currentTime - timerArray[i]->lastReadTime);
+                timerArray[i]->lastReadTime = currentTime;
+            }
         }
     }
 }
 
 
-uint32_t readTimer(timer_s *timerID) 
+uint32_t readTimer(uint8_t timerIndex) 
 {
     uint32_t currentTime = readCurrentTick()/TICK_MOD;
 
     static char msg[17];
-    if (timerID->isRunning) {
-        if ((currentTime - timerID->lastReadTime) >= timerID->timeRemaining) {
-            timerID->isRunning = false;
-            timerID->timeRemaining = 0;
-            usnprintf(msg, 17, "TIMER %d ENDED!", timerID->id);
+    if (timerArray[timerIndex]->isRunning) {
+        if ((currentTime - timerArray[timerIndex]->lastReadTime) >= timerArray[timerIndex]->timeRemaining) {
+            timerArray[timerIndex]->isRunning = false;
+            timerArray[timerIndex]->timeRemaining = 0;
+            usnprintf(msg, 17, "TIMER %d ENDED!", timerArray[timerIndex]->id);
             flashMessage(msg);
-            return timerID->timeRemaining;
+            return timerArray[timerIndex]->timeRemaining;
         } else {
-            timerID->timeRemaining = timerID->timeRemaining - (currentTime - timerID->lastReadTime);
-            timerID->lastReadTime = currentTime;
-            return timerID->timeRemaining;
+            timerArray[timerIndex]->timeRemaining = timerArray[timerIndex]->timeRemaining - (currentTime - timerArray[timerIndex]->lastReadTime);
+            timerArray[timerIndex]->lastReadTime = currentTime;
+            return timerArray[timerIndex]->timeRemaining;
         }
     } else {
-        if (timerID->timeRemaining == timerID->timeTotal) {
-            return timerID->timeTotal;
-        } else {
-            return timerID->timeRemaining;
+        if (timerArray[timerIndex]->timeRemaining == timerArray[timerIndex]->timeTotal) {
+            return timerArray[timerIndex]->timeTotal;
         }
-        
     }
+    return timerArray[timerIndex]->timeRemaining;
 }
 
 
-uint8_t getTimerID (timer_s *timerID) 
+uint8_t getTimerID (uint8_t timerIndex) 
 {
-    return timerID->id;
+    return timerArray[timerIndex]->id;
 }
 
 
-void incrementTime (timer_s *timerID, uint8_t place)
+void incrementTime (void)
 {
     static uint32_t seconds;
     static uint32_t minutes;
     static uint32_t hours;
 
-    timerID->timeTotal /= EXT_MS;
-    seconds = timerID->timeTotal % EXT_S;
-    timerID->timeTotal /= EXT_S;
-    minutes = timerID->timeTotal % EXT_M;
-    timerID->timeTotal /= EXT_M;
-    hours = timerID->timeTotal;
+    timerArray[timerSelect]->timeTotal /= EXT_MS;
+    seconds = timerArray[timerSelect]->timeTotal % EXT_S;
+    timerArray[timerSelect]->timeTotal /= EXT_S;
+    minutes = timerArray[timerSelect]->timeTotal % EXT_M;
+    timerArray[timerSelect]->timeTotal /= EXT_M;
+    hours = timerArray[timerSelect]->timeTotal;
 
-    switch(place) {
+    switch(placeSelect) {
         case 0: 
             seconds = (seconds + 1) % EXT_S;
             break;
@@ -160,26 +148,26 @@ void incrementTime (timer_s *timerID, uint8_t place)
             hours = (hours + 1) % EXT_H;
             break;
     }
-    timerID->timeTotal = (seconds*MS_IN_SECOND) + (minutes*MS_IN_MINUTE) + (hours*MS_IN_HOUR);
-    timerID->timeRemaining = timerID->timeTotal;
-    timerID->isRunning = false;
+    timerArray[timerSelect]->timeTotal = (seconds*MS_IN_SECOND) + (minutes*MS_IN_MINUTE) + (hours*MS_IN_HOUR);
+    timerArray[timerSelect]->timeRemaining = timerArray[timerSelect]->timeTotal;
+    timerArray[timerSelect]->isRunning = false;
 }
 
 
-void decrementTime (timer_s *timerID, uint8_t place)
+void decrementTime (void)
 {
     static uint32_t seconds;
     static uint32_t minutes;
     static uint32_t hours;
 
-    timerID->timeTotal /= EXT_MS;
-    seconds = timerID->timeTotal % EXT_S;
-    timerID->timeTotal /= EXT_S;
-    minutes = timerID->timeTotal % EXT_M;
-    timerID->timeTotal /= EXT_M;
-    hours = timerID->timeTotal;
+    timerArray[timerSelect]->timeTotal /= EXT_MS;
+    seconds = timerArray[timerSelect]->timeTotal % EXT_S;
+    timerArray[timerSelect]->timeTotal /= EXT_S;
+    minutes = timerArray[timerSelect]->timeTotal % EXT_M;
+    timerArray[timerSelect]->timeTotal /= EXT_M;
+    hours = timerArray[timerSelect]->timeTotal;
 
-    switch(place) {
+    switch(placeSelect) {
         case 0: 
             seconds = (EXT_S + seconds - 1) % EXT_S;
             break;
@@ -190,13 +178,55 @@ void decrementTime (timer_s *timerID, uint8_t place)
             hours = (EXT_H + hours - 1) % EXT_H;
             break;
     }
-    timerID->timeTotal = (seconds*MS_IN_SECOND) + (minutes*MS_IN_MINUTE) + (hours*MS_IN_HOUR);
-    timerID->timeRemaining = timerID->timeTotal;
-    timerID->isRunning = false;
+    timerArray[timerSelect]->timeTotal = (seconds*MS_IN_SECOND) + (minutes*MS_IN_MINUTE) + (hours*MS_IN_HOUR);
+    timerArray[timerSelect]->timeRemaining = timerArray[timerSelect]->timeTotal;
+    timerArray[timerSelect]->isRunning = false;
 }
 
 
-void setTime (timer_s *timerID, uint32_t time) 
+void setTime (uint8_t timerIndex, uint32_t time)
 {
-    timerID->timeTotal = time;
+    timerArray[timerIndex]->timeTotal = time;
+}
+
+
+void timerCycle(void)
+{
+    timerSelect = (timerSelect + 1) % NUM_TIMERS;
+}
+
+
+void placeCycle(void)
+{
+    placeSelect = (placeSelect + 1) % 3;
+}
+
+
+uint8_t getSelectedTimer(void)
+{
+    return timerSelect;
+}
+
+
+uint8_t getSelectedPlace(void)
+{
+    return placeSelect;
+}
+
+/* Local functions */
+
+// *******************************************************
+// createTimer: Creates and initialises a timer's members
+// e.g timer_s *myTimer = createTimer(1);
+static timer_s * createTimer (uint8_t ID)
+{
+    timer_s *instance = malloc(sizeof(timer_s));
+    if (instance) {
+        instance->lastReadTime = 0;
+        instance->timeRemaining = 0;
+        instance->timeTotal = 0;
+        instance->id = ID;
+        instance->isRunning = false;
+    }
+    return instance;
 }

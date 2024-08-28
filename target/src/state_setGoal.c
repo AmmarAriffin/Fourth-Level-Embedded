@@ -26,18 +26,18 @@ static void updateDisplay(FitnessTrackerPtr context)
     displayString("Set Step Goal:", FIRST_ROW, ALIGN_CENTRE);
 
     /* Second Line*/
-    displayValue("Goal:", getCurrentGoal(), "steps", SECOND_ROW, ALIGN_CENTRE);
+    displayValue("Goal:", getCurrentGoal(), "steps", SECOND_ROW, ALIGN_CENTRE, false);
 
     /* Third Line */
     if (newGoal == 0) {
         newGoal = 100;
-        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
+        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE, false);
     } else {
-        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE);
+        displayValue("New Goal:", newGoal, "", THIRD_ROW, ALIGN_CENTRE, false);
     }
     
     /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed,  FOURTH_ROW, ALIGN_CENTRE);
+    displayTime("Time:", context->timeElapsed,  FOURTH_ROW, ALIGN_CENTRE, false);
 
 }
 
@@ -71,10 +71,10 @@ StatePtr transitionToSetGoal(void)
         initDefaultImplementation(&startedState);
         initPotADC();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToTemperature;
+        startedState.rightButPressed = goToDistance;
         startedState.updateDisplay = updateDisplay;
         startedState.botButPressed = setGoalToNewGoal;
-        startedState.leftButPressed = goToDistance;
+        startedState.leftButPressed = goToTemperature;
 
 
         initialised = 1;

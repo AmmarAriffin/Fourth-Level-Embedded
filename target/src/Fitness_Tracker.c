@@ -13,11 +13,10 @@
 /* Include what it will transition into */
 #include "state_distance.h"
 
-#define LONG_PRESS_CYCLES 20
+#define LONG_PRESS_CYCLES 35
 
-// I don't like having these variables here very hacky
-static bool botLongPressTriggered = 0;
-static bool topLongPressTriggered = 0;
+
+
 
 
 void startTracker(FitnessTrackerPtr instance)
@@ -36,12 +35,16 @@ void pollGPIO(FitnessTrackerPtr instance)
     rightButPressed(instance);
     leftButPressed(instance);
     leftSwitchON(instance);
-    botButLongPress(instance);
-    topButLongPress(instance);
 
-    // Ensure short press is after long press is called
-    botButPressed(instance);
-    topButPressed(instance);
+    topButHandler(instance);
+    botButHandler(instance);
+
+    // botButLongPress(instance);
+    // topButLongPress(instance);
+
+    // // Ensure short press is after long press is called
+    // botButPressed(instance);
+    // topButPressed(instance);
 }
 
 
@@ -75,23 +78,44 @@ void leftButPressed(FitnessTrackerPtr instance)
     }
 }
 
-void topButPressed(FitnessTrackerPtr instance)
+void topButHandler(FitnessTrackerPtr instance)
 {
-    // RELEASED only if button has been pressed down before
-    // topLongPressTriggered for ensure that short button press 
-    // don't trigger after long press is triggered too
-    if (checkButton(UP) == RELEASED && !topLongPressTriggered) {
+    static bool topLongPressTriggered = 0;
+    static uint16_t longPressCountTop = 0;
+    if (isDown(UP)) {
+        checkButton(UP);
+        longPressCountTop++;
+        if (longPressCountTop >= LONG_PRESS_CYCLES && !topLongPressTriggered) {
+            instance->state->topButLongPress(instance);
+            topLongPressTriggered = 1;
+        } 
+    } else if (checkButton(UP) == RELEASED && longPressCountTop < LONG_PRESS_CYCLES) {
         instance->state->topButPressed(instance);
-        // clear up any triggers
+        longPressCountTop = 0;
+    } else if (checkButton(UP) == NO_CHANGE ) {
+        longPressCountTop = 0;   
         topLongPressTriggered = 0;
     }
+
 }
 
-void botButPressed(FitnessTrackerPtr instance)
+void botButHandler(FitnessTrackerPtr instance)
 {
-    // Look above
-    if (checkButton(DOWN) == RELEASED && !botLongPressTriggered) {
+    static bool botLongPressTriggered = 0;
+    static uint16_t longPressCountBot = 0;
+
+    if (isDown(DOWN)) {
+        checkButton(DOWN);
+        longPressCountBot++;
+        if (longPressCountBot >= LONG_PRESS_CYCLES && !botLongPressTriggered) {
+            instance->state->botButLongPress(instance);
+            botLongPressTriggered = 1;
+        } 
+    } else if (checkButton(DOWN) == RELEASED && longPressCountBot < LONG_PRESS_CYCLES) {
         instance->state->botButPressed(instance);
+        longPressCountBot = 0;
+    } else if (checkButton(DOWN) == NO_CHANGE ) {
+        longPressCountBot = 0;   
         botLongPressTriggered = 0;
     }
 }
@@ -102,37 +126,6 @@ void leftSwitchON(FitnessTrackerPtr instance)
         instance->state->leftSWPressed(instance);
     }
 }
-
-void botButLongPress(FitnessTrackerPtr instance)
-{
-    static uint16_t longPressCountBot = 0;
-
-    if (isDown(DOWN)) {
-        longPressCountBot++;
-        if (longPressCountBot >= LONG_PRESS_CYCLES) {
-            instance->state->botButLongPress(instance);
-            longPressCountBot = 0;
-            botLongPressTriggered = 1;
-        }  
-    }
-}
-
-
-void topButLongPress(FitnessTrackerPtr instance)
-{
-    static uint16_t longPressCountTop = 0;
-
-    if (isDown(UP)) {
-        longPressCountTop++;
-        if (longPressCountTop >= LONG_PRESS_CYCLES) {
-            instance->state->botButLongPress(instance);
-            longPressCountTop = 0;
-            topLongPressTriggered = 1;
-        }
-    }
-}
-
-
 
 /* To be used by concrete states to change states*/
 void changeState(FitnessTrackerPtr instance, StatePtr newState)

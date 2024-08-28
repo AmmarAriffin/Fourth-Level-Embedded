@@ -26,15 +26,15 @@ static void updateDisplay(FitnessTrackerPtr context)
 
     /* Third Line*/
     // If workout starts 
-    if (context->secondsElapsed != 0)
+    if (context->timeElapsed != 0)
     {
         switch (getUnit())
         {
             case UNIT_IMPERIAL:
-                displayValue("", changeToFahrenheit(currTemp), "F", THIRD_ROW, ALIGN_CENTRE);
+                displayValue("", changeToFahrenheit(currTemp), "F", THIRD_ROW, ALIGN_CENTRE, false);
                 break;
             default:
-                displayValue("", currTemp, "C", THIRD_ROW, ALIGN_CENTRE);
+                displayValue("", currTemp, "C", THIRD_ROW, ALIGN_CENTRE, false);
                 break;
         }
     } else {
@@ -42,7 +42,7 @@ static void updateDisplay(FitnessTrackerPtr context)
     }
 
     /* Fourth Line */
-    displayTime("Time:", context->secondsElapsed, FOURTH_ROW, ALIGN_CENTRE);
+    displayTime("Time:", context->timeElapsed, FOURTH_ROW, ALIGN_CENTRE, false);
     
 }
 
@@ -75,10 +75,10 @@ StatePtr transitionToTemperature(void)
         initDefaultImplementation(&startedState);
         initTempADC();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToTimer;
+        startedState.rightButPressed = goToSetGoal;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
-        startedState.leftButPressed = goToSetGoal;
+        startedState.leftButPressed = goToTimer;
 
         initialised = 1;
     }

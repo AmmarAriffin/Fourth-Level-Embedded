@@ -9,9 +9,10 @@
 #include <stdbool.h>
 #include "stopwatch.h"
 #include "step_counter_main.h"
+#include "core.h"
 #include "utils/ustdlib.h"
 
-#define TICK_MOD 10 // Changes ticks to milliseconds
+
 
 typedef struct
 {
@@ -23,7 +24,7 @@ typedef struct
     bool isRunning;
 } stopWatch_s;
 
-stopWatch_s stopWatch = {.lapNum = 0, .lapReadIndex = -1, .isRunning = false};
+static stopWatch_s stopWatch = {.lapNum = 0, .lapReadIndex = -1, .isRunning = false};
 
 
 void toggleStopwatch (void)
