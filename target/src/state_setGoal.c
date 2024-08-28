@@ -75,7 +75,7 @@ StatePtr transitionToSetGoal(void)
     if (0 == initialised)
     {
         initDefaultImplementation(&startedState);
-        
+        initPotADC();
         /* Init all the functions for state */
         startedState.rightButPressed = goToDistance;
         startedState.updateDisplay = updateDisplay;

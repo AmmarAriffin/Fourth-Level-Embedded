@@ -43,6 +43,15 @@ void initTempADC(void)
     initAverager(&averagerTemp, TEMP_BUFFER);
 
     adcHalRegister(ADC_ID_2, callbackADCTemp);
+
+    storeInitValues(); //store proper values instead of junk
+}
+
+static void storeInitValues(void)
+{
+  for (int i=0; i < TEMP_BUFFER; i++) {
+    pollTemp();
+  }
 }
 
 int32_t getTemp(void) 

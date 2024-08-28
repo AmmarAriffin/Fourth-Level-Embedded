@@ -12,26 +12,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "inc/hw_ints.h"
-#include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/debug.h"
 #include "driverlib/pin_map.h"
 #include "utils/ustdlib.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "utils/ustdlib.h"
-#include "acc.h"
+
 #include "math.h"
 #include "stepCounter.h"
-#include "accelerometer.h"
 #include "core.h"
 #include "timer_s.h"
-#include "pot_measure.h"
-#include "temp_measure.h"
 #include "displayInterface.h"
 #include "Fitness_Tracker.h"
 
@@ -53,14 +44,6 @@
 #define BUTTONS_AND_POTENTIOMETER_TASK_PERIOD portTICK_PERIOD_MS * 1000 / RATE_IO_HZ
 #define ACELL_TASK_PERIOD portTICK_PERIOD_MS * 1000 / RATE_ACCL_HZ
 #define DISPLAY_TASK_PERIOD portTICK_PERIOD_MS * 1000 / RATE_DISPLAY_UPDATE_HZ
-
-#define STEP_GOAL_ROUNDING 100
-#define STEP_THRESHOLD_HIGH 270
-#define STEP_THRESHOLD_LOW 235
-
-#define TARGET_DISTANCE_DEFAULT 1000
-
-#define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
 
 /*******************************************
  *      Local prototypes
@@ -104,12 +87,6 @@ void PollButtonsAndPotentiometerTask(void* args) {
         lastIoProcess = currentTick;
 
         pollGPIO(fitnessTrackerPtr);
-        // Poll ADC Potentiometer
-        pollPot();
-        getPotVal();
-        // Poll ADC Temperature
-        pollTemp();
-        getTemp();
         
         // Protection in the unlikely case the device is left running for long enough for the system tick counter to overflow
         // This prevents the last process ticks from being 'in the future', which would prevent the update functions from being called,
@@ -129,8 +106,6 @@ void AccelerometerTask(void* args) {
 
     uint32_t lastAcclProcess = 0;
 
-    uint8_t stepHigh = false;
-    vector3_t mean;
     uint32_t currentTick = readCurrentTick();
 
     for (;;) {
@@ -138,24 +113,7 @@ void AccelerometerTask(void* args) {
 
         lastAcclProcess = currentTick;
 
-        pollAccelData();
-
-        mean = getAverageAccel();
-
-        uint16_t combined = sqrt(mean.x*mean.x + mean.y*mean.y + mean.z*mean.z);
-
-        if (combined >= STEP_THRESHOLD_HIGH && stepHigh == false) {
-            stepHigh = true;
-            incrementStep();
-
-            // flash a message if the user has reached their goal
-            if (getStepsCount() == getCurrentGoal()) {
-                flashMessage("Goal reached!");
-            }
-
-        } else if (combined <= STEP_THRESHOLD_LOW) {
-            stepHigh = false;
-        }
+       pollSteps();
 
         // Don't start the workout until the user begins walking
         if (getStepsCount() == 0) {
@@ -218,11 +176,8 @@ void DisplayTask(void* args) {
 void initEverything(void) {
     // Init libs
     initClock();
-    initAccelBuffer(); // init buffer and accel chip
-    initTempADC();
-    initPotADC();
     initTimers();
-    displayInit();
+    
     initStepCounter();
 
     fitnessTracker.workoutStartTick = 0;

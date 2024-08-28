@@ -16,9 +16,6 @@
 #include "utils/ustdlib.h"
 #include "stdio.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-
-
-#include "serial_sender.h"
 #include "displayInterface.h"
 #include "string.h"
 

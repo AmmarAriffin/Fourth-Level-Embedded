@@ -36,6 +36,14 @@ void initPotADC (void)
 {
     initAverager(&ADC_inBuffer, ADC_BUF_SIZE);
     adcHalRegister(ADC_ID_1, callbackPotADC);
+    storeInitValues; // To fill up with proper values in buffer instead of junk
+}
+
+static void storeInitValues(void)
+{
+  for (int i=0; i < ADC_BUF_SIZE; i++) {
+    pollPot();
+  }
 }
 
 int32_t getPotVal(void)
