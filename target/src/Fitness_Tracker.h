@@ -3,6 +3,7 @@
 
 #include "state.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct FitnessTracker* FitnessTrackerPtr;
 
@@ -12,7 +13,8 @@ typedef struct FitnessTracker* FitnessTrackerPtr;
 struct FitnessTracker
 {
     StatePtr state;
-    uint16_t timeElapsed;
+    unsigned long timeElapsed;
+    unsigned long workoutStartTick;
 };
 
 void changeState(FitnessTrackerPtr instance, StatePtr newState);
@@ -35,5 +37,7 @@ void topButHandler(FitnessTrackerPtr instance);
 void botButHandler(FitnessTrackerPtr instance);
 
 void leftSwitchON(FitnessTrackerPtr instance);
+
+
 
 #endif /* Fitness_Tracker_H */

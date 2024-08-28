@@ -27,7 +27,12 @@ static void defaultBotButPressed(FitnessTrackerPtr instance)
 {
 }
 
-static void defaultLeftSWPressed(FitnessTrackerPtr instance)
+static void defaultLeftSWOn(FitnessTrackerPtr instance)
+{
+    
+}
+
+static void defaultLeftSWOff(FitnessTrackerPtr instance)
 {
     
 }
@@ -52,7 +57,8 @@ void initDefaultImplementation(StatePtr state)
     state->rightButPressed = defaultRightButPressed;
     state->topButPressed = defaultTopButPressed;
     state->botButPressed = defaultBotButPressed;
-    state->leftSWPressed = defaultLeftSWPressed;
+    state->rightSWOn = defaultLeftSWOn;
+    state->rightSWOff = defaultLeftSWOff;
     state->updateDisplay = defaultupdateDisplay;
     state->botButLongPress = defaultbotButLongPress;
     state->topButLongPress = defaulttopButLongPress;

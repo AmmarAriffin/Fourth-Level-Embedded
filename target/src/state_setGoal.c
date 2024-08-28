@@ -2,6 +2,7 @@
 #include "displayInterface.h"
 #include "pot_measure.h"
 #include "stepCounter.h"
+#include "core.h"
 
 
 /* Include what it will transition into */
@@ -22,6 +23,9 @@ static void updateDisplay(FitnessTrackerPtr context)
     /* Get New Goal */
     newGoal = getPotVal() * POT_SCALE_COEFF;
     newGoal = (newGoal / STEP_GOAL_ROUNDING) * STEP_GOAL_ROUNDING; // Round to nearest hundred
+    if (newGoal == 0) { // Prevent a goal of zero, instead setting to the minimum goal (this also makes it easier to test the goal-reaching code on a small but non-zero target)
+        newGoal = STEP_GOAL_ROUNDING;
+    }
     /* First Line */
     displayString("Set Step Goal:", FIRST_ROW, ALIGN_CENTRE);
 
@@ -44,6 +48,8 @@ static void updateDisplay(FitnessTrackerPtr context)
 void setGoalToNewGoal(FitnessTrackerPtr context)
 {
     setGoal(newGoal);
+    flashMessage("New Goal Set!");
+    changeState(context, transitionToDistance());
 }
 
 
@@ -69,7 +75,7 @@ StatePtr transitionToSetGoal(void)
     if (0 == initialised)
     {
         initDefaultImplementation(&startedState);
-        initPotADC();
+        
         /* Init all the functions for state */
         startedState.rightButPressed = goToDistance;
         startedState.updateDisplay = updateDisplay;

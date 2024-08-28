@@ -11,7 +11,6 @@
 #include "timer_s.h"
 #include "core.h"
 #include "utils/ustdlib.h"
-#include "step_counter_main.h"
 
 #define MS_IN_SECOND 100
 #define MS_IN_MINUTE 6000
@@ -80,7 +79,7 @@ void updateTimers(void)
         if (timerArray[i]->isRunning) {
             if ((currentTime - timerArray[i]->lastReadTime) >= timerArray[i]->timeRemaining) {
                 timerArray[i]->isRunning = false;
-                timerArray[i]->timeRemaining = 0;
+                timerArray[i]->timeRemaining = timerArray[i]->timeTotal;
                 usnprintf(msg, 17, "TIMER %d ENDED!", timerArray[i]->id);
                 flashMessage(msg);
             } else {
@@ -100,7 +99,7 @@ uint32_t readTimer(uint8_t timerIndex)
     if (timerArray[timerIndex]->isRunning) {
         if ((currentTime - timerArray[timerIndex]->lastReadTime) >= timerArray[timerIndex]->timeRemaining) {
             timerArray[timerIndex]->isRunning = false;
-            timerArray[timerIndex]->timeRemaining = 0;
+            timerArray[timerIndex]->timeRemaining = timerArray[timerIndex]->timeTotal;
             usnprintf(msg, 17, "TIMER %d ENDED!", timerArray[timerIndex]->id);
             flashMessage(msg);
             return timerArray[timerIndex]->timeRemaining;

@@ -23,7 +23,8 @@ struct State {
     ActionFunction leftButPressed;
     ActionFunction topButPressed;
     ActionFunction botButPressed;
-    ActionFunction leftSWPressed;
+    ActionFunction rightSWOn;
+    ActionFunction rightSWOff;
     ActionFunction updateDisplay;
     ActionFunction botButLongPress;
     ActionFunction topButLongPress;

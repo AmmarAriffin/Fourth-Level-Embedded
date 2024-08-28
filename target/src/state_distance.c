@@ -10,7 +10,7 @@
 #include "state_stopwatch.h"
 
 
-
+static bool isDebugging = false;
 /* Functions for State */
 static void updateDisplay(FitnessTrackerPtr context)
 {   
@@ -24,7 +24,7 @@ static void updateDisplay(FitnessTrackerPtr context)
     {
         case UNIT_STEPS:
             displayValue("", getStepsCount() , "steps", SECOND_ROW, ALIGN_CENTRE, false);
-            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE, true);
+            displayValue("", getStepsPercent() , "% of goal", THIRD_ROW, ALIGN_CENTRE, false);
             break;
         case UNIT_METRIC:
             displayValue("Dist:", changeToKM(getStepsCount()), "km", SECOND_ROW, ALIGN_CENTRE, true);
@@ -44,13 +44,36 @@ static void updateDisplay(FitnessTrackerPtr context)
 
 static void changeUnits(FitnessTrackerPtr context)
 {
-    incrementUnitType();
+    if (isDebugging){
+        incrementStep45();
+    } else {
+        incrementUnitType();
+        isDebugging = false;
+    }
 }
 
+static void decrementSteps(FitnessTrackerPtr context)
+{
+    if (isDebugging){
+        decrementStep45();
+    } else {
+        isDebugging = false;
+    }
+}
 
-void resetSteps(FitnessTrackerPtr context)
+static void resetSteps(FitnessTrackerPtr context)
 {
     resetStepCount();    
+}
+
+static void debugModeOn(FitnessTrackerPtr context)
+{
+    isDebugging = true;
+}
+
+static void debugModeOff(FitnessTrackerPtr context)
+{
+    isDebugging = false;
 }
 
 /* State Transitions */
@@ -76,13 +99,16 @@ StatePtr transitionToDistance(void)
 
         initDefaultImplementation(&startedState);
 
-        displayInit();
+        
         /* Init all the functions for state */
         startedState.rightButPressed = goToStopwatch;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
         startedState.botButLongPress = resetSteps;
+        startedState.botButPressed = decrementSteps;
         startedState.leftButPressed = goToSetGoal;
+        startedState.rightSWOn = debugModeOn;
+        startedState.rightSWOff = debugModeOff;
 
         initialised = 1;
     }

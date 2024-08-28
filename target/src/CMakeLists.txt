@@ -9,6 +9,7 @@ add_tiva_executable(fitness-tracker
     displayInterface.c
     Fitness_Tracker.c
     i2c_driver.c
+    main.c
     pot_measure.c
     serial_sender.c
     state_distance.c
@@ -18,7 +19,6 @@ add_tiva_executable(fitness-tracker
     state_temperature.c
     state_timer.c
     state.c
-    step_counter_main.c
     stepCounter.c
     stopwatch.c
     switches.c
