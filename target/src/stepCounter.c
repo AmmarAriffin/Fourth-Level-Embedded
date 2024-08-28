@@ -1,8 +1,14 @@
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "stepCounter.h"
+#include "accelerometer.h"
+#include "core.h"
+
 
 #define DEFAULT_GOAL 100
+#define STEP_THRESHOLD_HIGH 270
+#define STEP_THRESHOLD_LOW 235
 
 typedef struct {
     uint32_t stepsTaken;
@@ -11,10 +17,32 @@ typedef struct {
 
 static StepCounter stepCounter;
 
+static vector3_t mean;
+
+
+void pollSteps(void)
+{
+    static bool stepHigh = false;
+    pollAccelData();
+    mean = getAverageAccel();
+    uint16_t combined = sqrt(mean.x*mean.x + mean.y*mean.y + mean.z*mean.z);
+    if (combined >= STEP_THRESHOLD_HIGH && stepHigh = false) {
+        stepHigh = true;
+
+        if (getStepsCount() == getCurrentGoal()) {
+            flashMessage("Goal reached!");
+        }
+    } else if (combined <=  STEP_THRESHOLD_LOW) {
+        stepHigh = false;
+    }
+
+}
+
 
 void initStepCounter(void)
 {
     stepCounter.stepsGoal = DEFAULT_GOAL;
+    initAccelBuffer();
 }
 
 uint32_t getStepsCount(void)
@@ -42,6 +70,7 @@ void decrementStep45(void)
 
     // (currentTime - lastReadTime) >= timeRemaining)
 }
+
 
 void resetStepCount(void)
 {

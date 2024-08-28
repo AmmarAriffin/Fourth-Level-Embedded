@@ -12,9 +12,6 @@
 #ifndef DISPLAYINTERFACE_H_
 #define DISPLAYINTERFACE_H_
 
-#include <stdint.h>
-#include <stdbool.h>
-
 typedef enum {
     ALIGN_LEFT = 0,
     ALIGN_CENTRE,

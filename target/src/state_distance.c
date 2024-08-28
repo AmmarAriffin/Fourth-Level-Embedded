@@ -98,7 +98,7 @@ StatePtr transitionToDistance(void)
     {
 
         initDefaultImplementation(&startedState);
-
+        initStepCounter();
         
         /* Init all the functions for state */
         startedState.rightButPressed = goToStopwatch;

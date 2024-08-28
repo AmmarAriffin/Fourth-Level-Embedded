@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 
+void pollSteps(void);
+
 void initStepCounter(void);
 
 uint32_t getStepsCount(void);
