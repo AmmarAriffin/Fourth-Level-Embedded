@@ -83,7 +83,7 @@ void topButHandler(FitnessTrackerPtr instance)
     static bool topLongPressTriggered = 0;
     static uint16_t longPressCountTop = 0;
     if (isDown(UP)) {
-        checkButton(UP);
+        checkButton(UP); // Changes state of function even when not returning
         longPressCountTop++;
         if (longPressCountTop >= LONG_PRESS_CYCLES && !topLongPressTriggered) {
             instance->state->topButLongPress(instance);
@@ -123,7 +123,9 @@ void botButHandler(FitnessTrackerPtr instance)
 void leftSwitchON(FitnessTrackerPtr instance)
 {
     if (isSwitchUp()) {
-        instance->state->leftSWPressed(instance);
+        instance->state->rightSWOn(instance);
+    } else {
+        instance->state->rightSWOff(instance);
     }
 }
 

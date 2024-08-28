@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "stopwatch.h"
-#include "step_counter_main.h"
 #include "core.h"
 #include "utils/ustdlib.h"
 

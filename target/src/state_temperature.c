@@ -73,7 +73,7 @@ StatePtr transitionToTemperature(void)
     if (0 == initialised)
     {
         initDefaultImplementation(&startedState);
-        initTempADC();
+        
         /* Init all the functions for state */
         startedState.rightButPressed = goToSetGoal;
         startedState.updateDisplay = updateDisplay;

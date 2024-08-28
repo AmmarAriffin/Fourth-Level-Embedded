@@ -12,10 +12,15 @@
 
 #include <stdint.h>
 
+void initStepCounter(void);
 
 uint32_t getStepsCount(void);
 
 void incrementStep(void);
+
+void incrementStep45(void);
+
+void decrementStep45(void);
 
 void resetStepCount(void);
 

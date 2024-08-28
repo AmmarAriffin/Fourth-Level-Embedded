@@ -55,7 +55,7 @@ vector3_t getAverageAccel(void)
 
 
 /* Helper Local Functions */
-// Not gonna use this function outside of pollAccelData
+// Not going to use this function outside of pollAccelData
 void writeAccelData(void)
 {
     storeData(&(AccelBuffer.AccelX), vector.x);

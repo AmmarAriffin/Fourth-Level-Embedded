@@ -67,6 +67,7 @@ StatePtr transitionToTimer(void)
     if (0 == initialised)
     {
         initDefaultImplementation(&startedState);
+        
         /* Init all the functions for state */
         startedState.rightButPressed = goToTemperature;
         startedState.updateDisplay = updateDisplay;
