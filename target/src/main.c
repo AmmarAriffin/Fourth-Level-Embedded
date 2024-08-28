@@ -177,7 +177,7 @@ void initEverything(void) {
     // Init libs
     initClock();
     initTimers();
-    
+    displayInit();
     initStepCounter();
 
     fitnessTracker.workoutStartTick = 0;
@@ -194,9 +194,6 @@ int main(void)
 {
     // Fitness Monitor 2.0 Initiialisation
     
-
-
-
     initEverything();
 
     xTaskCreate(&PollButtonsAndPotentiometerTask, "PollingTask", 190, NULL, 1, NULL);

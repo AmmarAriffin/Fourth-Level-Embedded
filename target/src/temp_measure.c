@@ -38,6 +38,13 @@ void callbackADCTemp(int32_t value)
     storeData(&averagerTemp, value);
 }
 
+static void storeInitValues(void)
+{
+  for (int i=0; i < TEMP_BUFFER; i++) {
+    pollTemp();
+  }
+}
+
 void initTempADC(void)
 {
     initAverager(&averagerTemp, TEMP_BUFFER);
@@ -47,12 +54,6 @@ void initTempADC(void)
     storeInitValues(); //store proper values instead of junk
 }
 
-static void storeInitValues(void)
-{
-  for (int i=0; i < TEMP_BUFFER; i++) {
-    pollTemp();
-  }
-}
 
 int32_t getTemp(void) 
 {
