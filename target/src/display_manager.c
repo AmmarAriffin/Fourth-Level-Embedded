@@ -13,20 +13,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "inc/hw_ints.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
 #include "driverlib/debug.h"
-#include "driverlib/pin_map.h"
 #include "utils/ustdlib.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-#include "utils/ustdlib.h"
-
 #include "serial_sender.h"
 #include "display_manager.h"
 #include "stopwatch.h"
@@ -42,7 +33,7 @@
 #define KM_TO_MILES 62/100 // Multiply by 0.6215 to convert, this should be good enough
 #define MS_TO_KMH 36/10
 #define TIME_UNIT_SCALE 60
-
+#define CELSIUS_TO_FAHRENHEIT(celsius) ((celsius) * 9.0 / 5.0 + 32)
 
 
 /*******************************************
@@ -86,17 +77,22 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
         //*****************************************************************
         case DISPLAY_STEPS:
             displayLine("", 0, ALIGN_CENTRE); // Clear the top line
-            if (deviceState->displayUnits == UNITS_SI) {
+            if (deviceState->displaySteps == STEPS_TOTAL) {
                 displayValue("", "steps", deviceState->stepsTaken, 1, ALIGN_CENTRE, false);
             } else {
                 displayValue("", "% of goal", deviceState->stepsTaken * 100 / deviceState->currentGoal, 1, ALIGN_CENTRE, false);
             }
             displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE, false);
-            displayLine("", 3, ALIGN_CENTRE);
+            
+            if (deviceState->displayUnits == UNITS_SI) {
+                displayValue("Temp", "C", deviceState->currentTemp, 3, ALIGN_CENTRE, false);
+            } else {
+                displayValue("Temp", "F", CELSIUS_TO_FAHRENHEIT(deviceState->currentTemp), 3, ALIGN_CENTRE, false);
+            }
             break;
         //*****************************************************************
         case DISPLAY_DISTANCE:
-            displayTime("Time:", secondsElapsed, 1, ALIGN_CENTRE, false);
+            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE, false);
             mTravelled = deviceState->stepsTaken * M_PER_STEP;
 
             // Protection against division by zero
@@ -108,13 +104,14 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
             }
 
             if (deviceState->displayUnits == UNITS_SI) {
-                displayValue("Dist:", "km", mTravelled, 0, ALIGN_CENTRE, true);
-                displayValue("Speed", "kph", speed, 2, ALIGN_CENTRE, false);
+                displayValue("Dist:", "km", mTravelled, 1, ALIGN_CENTRE, true);
+                displayValue("Speed", "kph", speed, 0, ALIGN_CENTRE, false);
+                displayValue("Temp", "C", deviceState->currentTemp, 3, ALIGN_CENTRE, false);
             } else {
-                displayValue("Dist:", "mi", mTravelled * KM_TO_MILES, 0, ALIGN_CENTRE, true);
-                displayValue("Speed", "mph", speed * KM_TO_MILES, 2, ALIGN_CENTRE, false);
+                displayValue("Dist:", "mi", mTravelled * KM_TO_MILES, 1, ALIGN_CENTRE, true);
+                displayValue("Speed", "mph", speed * KM_TO_MILES, 0, ALIGN_CENTRE, false);
+                displayValue("Temp", "F", CELSIUS_TO_FAHRENHEIT(deviceState->currentTemp), 3, ALIGN_CENTRE, false);
             }
-            displayLine("", 3, ALIGN_CENTRE);
             break;
         //*****************************************************************
         case DISPLAY_SET_GOAL:
@@ -137,17 +134,6 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
 
             displayLine(toDraw, 1, ALIGN_CENTRE);
             displayLine("", 3, ALIGN_CENTRE);
-            break;
-        //*****************************************************************
-        case DISPLAY_TEMPERATURE:
-            if (deviceState->workoutStartTick != 0)
-            {
-                displayValue("Temp", "deg", deviceState->currentTemp, 0, ALIGN_CENTRE, false);
-            } else {
-                displayLine("Temp: Workout not started", 0, ALIGN_CENTRE);
-            }
-            displayValue("", "steps", deviceState->stepsTaken, 1, ALIGN_CENTRE, false);
-            displayTime("Time:", secondsElapsed, 2, ALIGN_CENTRE, false);
             break;
         //*****************************************************************
         case DISPLAY_TIMER:

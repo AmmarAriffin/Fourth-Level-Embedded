@@ -25,7 +25,6 @@ typedef enum {
     DISPLAY_STEPS = 0,
     DISPLAY_DISTANCE,
     DISPLAY_SET_GOAL,
-    DISPLAY_TEMPERATURE,
     DISPLAY_TIMER,
     DISPLAY_STOPWATCH,
     DISPLAY_SET_TIMER,
@@ -39,6 +38,10 @@ typedef enum {
     UNITS_NUM_TYPES,
 } displayUnits_t;
 
+typedef enum {
+    STEPS_TOTAL = 0,
+    STEPS_PERCENTILE,
+} displaySteps_t;
 
 typedef struct {
     uint32_t stepsTaken;
@@ -48,6 +51,7 @@ typedef struct {
     bool debugMode;             // Is enable/disable debug functionality
     displayMode_t displayMode;
     displayUnits_t displayUnits;
+    displaySteps_t displaySteps;
     unsigned long workoutStartTick;
 
     // For displaying temporary messages over the top of everything else

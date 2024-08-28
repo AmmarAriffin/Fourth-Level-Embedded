@@ -859,6 +859,11 @@ SysCtlPeripheralEnable(uint32_t ui32Peripheral)
     //
     HWREGBITW(SYSCTL_RCGCBASE + ((ui32Peripheral & 0xff00) >> 8),
               ui32Peripheral & 0xff) = 1;
+
+    //Ensure the ADC doesn't get configured before it's ready to find a place
+    //where the ADC hardware is enabled.
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
+
 }
 
 //*****************************************************************************

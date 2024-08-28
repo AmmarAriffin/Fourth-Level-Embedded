@@ -141,7 +141,8 @@ void superloop(void* args)
     deviceState.displayMode = DISPLAY_STEPS;
     deviceState.currentGoal = TARGET_DISTANCE_DEFAULT;
     deviceState.debugMode = false;
-    deviceState.displayUnits= UNITS_SI;
+    deviceState.displayUnits = UNITS_SI;
+    deviceState.displaySteps = STEPS_TOTAL;
     deviceState.workoutStartTick = 0;
     deviceState.currentTemp = 0;
 
@@ -255,6 +256,15 @@ void superloop(void* args)
 int main(void)
 {
     // Fitness Monitor 1.0 Initiialisation
+    
+    // Init libs
+    initClock();
+    displayInit();
+    btnInit();
+    acclInit();
+    initADC();
+    initTempADC();
+
 
     xTaskCreate(&superloop, "superloop", 512, NULL, 1, NULL);
     vTaskStartScheduler();
