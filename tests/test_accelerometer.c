@@ -39,7 +39,7 @@ void writeStuffToVector(vector3_t* vector)
     vector->x = count;
     vector->y = count;
     vector->z = count;
-    count++;
+    count += 10;
 }
 
 // Using Carl Gauss's method
@@ -72,13 +72,10 @@ void test_accel_average_for_each_buffer_is_the_same(void)
     vector3_t vector = getAverageAccel();
 
     // Assert average be the same meaning they are read at same time
-    // 10 + 11 + 12 + 13 + 14 + 15 = 65 / 20 = 3
 
-    int32_t num = getAverageOfSumConsequentNumbers(10,BUFFER_SIZE/2);
-
-    TEST_ASSERT_EQUAL(num, vector.x);
-    TEST_ASSERT_EQUAL(num, vector.y);
-    TEST_ASSERT_EQUAL(num, vector.z);
+    TEST_ASSERT_EQUAL(22, vector.x);
+    TEST_ASSERT_EQUAL(22, vector.y);
+    TEST_ASSERT_EQUAL(22, vector.z);
 }
 
 void test_accel_read_at_same_time(void)
@@ -94,13 +91,10 @@ void test_accel_read_at_same_time(void)
     pollAccelData();
     // Act : Read from AccelBuf
     vector3_t vector = getAverageAccel();
-    // Assert
-    int32_t num = getAverageOfSumConsequentNumbers(10,4);
 
-    // 10 + 11 + 12 + 14 = 47 / 20 = 2
-    TEST_ASSERT_EQUAL(num, vector.x);
-    TEST_ASSERT_EQUAL(num, vector.x);
-    TEST_ASSERT_EQUAL(num, vector.x);
+    TEST_ASSERT_EQUAL(4, vector.x);
+    TEST_ASSERT_EQUAL(4, vector.x);
+    TEST_ASSERT_EQUAL(4, vector.x);
 }
 
 

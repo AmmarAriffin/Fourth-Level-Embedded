@@ -1,13 +1,9 @@
-//*****************************************************************************
-//
-// ADCdemo1.c - Simple interrupt driven program which samples with AIN0
-//
-// Author:  P.J. Bones	UCECE
-// Last modified:	8.2.2018
-//
-//*****************************************************************************
-// Based on the 'convert' series from 2016
-//*****************************************************************************
+/* 
+ *   by Ammar Ariffin
+ *
+ * Potentiometer Functionality
+**/
+
 
 #include <stdint.h>
 #include <stdbool.h>

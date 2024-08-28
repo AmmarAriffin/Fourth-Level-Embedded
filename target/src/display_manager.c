@@ -68,7 +68,7 @@ void displayUpdate(deviceStateInfo_t *deviceState, uint32_t currentTime)
         return;
     }
     // actually milliseconds now change name to reflect this
-    uint16_t secondsElapsed = currentTime - deviceState->workoutStartTick/TICK_MODIFIER;
+    uint16_t secondsElapsed = currentTime - deviceState->workoutStartTick/TICK_MOD;
     uint32_t mTravelled = 0; // TODO: If I put this inside the case statement it won't compile. Work out why!
     char toDraw[DISPLAY_WIDTH+1]; // Must be one character longer to account for EOFs
     uint8_t i;
@@ -260,7 +260,7 @@ static void displayTime(char* prefix, uint32_t time, uint8_t row, textAlignment_
     uint32_t hours = time;
 
     if (hours == 0 && milli) {
-        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, minutes, seconds, milliSeconds);
+        usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d", prefix, minutes, seconds);
     } else {
         usnprintf(toDraw, DISPLAY_WIDTH + 1, "%s %01d:%02d:%02d", prefix, hours, minutes, seconds);
     }

@@ -30,19 +30,22 @@
 #include "utils/ustdlib.h"
 #include "acc.h"
 #include "math.h"
-#include "timer_s.h"
-#include "pot_measure.h"
-#include "temp_measure.h"
+#include "stepCounter.h"
 #include "accelerometer.h"
+#include "core.h"
+#include "timer_s.h"
+
+
 
 #ifdef SERIAL_PLOTTING_ENABLED
 #include "serial_sender.h"
 #endif //SERIAL_PLOTTING_ENABLED
 
-#include "display_manager.h"
-#include "button_manager.h"
+#include "displayInterface.h"
 
 #include "step_counter_main.h"
+
+#include "Fitness_Tracker.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -70,14 +73,10 @@
 
 #define POT_SCALE_COEFF 200000/4095 // in steps, adjusting to account for the potentiometer's maximum possible reading (was 20000/4095)
 
-
-
 /*******************************************
  *      Local prototypes
  *******************************************/
 void initClock (void);
-void initDisplay (void);
-void initAccl (void);
 
 
 /*******************************************
@@ -85,7 +84,7 @@ void initAccl (void);
  *******************************************/   
 
 deviceStateInfo_t deviceState; // Stored as one global so it can be accessed by other helper libs within this main module
-timer_s *timerArray[NUM_TIMERS]; 
+
 /***********************************************************
  * Initialisation functions
  ***********************************************************/
@@ -96,17 +95,9 @@ void initClock (void)
                    SYSCTL_XTAL_16MHZ);
 }
 
-
 /***********************************************************
  * Helper functions
  ***********************************************************/
-// Read the current systick value, without mangling the data
-unsigned long readCurrentTick(void)
-{
-    return xTaskGetTickCount();
-}
-
-
 
 // Flash a message onto the screen, overriding everything else
 void flashMessage(char* toShow)
@@ -122,6 +113,7 @@ void flashMessage(char* toShow)
 
     deviceState.flashMessage[i] = '\0';
 }
+
 
 // error trapping function that FreeRTOS
 void vAssertCalled( const char * pcFile, unsigned long ulLine ) {
@@ -144,62 +136,43 @@ void superloop(void* args)
 
     uint8_t stepHigh = false;
 
-
     // Device state
     // Omnibus struct that holds loads of info about the device's current state, so it can be updated from any function
     deviceState.displayMode = DISPLAY_STEPS;
-    deviceState.stepsTaken = 0;
     deviceState.currentGoal = TARGET_DISTANCE_DEFAULT;
     deviceState.debugMode = false;
     deviceState.displayUnits = UNITS_SI;
     deviceState.displaySteps = STEPS_TOTAL;
     deviceState.workoutStartTick = 0;
-    deviceState.flashTicksLeft = 0;
     deviceState.currentTemp = 0;
-    deviceState.flashMessage = calloc(MAX_STR_LEN + 1, sizeof(char));
 
     // Init libs
     initClock();
-    displayInit();
-    btnInit();
-
     initAccelBuffer(); // init buffer and accel chip
-    initPotADC();
-    initTempADC();
-
-    // Initialise Timers
-    uint8_t initTimerIndex;
-    for (initTimerIndex = 0;initTimerIndex < NUM_TIMERS;initTimerIndex++) {
-        timerArray[initTimerIndex] = createTimer(initTimerIndex + 1);
-    }
- 
-
+    initTimers();
     #ifdef SERIAL_PLOTTING_ENABLED
     SerialInit ();
     #endif // SERIAL_PLOTTING_ENABLED
 
+    /* State Pattern */
+    static struct FitnessTracker fitnessTracker = {0,0};
+
+    FitnessTrackerPtr fitnessTrackerPtr = &fitnessTracker;
+    
+    fitnessTracker.timeElapsed = 0;
+    // Start state
+    startTracker(fitnessTrackerPtr);
 
     while(1)
     {
         unsigned long currentTick = readCurrentTick();
-
+        
         // Poll the buttons and potentiometer
         if (lastIoProcess + RATE_SYSTICK_HZ/RATE_IO_HZ < currentTick) {
             lastIoProcess = currentTick;
 
-//            updateSwitch();
-            btnUpdateState(&deviceState, currentTick/TICK_MODIFIER);
-            pollPot();
+            pollGPIO(fitnessTrackerPtr);
 
-            deviceState.newGoal = getPotVal() * POT_SCALE_COEFF; // Set the new goal value, scaling to give the desired range
-            deviceState.newGoal = (deviceState.newGoal / STEP_GOAL_ROUNDING) * STEP_GOAL_ROUNDING; // Round to the nearest 100 steps
-            if (deviceState.newGoal == 0) { // Prevent a goal of zero, instead setting to the minimum goal (this also makes it easier to test the goal-reaching code on a small but non-zero target)
-                deviceState.newGoal = STEP_GOAL_ROUNDING;
-            }
-
-            // Pol ADC Temp 
-            pollTemp();
-            deviceState.currentTemp = getTemp();
         }
 
         // Read and process the accelerometer
@@ -214,10 +187,10 @@ void superloop(void* args)
 
             if (combined >= STEP_THRESHOLD_HIGH && stepHigh == false) {
                 stepHigh = true;
-                deviceState.stepsTaken++;
+                incrementStep();
 
                 // flash a message if the user has reached their goal
-                if (deviceState.stepsTaken == deviceState.currentGoal && deviceState.flashTicksLeft == 0) {
+                if (getStepsCount() == deviceState.currentGoal) {
                     flashMessage("Goal reached!");
                 }
 
@@ -226,9 +199,8 @@ void superloop(void* args)
             }
 
             // Don't start the workout until the user begins walking
-            if (deviceState.stepsTaken == 0) {
+            if (getStepsCount() == 0) {
                 deviceState.workoutStartTick = currentTick;
-
             }
         }
 
@@ -236,11 +208,9 @@ void superloop(void* args)
         if (lastDisplayProcess + RATE_SYSTICK_HZ/RATE_DISPLAY_UPDATE_HZ < currentTick) {
             lastDisplayProcess = currentTick;
 
-            if (deviceState.flashTicksLeft > 0) {
-                deviceState.flashTicksLeft--;
-            }
-
-            displayUpdate(&deviceState, currentTick/TICK_MODIFIER);
+            uint16_t timeElapsed = (currentTick - deviceState.workoutStartTick)/TICK_MOD;
+            fitnessTracker.timeElapsed = timeElapsed;
+            display(fitnessTrackerPtr);
         }
 
         // Send to USB via serial
@@ -248,7 +218,7 @@ void superloop(void* args)
         if (lastSerialProcess + RATE_SYSTICK_HZ/RATE_SERIAL_PLOT_HZ < currentTick) {
             lastSerialProcess = currentTick;
 
-            SerialPlot(deviceState.stepsTaken, mean.x, mean.y, mean.z);
+            SerialPlot(getStepsCount(), mean.x, mean.y, mean.z);
         }
         #endif // SERIAL_PLOTTING_ENABLED
 
@@ -278,7 +248,6 @@ void superloop(void* args)
     }
 
 }
-
 
 
 //  * Main Loop
