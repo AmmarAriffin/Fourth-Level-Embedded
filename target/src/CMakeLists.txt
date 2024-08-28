@@ -25,6 +25,8 @@ add_tiva_executable(fitness-tracker
     temp_measure.c
     timer_s.c
     unitConverter.c
+    state_calorie_counter.c
+    calorie_counter.c
 )
 target_compile_options(fitness-tracker PRIVATE -Wall)
 target_link_libraries(fitness-tracker PRIVATE tivaware OrbitOLED freertos::heap-4 m)

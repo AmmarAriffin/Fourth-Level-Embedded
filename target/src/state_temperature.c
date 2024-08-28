@@ -6,7 +6,7 @@
 
 /* Include what it will transition into */
 #include "state_timer.h"
-#include "state_setGoal.h"
+#include "state_calorie_counter.h"
 
 
 /* Functions for State */
@@ -58,9 +58,9 @@ static void goToTimer(FitnessTrackerPtr context)
     changeState(context, transitionToTimer());
 }
 
-static void goToSetGoal(FitnessTrackerPtr context)
+static void goToCalorieCounter(FitnessTrackerPtr context)
 {
-    changeState(context, transitionToSetGoal());
+    changeState(context, transitionToCalorieCounter());
 }
 
 
@@ -75,7 +75,7 @@ StatePtr transitionToTemperature(void)
         initDefaultImplementation(&startedState);
         initTempADC();
         /* Init all the functions for state */
-        startedState.rightButPressed = goToSetGoal;
+        startedState.rightButPressed = goToCalorieCounter;
         startedState.updateDisplay = updateDisplay;
         startedState.topButPressed = changeUnits;
         startedState.leftButPressed = goToTimer;
