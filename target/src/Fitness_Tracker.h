@@ -1,11 +1,13 @@
 #ifndef Fitness_Tracker_H_
 #define Fitness_Tracker_H_
 
-#include "state.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
 typedef struct FitnessTracker* FitnessTrackerPtr;
+
+#include "state.h"
 
 /* Main Context */
 // For delegating behaviour to its current state

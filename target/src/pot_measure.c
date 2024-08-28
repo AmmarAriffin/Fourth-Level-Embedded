@@ -32,6 +32,13 @@ void callbackPotADC(int32_t value)
   storeData(&ADC_inBuffer, value);
 }
 
+static void storeInitValues(void)
+{
+  for (int i=0; i < ADC_BUF_SIZE; i++) {
+    pollPot();
+  }
+}
+
 void initPotADC (void)
 {
     initAverager(&ADC_inBuffer, ADC_BUF_SIZE);
@@ -39,12 +46,6 @@ void initPotADC (void)
     storeInitValues; // To fill up with proper values in buffer instead of junk
 }
 
-static void storeInitValues(void)
-{
-  for (int i=0; i < ADC_BUF_SIZE; i++) {
-    pollPot();
-  }
-}
 
 int32_t getPotVal(void)
 {

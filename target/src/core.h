@@ -8,6 +8,7 @@
 // Author: S Fernando
 // 
 // *******************************************************
+#include <stdbool.h>
 
 #define TICK_MOD 10 // Changes ticks to milliseconds
 #define MAX_STR_LEN 16

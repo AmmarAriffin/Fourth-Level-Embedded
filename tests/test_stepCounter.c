@@ -1,6 +1,13 @@
 #include "unity.h"
 #include "stepCounter.h"
 
+#include "fff.h"
+DEFINE_FFF_GLOBALS;
+#define FFF_MOCK_IMPL
+
+
+#include "accelerometer_mock.h"
+#include "core_mock.h"
 
 void setUp(void)
 {

@@ -4,6 +4,7 @@
 #include "stepCounter.h"
 #include "accelerometer.h"
 #include "core.h"
+#include "math.h"
 
 
 #define DEFAULT_GOAL 100
@@ -18,17 +19,17 @@ typedef struct {
 static StepCounter stepCounter;
 
 static vector3_t mean;
+static bool stepHigh = false;
 
 
 void pollSteps(void)
 {
-    static bool stepHigh = false;
     pollAccelData();
     mean = getAverageAccel();
     uint16_t combined = sqrt(mean.x*mean.x + mean.y*mean.y + mean.z*mean.z);
-    if (combined >= STEP_THRESHOLD_HIGH && stepHigh = false) {
+    if (combined >= STEP_THRESHOLD_HIGH && stepHigh == false) {
         stepHigh = true;
-
+        incrementStep();
         if (getStepsCount() == getCurrentGoal()) {
             flashMessage("Goal reached!");
         }
