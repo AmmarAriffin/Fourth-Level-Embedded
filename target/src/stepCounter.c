@@ -7,7 +7,7 @@
 #include "math.h"
 
 
-#define DEFAULT_GOAL 100
+#define DEFAULT_GOAL 1000
 #define STEP_THRESHOLD_HIGH 270
 #define STEP_THRESHOLD_LOW 235
 
